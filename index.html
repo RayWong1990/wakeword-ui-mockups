@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自定义唤醒词 · 交互设计稿</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Microsoft YaHei','PingFang SC','Segoe UI',sans-serif; background:#0d1117; color:#f0f6fc; }
+
+  /* Navigation */
+  .nav { background:#161b22; border-bottom:1px solid #30363d; padding:10px 24px; display:flex; gap:8px; align-items:center; position:sticky; top:0; z-index:100; }
+  .nav-title { color:#8b949e; font-size:13px; margin-right:12px; padding-right:12px; border-right:1px solid #30363d; }
+  .nav a { color:#c9d1d9; text-decoration:none; font-size:13px; padding:6px 14px; border-radius:6px; transition:all .2s; }
+  .nav a:hover { background:#21262d; color:#58a6ff; }
+  .nav a.active { background:#1f6feb; color:white; }
+
+  /* Pages */
+  .page { display:none; min-height:calc(100vh - 46px); padding:0; }
+  .page.active { display:block; }
+
+  /* Screen container */
+  .screen { max-width:1200px; margin:0 auto; padding:24px; }
+
+  /* Status bar */
+  .status-bar { height:28px; background:rgba(0,0,0,0.4); display:flex; justify-content:space-between; align-items:center; padding:0 20px; color:#8b949e; font-size:11px; border-radius:8px 8px 0 0; }
+
+  /* Header */
+  .header { padding:16px 24px 12px; }
+  .header h1 { font-size:20px; font-weight:600; }
+  .header p { color:#8b949e; font-size:12px; margin-top:4px; }
+
+  /* Tabs bar */
+  .tabs { display:flex; gap:0; margin:0 24px; border-bottom:1px solid #30363d; }
+  .tab { padding:8px 20px; font-size:13px; color:#8b949e; cursor:pointer; border-bottom:2px solid transparent; font-weight:500; }
+  .tab.active { color:#58a6ff; border-bottom-color:#58a6ff; }
+  .tab:hover { color:#c9d1d9; }
+
+  /* Content area */
+  .content { padding:16px 24px; }
+
+  /* Category */
+  .category-row { margin-bottom:18px; }
+  .category-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .category-title { color:#c9d1d9; font-size:14px; font-weight:600; }
+  .see-all { color:#58a6ff; font-size:11px; cursor:pointer; }
+
+  /* Word cards */
+  .cards { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+  .cards::-webkit-scrollbar { height:4px; }
+  .cards::-webkit-scrollbar-thumb { background:#30363d; border-radius:2px; }
+  .word-card {
+    min-width:130px; flex-shrink:0; background:#21262d; border:1px solid #30363d;
+    border-radius:10px; padding:12px 14px; cursor:pointer; transition:all .2s; position:relative;
+  }
+  .word-card:hover { border-color:#58a6ff; transform:translateY(-2px); }
+  .word-card.selected { border-color:#3fb950; background:rgba(63,185,80,0.08); }
+  .word-card.selected::after { content:"✓"; position:absolute; top:6px; right:8px; color:#3fb950; font-size:14px; font-weight:700; }
+  .word-name { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .word-stars { color:#f0883e; font-size:10px; letter-spacing:1px; }
+  .word-meta { color:#8b949e; font-size:10px; margin-top:4px; }
+  .word-actions { display:flex; gap:6px; margin-top:8px; }
+  .btn-sm { padding:3px 10px; border-radius:5px; font-size:10px; cursor:pointer; border:none; }
+  .btn-preview { background:none; border:1px solid #30363d !important; color:#8b949e; }
+  .btn-set { background:#238636; color:white; font-weight:600; }
+  .btn-set:hover { background:#2ea043; }
+
+  /* Footer hint */
+  .footer-hint {
+    background:#161b22; border:1px solid #30363d; border-radius:8px;
+    padding:10px 16px; color:#8b949e; font-size:11px; margin:16px 24px;
+    display:flex; align-items:center; gap:8px;
+  }
+
+  /* Search page */
+  .search-box { display:flex; gap:8px; margin-bottom:16px; }
+  .search-input {
+    flex:1; background:#0d1117; border:1px solid #30363d; border-radius:8px;
+    padding:10px 16px; color:#f0f6fc; font-size:14px; outline:none;
+  }
+  .search-input:focus { border-color:#58a6ff; }
+  .search-btn { background:#21262d; border:1px solid #30363d; color:#c9d1d9; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:13px; }
+
+  .result-item {
+    display:flex; align-items:center; gap:16px; padding:12px 16px;
+    background:#21262d; border:1px solid #30363d; border-radius:8px; margin-bottom:8px;
+    transition:border-color .2s;
+  }
+  .result-item:hover { border-color:#58a6ff; }
+  .result-name { font-size:16px; font-weight:700; flex:1; }
+  .result-stars { color:#f0883e; font-size:12px; }
+  .result-quality { color:#3fb950; font-size:12px; margin-left:8px; }
+
+  /* Free input page */
+  .warning-banner {
+    background:rgba(210,153,34,0.1); border:1px solid rgba(210,153,34,0.3);
+    border-radius:8px; padding:12px 16px; color:#d29922; font-size:12px; margin-bottom:16px;
+  }
+  .free-input {
+    background:#0d1117; border:1px solid #30363d; border-radius:8px;
+    padding:12px 16px; color:#f0f6fc; font-size:16px; width:100%; outline:none; margin-bottom:16px;
+  }
+  .score-panel {
+    background:#21262d; border:1px solid #30363d; border-radius:10px; padding:16px;
+  }
+  .score-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .score-value { font-size:24px; font-weight:800; }
+  .score-detail { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #30363d; font-size:12px; color:#8b949e; }
+  .score-detail:last-child { border:none; }
+  .score-detail .label { }
+  .score-detail .val { color:#f0f6fc; font-weight:600; }
+  .recommend-box {
+    background:rgba(63,185,80,0.08); border:1px solid rgba(63,185,80,0.3);
+    border-radius:8px; padding:12px 16px; margin-top:12px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .recommend-box .name { color:#3fb950; font-weight:700; font-size:15px; }
+  .btn-actions { display:flex; gap:8px; margin-top:16px; }
+  .btn-outline { background:none; border:1px solid #30363d; color:#8b949e; padding:8px 20px; border-radius:8px; cursor:pointer; font-size:13px; }
+  .btn-primary { background:#238636; border:none; color:white; padding:8px 20px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+
+  /* Confirm page */
+  .confirm-center { display:flex; justify-content:center; align-items:center; min-height:calc(100vh - 46px); }
+  .confirm-card {
+    width:480px; background:#21262d; border:1px solid #30363d;
+    border-radius:16px; padding:32px; text-align:center;
+    box-shadow:0 16px 48px rgba(0,0,0,0.4);
+  }
+  .confirm-emoji { font-size:40px; margin-bottom:12px; }
+  .confirm-title { font-size:22px; font-weight:700; margin-bottom:4px; }
+  .confirm-sub { color:#8b949e; font-size:13px; margin-bottom:20px; }
+  .ww-display {
+    background:linear-gradient(135deg,#238636,#2ea043); border-radius:12px; padding:20px; margin-bottom:20px;
+  }
+  .ww-name { font-size:28px; font-weight:800; letter-spacing:1px; }
+  .ww-stars { color:#ffd33d; font-size:14px; margin-top:6px; }
+  .ww-phrase { color:rgba(255,255,255,0.8); font-size:13px; margin-top:6px; }
+  .practice {
+    background:#161b22; border:1px solid #30363d; border-radius:10px; padding:16px; text-align:left; margin-bottom:16px;
+  }
+  .practice-title { color:#58a6ff; font-size:13px; font-weight:600; margin-bottom:10px; }
+  .practice-mic {
+    display:flex; align-items:center; gap:10px; background:#0d1117;
+    border:1px solid #30363d; border-radius:6px; padding:10px 14px;
+  }
+  .mic-dot { width:12px; height:12px; background:#f85149; border-radius:50%; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .mic-text { color:#8b949e; font-size:12px; flex:1; }
+  .mic-wave { color:#3fb950; font-size:12px; letter-spacing:2px; font-family:monospace; }
+  .practice-steps { margin-top:10px; }
+  .step { display:flex; align-items:center; gap:6px; padding:3px 0; font-size:12px; }
+  .step.done { color:#3fb950; }
+  .step.pending { color:#484f58; }
+  .confirm-actions { display:flex; gap:10px; justify-content:center; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-title">唤醒词设置</span>
+  <a href="#" class="active" onclick="show('picks',this)">精选推荐</a>
+  <a href="#" onclick="show('search',this)">搜索</a>
+  <a href="#" onclick="show('free',this)">自由输入</a>
+  <a href="#" onclick="show('confirm',this)">设置确认</a>
+</div>
+
+<!-- ==================== 页面一：推荐墙 ==================== -->
+<div id="picks" class="page active">
+  <div class="screen">
+    <div class="status-bar"><span>9:41</span><span>语音助手设置</span><span>5G 100%</span></div>
+    <div class="header">
+      <h1>选择你的专属唤醒词</h1>
+      <p>为语音助手起一个名字，说"你好 [名字]"即可唤醒</p>
+    </div>
+    <div class="tabs">
+      <div class="tab active">精选推荐</div>
+      <div class="tab">搜索</div>
+      <div class="tab">自由输入</div>
+    </div>
+    <div class="content">
+      <div class="category-row">
+        <div class="category-header">
+          <span class="category-title">🔥 热门推荐</span>
+          <span class="see-all">查看全部</span>
+        </div>
+        <div class="cards">
+          <div class="word-card selected">
+            <div class="word-name">星火</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">2音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+          <div class="word-card">
+            <div class="word-name">Starfire</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">2音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+          <div class="word-card">
+            <div class="word-name">Cosmo</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">2音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+          <div class="word-card">
+            <div class="word-name">Biscuit</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">2音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+          <div class="word-card">
+            <div class="word-name">Nebula</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">3音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+          <div class="word-card">
+            <div class="word-name">Dynamite</div>
+            <div class="word-stars">★★★★★</div>
+            <div class="word-meta">3音节 · 极佳</div>
+            <div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="category-row">
+        <div class="category-header">
+          <span class="category-title">🐾 宠物伙伴</span>
+          <span class="see-all">查看全部 20 个</span>
+        </div>
+        <div class="cards">
+          <div class="word-card"><div class="word-name">Pumpkin</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Gizmo</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Cricket</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Pistachio</div><div class="word-stars">★★★★★</div><div class="word-meta">4音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Pretzel</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Truffle</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+        </div>
+      </div>
+
+      <div class="category-row">
+        <div class="category-header">
+          <span class="category-title">🤖 科幻科技</span>
+          <span class="see-all">查看全部 20 个</span>
+        </div>
+        <div class="cards">
+          <div class="word-card"><div class="word-name">Quantum</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Vortex</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Phantom</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Spectrum</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Galactic</div><div class="word-stars">★★★★★</div><div class="word-meta">3音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Maverick</div><div class="word-stars">★★★★★</div><div class="word-meta">3音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+        </div>
+      </div>
+
+      <div class="category-row">
+        <div class="category-header">
+          <span class="category-title">✨ 优雅经典</span>
+          <span class="see-all">查看全部 15 个</span>
+        </div>
+        <div class="cards">
+          <div class="word-card"><div class="word-name">Sapphire</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Sterling</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Obsidian</div><div class="word-stars">★★★★★</div><div class="word-meta">4音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Crystal</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+          <div class="word-card"><div class="word-name">Velvet</div><div class="word-stars">★★★★★</div><div class="word-meta">2音节</div><div class="word-actions"><button class="btn-sm btn-preview">试听</button><button class="btn-sm btn-set">设置</button></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-hint">
+      <span>💡</span>
+      <span>推荐词经过声学验证，保证 ≥90% 唤醒率。也可以试试「搜索」或「自由输入」设置个性化名字。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 页面二：搜索 ==================== -->
+<div id="search" class="page">
+  <div class="screen">
+    <div class="status-bar"><span>9:41</span><span>语音助手设置</span><span>5G 100%</span></div>
+    <div class="header">
+      <h1>搜索唤醒词</h1>
+      <p>输入关键字，从词库中模糊匹配推荐</p>
+    </div>
+    <div class="tabs">
+      <div class="tab">精选推荐</div>
+      <div class="tab active">搜索</div>
+      <div class="tab">自由输入</div>
+    </div>
+    <div class="content">
+      <div class="search-box">
+        <input class="search-input" type="text" value="star" placeholder="输入关键字搜索...">
+        <button class="search-btn">🔍 搜索</button>
+      </div>
+      <div style="color:#8b949e;font-size:12px;margin-bottom:12px;">找到 4 个匹配结果：</div>
+      <div class="result-item">
+        <div class="result-name">Starfire</div>
+        <div class="result-stars">★★★★★</div>
+        <div class="result-quality">极佳</div>
+        <button class="btn-sm btn-preview">试听</button>
+        <button class="btn-sm btn-set">设置</button>
+      </div>
+      <div class="result-item">
+        <div class="result-name">Stardust</div>
+        <div class="result-stars">★★★★★</div>
+        <div class="result-quality">极佳</div>
+        <button class="btn-sm btn-preview">试听</button>
+        <button class="btn-sm btn-set">设置</button>
+      </div>
+      <div class="result-item">
+        <div class="result-name">Starburst</div>
+        <div class="result-stars">★★★★★</div>
+        <div class="result-quality">极佳</div>
+        <button class="btn-sm btn-preview">试听</button>
+        <button class="btn-sm btn-set">设置</button>
+      </div>
+      <div class="result-item">
+        <div class="result-name">Starling</div>
+        <div class="result-stars">★★★★</div>
+        <div class="result-quality">优秀</div>
+        <button class="btn-sm btn-preview">试听</button>
+        <button class="btn-sm btn-set">设置</button>
+      </div>
+      <div class="footer-hint">
+        <span>💡</span>
+        <span>没找到想要的？试试「自由输入」—— 但推荐词效果更佳哦。</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 页面三：自由输入 ==================== -->
+<div id="free" class="page">
+  <div class="screen">
+    <div class="status-bar"><span>9:41</span><span>语音助手设置</span><span>5G 100%</span></div>
+    <div class="header">
+      <h1>自由输入唤醒词</h1>
+      <p>输入你想要的唤醒词名称，系统实时评估声学质量</p>
+    </div>
+    <div class="tabs">
+      <div class="tab">精选推荐</div>
+      <div class="tab">搜索</div>
+      <div class="tab active">自由输入</div>
+    </div>
+    <div class="content">
+      <div class="warning-banner">
+        ⚠️ 自定义名称的唤醒效果可能不如推荐词。推荐词经过声学验证，保证 ≥90% 唤醒率。
+      </div>
+      <input class="free-input" type="text" value="thunder cat" placeholder="输入4-16个字符...">
+      <div class="score-panel">
+        <div class="score-header">
+          <span style="color:#8b949e;font-size:13px;">实时声学评分</span>
+          <span class="score-value" style="color:#d29922;">★★★ 一般</span>
+        </div>
+        <div class="score-detail"><span class="label">清晰度</span><span class="val" style="color:#3fb950;">★★★★ "th"和"k"辅音清晰</span></div>
+        <div class="score-detail"><span class="label">长度</span><span class="val" style="color:#d29922;">★★★ 3音节，可接受</span></div>
+        <div class="score-detail"><span class="label">唯一性</span><span class="val" style="color:#f85149;">★★ 与"thunder cap"近音</span></div>
+        <div class="score-detail"><span class="label">综合</span><span class="val" style="color:#d29922;">一般 — 唤醒可能不太稳定</span></div>
+        <div class="recommend-box">
+          <div>
+            <div style="color:#8b949e;font-size:11px;">💡 试试这个相似的推荐词？</div>
+            <div class="name">Thunderbolt ★★★★★ 极佳</div>
+          </div>
+          <button class="btn-sm btn-set" style="padding:6px 14px;font-size:12px;">切换</button>
+        </div>
+      </div>
+      <div class="btn-actions">
+        <button class="btn-outline">仍然使用 "thunder cat"</button>
+        <button class="btn-primary">切换到 "Thunderbolt"</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 页面四：设置确认 ==================== -->
+<div id="confirm" class="page">
+  <div class="confirm-center">
+    <div class="confirm-card">
+      <div class="confirm-emoji">🎉</div>
+      <div class="confirm-title">设置成功！</div>
+      <div class="confirm-sub">你的唤醒词已更新</div>
+      <div class="ww-display">
+        <div class="ww-name">" Starfire "</div>
+        <div class="ww-stars">★★★★★ 极佳</div>
+        <div class="ww-phrase">说 "Hey Starfire" 即可唤醒语音助手</div>
+      </div>
+      <div class="practice">
+        <div class="practice-title">🎤 语音练习（推荐）</div>
+        <div class="practice-mic">
+          <div class="mic-dot"></div>
+          <span class="mic-text">请说 "Hey Starfire"...</span>
+          <span class="mic-wave">▁▂▃▅▇▅▃▂▁▂▃▅▇</span>
+        </div>
+        <div class="practice-steps">
+          <div class="step done">✅ 第1次录入成功</div>
+          <div class="step done">✅ 第2次录入成功</div>
+          <div class="step pending">⬜ 再说一次 (3/3)</div>
+        </div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn-outline">跳过练习</button>
+        <button class="btn-primary">完成 ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el) el.classList.add('active');
+}
+</script>
+</body>
+</html>
