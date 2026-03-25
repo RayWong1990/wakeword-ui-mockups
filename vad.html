@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语义VAD · 交互设计稿</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Microsoft YaHei','PingFang SC','Segoe UI',sans-serif; background:#0d1117; color:#f0f6fc; }
+
+  /* Navigation */
+  .nav { background:#161b22; border-bottom:1px solid #30363d; padding:10px 24px; display:flex; gap:8px; align-items:center; position:sticky; top:0; z-index:100; flex-wrap:wrap; }
+  .nav-title { color:#8b949e; font-size:13px; margin-right:12px; padding-right:12px; border-right:1px solid #30363d; white-space:nowrap; }
+  .nav a { color:#c9d1d9; text-decoration:none; font-size:13px; padding:6px 14px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+  .nav a:hover { background:#21262d; color:#58a6ff; }
+  .nav a.active { background:#1f6feb; color:white; }
+
+  /* Pages */
+  .page { display:none; min-height:calc(100vh - 46px); padding:24px; }
+  .page.active { display:block; }
+  .page-inner { max-width:1100px; margin:0 auto; }
+
+  /* Section titles */
+  .section-title { font-size:22px; font-weight:700; margin-bottom:8px; }
+  .section-desc { color:#8b949e; font-size:14px; margin-bottom:24px; line-height:1.6; }
+
+  /* === STATE MACHINE === */
+  .state-machine { display:flex; flex-direction:column; gap:0; position:relative; }
+  .state-row { display:flex; align-items:center; gap:12px; position:relative; }
+  .state-node { width:180px; padding:14px 16px; border-radius:12px; text-align:center; font-size:13px; font-weight:600; position:relative; flex-shrink:0; }
+  .state-node .label { font-size:11px; color:rgba(255,255,255,0.7); margin-top:4px; font-weight:400; }
+  .state-connector { display:flex; flex-direction:column; align-items:center; gap:0; }
+  .state-arrow { width:2px; height:32px; background:#30363d; position:relative; }
+  .state-arrow::after { content:'▼'; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); color:#30363d; font-size:10px; }
+  .state-branch { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+  .s-idle { background:#21262d; border:1px solid #30363d; }
+  .s-listen { background:#0d419d; border:1px solid #1f6feb; }
+  .s-wait { background:#4a2706; border:1px solid #d29922; }
+  .s-understand { background:#1a1a4e; border:1px solid #6366f1; }
+  .s-generate { background:#2a1a4e; border:1px solid #a78bfa; }
+  .s-done { background:#0a3d1f; border:1px solid #3fb950; }
+  .s-timeout { background:#21262d; border:1px solid #484f58; }
+
+  /* Branch cards for EOS */
+  .eos-branches { display:flex; gap:16px; margin-top:16px; flex-wrap:wrap; }
+  .eos-card { flex:1; min-width:200px; padding:16px; border-radius:12px; }
+  .eos-card h4 { font-size:14px; margin-bottom:6px; }
+  .eos-card p { font-size:12px; color:rgba(255,255,255,0.8); line-height:1.5; }
+  .eos-card .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; margin-bottom:8px; font-weight:600; }
+  .eos-fast { background:#0a3d1f; border:1px solid #3fb950; }
+  .eos-fast .tag { background:#3fb950; color:#0d1117; }
+  .eos-hold { background:#1c1917; border:1px solid #6b7280; }
+  .eos-hold .tag { background:#6b7280; color:#fff; }
+  .eos-wait { background:#3d0a0a; border:1px solid #f85149; }
+  .eos-wait .tag { background:#f85149; color:#fff; }
+
+  /* === TYPEWRITER COMPARISON === */
+  .compare-container { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; }
+  @media(max-width:768px) { .compare-container { grid-template-columns:1fr; } }
+
+  .compare-panel { border-radius:16px; overflow:hidden; }
+  .compare-header { padding:12px 16px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .compare-body { padding:16px; min-height:340px; }
+
+  .panel-old { background:#1a0a0a; border:1px solid #f85149; }
+  .panel-old .compare-header { background:rgba(248,81,73,0.15); color:#f85149; }
+  .panel-new { background:#0a1a0a; border:1px solid #3fb950; }
+  .panel-new .compare-header { background:rgba(63,185,80,0.15); color:#3fb950; }
+
+  /* Car screen mockup */
+  .car-screen { background:#000; border-radius:12px; padding:0; overflow:hidden; margin-bottom:12px; }
+  .car-topbar { height:28px; background:rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; padding:0 12px; font-size:10px; color:#6b7280; }
+  .car-main { padding:16px; min-height:120px; position:relative; }
+
+  .assistant-bubble { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px; font-size:12px; margin-bottom:12px; }
+  .assistant-avatar { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; }
+
+  .typewriter-text { font-size:18px; font-weight:500; line-height:1.6; min-height:32px; }
+  .cursor-blink { display:inline-block; width:2px; height:20px; background:#58a6ff; margin-left:2px; vertical-align:middle; animation:blink 1s infinite; }
+  .cursor-dots { color:#58a6ff; animation:dots 1.5s infinite; }
+  @keyframes blink { 0%,50% { opacity:1; } 51%,100% { opacity:0; } }
+  @keyframes dots { 0% { content:''; } 33% { content:'.'; } 66% { content:'..'; } 100% { content:'...'; } }
+
+  .step-label { font-size:11px; color:#8b949e; margin-top:8px; padding:6px 10px; background:rgba(255,255,255,0.05); border-radius:6px; line-height:1.5; }
+  .step-label .highlight { color:#58a6ff; font-weight:600; }
+
+  /* Timeline steps */
+  .timeline { display:flex; flex-direction:column; gap:16px; }
+  .timeline-step { display:flex; gap:12px; align-items:flex-start; }
+  .timeline-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+  .timeline-content { flex:1; }
+  .timeline-content h4 { font-size:13px; font-weight:600; margin-bottom:4px; }
+  .timeline-content p { font-size:12px; color:#8b949e; line-height:1.5; }
+  .dot-1 { background:#1f6feb; color:#fff; }
+  .dot-2 { background:#d29922; color:#0d1117; }
+  .dot-3 { background:#3fb950; color:#0d1117; }
+
+  /* === FLOW PAGE === */
+  .flow-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; }
+  @media(max-width:768px) { .flow-grid { grid-template-columns:1fr; } }
+
+  .flow-card { background:#161b22; border:1px solid #30363d; border-radius:16px; overflow:hidden; }
+  .flow-card-header { padding:14px 16px; border-bottom:1px solid #30363d; display:flex; align-items:center; gap:10px; }
+  .flow-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .flow-card-header h3 { font-size:15px; font-weight:600; }
+  .flow-card-header p { font-size:11px; color:#8b949e; }
+  .flow-card-body { padding:16px; }
+
+  .flow-step { display:flex; gap:10px; margin-bottom:12px; align-items:flex-start; }
+  .flow-step:last-child { margin-bottom:0; }
+  .flow-num { width:22px; height:22px; border-radius:50%; background:#21262d; border:1px solid #30363d; display:flex; align-items:center; justify-content:center; font-size:10px; color:#8b949e; flex-shrink:0; margin-top:2px; }
+  .flow-text { font-size:12px; line-height:1.5; color:#c9d1d9; }
+  .flow-text strong { color:#58a6ff; }
+  .flow-text .red { color:#f85149; }
+  .flow-text .green { color:#3fb950; }
+  .flow-text .yellow { color:#d29922; }
+
+  /* Scenario cards */
+  .scenario-card { background:#0d1117; border:1px solid #21262d; border-radius:10px; padding:14px; margin-top:12px; }
+  .scenario-title { font-size:12px; font-weight:600; color:#8b949e; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
+  .scenario-line { display:flex; gap:8px; margin-bottom:6px; align-items:center; font-size:12px; }
+  .scenario-line:last-child { margin-bottom:0; }
+  .role-user { color:#58a6ff; font-weight:600; min-width:28px; }
+  .role-sys { color:#3fb950; font-weight:600; min-width:28px; }
+  .speech-bubble { background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:8px; flex:1; }
+  .action-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600; margin-left:6px; }
+  .tag-fast { background:#3fb950; color:#0d1117; }
+  .tag-wait { background:#f85149; color:#fff; }
+  .tag-hold { background:#6b7280; color:#fff; }
+  .tag-exec { background:#1f6feb; color:#fff; }
+
+  /* === PRIORITY PAGE === */
+  .priority-table { width:100%; border-collapse:separate; border-spacing:0; margin-top:16px; }
+  .priority-table th { background:#161b22; padding:10px 14px; text-align:left; font-size:12px; color:#8b949e; font-weight:600; border-bottom:1px solid #30363d; }
+  .priority-table td { padding:10px 14px; font-size:13px; border-bottom:1px solid #21262d; }
+  .priority-table tr:hover td { background:rgba(255,255,255,0.02); }
+
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+  .badge-p0 { background:#f85149; color:#fff; }
+  .badge-p1 { background:#d29922; color:#0d1117; }
+  .badge-p2 { background:#6b7280; color:#fff; }
+  .badge-low { background:#3fb950; color:#0d1117; }
+  .badge-mid { background:#d29922; color:#0d1117; }
+  .badge-high { background:#f85149; color:#fff; }
+
+  /* Generation comparison */
+  .gen-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:16px; }
+  @media(max-width:900px) { .gen-grid { grid-template-columns:repeat(2, 1fr); } }
+  .gen-card { border-radius:14px; padding:18px; text-align:center; position:relative; }
+  .gen-card .gen-num { font-size:36px; font-weight:800; opacity:0.15; position:absolute; top:8px; right:14px; }
+  .gen-card h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .gen-card .gen-tech { font-size:11px; color:rgba(255,255,255,0.7); margin-bottom:8px; }
+  .gen-card .gen-eos { font-size:12px; padding:4px 10px; border-radius:6px; background:rgba(0,0,0,0.3); display:inline-block; }
+  .gen-1 { background:linear-gradient(135deg,#374151,#1f2937); border:1px solid #4b5563; }
+  .gen-2 { background:linear-gradient(135deg,#92400e,#78350f); border:1px solid #d97706; }
+  .gen-current { position:relative; }
+  .gen-current::after { content:'当前方案'; position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:#d97706; color:#0d1117; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+  .gen-3 { background:linear-gradient(135deg,#1e3a5f,#1e293b); border:1px solid #3b82f6; }
+  .gen-4 { background:linear-gradient(135deg,#3b1f6e,#1e1b4b); border:1px solid #8b5cf6; }
+
+  /* Footer */
+  .footer { text-align:center; padding:32px 24px; color:#484f58; font-size:12px; border-top:1px solid #21262d; margin-top:48px; }
+
+  /* Animated demo */
+  .demo-container { position:relative; }
+  .demo-controls { display:flex; gap:8px; margin-top:12px; }
+  .demo-btn { padding:6px 14px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#c9d1d9; font-size:12px; cursor:pointer; transition:all .2s; }
+  .demo-btn:hover { background:#30363d; border-color:#58a6ff; }
+  .demo-btn.active { background:#1f6feb; border-color:#1f6feb; color:#fff; }
+
+  /* Waveform animation */
+  .waveform { display:flex; gap:2px; align-items:center; height:20px; }
+  .waveform .bar { width:3px; border-radius:2px; background:#58a6ff; animation:wave 1.2s ease-in-out infinite; }
+  .waveform .bar:nth-child(1) { height:6px; animation-delay:0s; }
+  .waveform .bar:nth-child(2) { height:12px; animation-delay:0.1s; }
+  .waveform .bar:nth-child(3) { height:18px; animation-delay:0.2s; }
+  .waveform .bar:nth-child(4) { height:12px; animation-delay:0.3s; }
+  .waveform .bar:nth-child(5) { height:6px; animation-delay:0.4s; }
+  @keyframes wave { 0%,100% { transform:scaleY(0.5); } 50% { transform:scaleY(1); } }
+
+  /* Pulse animation */
+  .pulse { display:inline-block; width:8px; height:8px; border-radius:50%; background:#d29922; animation:pulse-anim 2s ease-in-out infinite; }
+  @keyframes pulse-anim { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.5); opacity:0.5; } }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-title">语义VAD · 交互设计稿</span>
+  <a href="#" class="active" onclick="showPage('state',this)">状态机</a>
+  <a href="#" onclick="showPage('typewriter',this)">打字机对比</a>
+  <a href="#" onclick="showPage('flow',this)">交互流程</a>
+  <a href="#" onclick="showPage('generation',this)">技术代际</a>
+  <a href="#" onclick="showPage('priority',this)">优先级</a>
+</div>
+
+<!-- ========== PAGE 1: STATE MACHINE ========== -->
+<div id="page-state" class="page active">
+<div class="page-inner">
+  <h2 class="section-title">语义VAD状态机</h2>
+  <p class="section-desc">
+    语义VAD通过黑白名单机制，将指令分为三档并动态调整EOS（End of Session）等待时间。<br/>
+    核心逻辑：说完了快响应，没说完耐心等，不确定不乱动。
+  </p>
+
+  <!-- State flow -->
+  <div style="display:flex; flex-direction:column; align-items:center; gap:0;">
+    <div class="state-node s-idle">
+      🎤 待机
+      <div class="label">等待唤醒</div>
+    </div>
+    <div class="state-connector"><div class="state-arrow"></div></div>
+
+    <div class="state-node s-listen">
+      <div class="waveform" style="justify-content:center; margin-bottom:4px;">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+      聆听中...
+      <div class="label">VAD检测有效语音</div>
+    </div>
+    <div class="state-connector"><div class="state-arrow"></div></div>
+
+    <div class="state-node" style="background:#1a1a2e; border:1px solid #6366f1; width:220px;">
+      ⚡ 检测到200ms静音
+      <div class="label">触发子句识别 → 语义VAD匹配</div>
+    </div>
+    <div class="state-connector"><div class="state-arrow"></div></div>
+
+    <div style="color:#8b949e; font-size:12px; font-weight:600; margin:4px 0;">▼ 三档分流 ▼</div>
+  </div>
+
+  <div class="eos-branches">
+    <div class="eos-card eos-fast">
+      <span class="tag">白名单 · 快停</span>
+      <h4>✅ 确认说完</h4>
+      <p>
+        <strong>EOS缩短至 [400, 默认)ms</strong><br/>
+        快速响应，减少等待感<br/><br/>
+        示例：<br/>
+        · "Turn on AC, please"<br/>
+        · "Give mom a call"<br/>
+        · 可见可说热词 / 二次交互
+      </p>
+    </div>
+
+    <div class="eos-card eos-hold">
+      <span class="tag">灰名单 · 保持</span>
+      <h4>❓ 不确定</h4>
+      <p>
+        <strong>EOS保持默认值不变</strong><br/>
+        体验不劣化，宁可不动也不错动<br/><br/>
+        示例：<br/>
+        · "Turn on AC" (可能还想说温度)<br/>
+        · "Open window" (可能想说halfway)<br/>
+        · 多意图 / AI大模型功能
+      </p>
+    </div>
+
+    <div class="eos-card eos-wait">
+      <span class="tag">黑名单 · 防截断</span>
+      <h4>⏳ 确认未说完</h4>
+      <p>
+        <strong>EOS延长至 (默认, 2000]ms</strong><br/>
+        耐心等待用户补充<br/><br/>
+        示例：<br/>
+        · "Set the temperature to..."<br/>
+        · "Navigate to..."<br/>
+        · "Play music from..."
+      </p>
+    </div>
+  </div>
+
+  <!-- After EOS decision -->
+  <div style="display:flex; flex-direction:column; align-items:center; gap:0; margin-top:24px;">
+    <div style="color:#8b949e; font-size:12px; font-weight:600; margin-bottom:8px;">▼ EOS到达后 ▼</div>
+    <div style="display:flex; gap:24px; flex-wrap:wrap; justify-content:center;">
+      <div class="state-node s-understand" style="width:200px;">
+        🧠 理解中...
+        <div class="label">语义解析</div>
+      </div>
+      <div class="state-node s-generate" style="width:200px;">
+        ✨ 生成中...
+        <div class="label">智能体场景</div>
+      </div>
+    </div>
+    <div class="state-connector"><div class="state-arrow"></div></div>
+    <div class="state-node s-done" style="width:240px;">
+      ✅ 回复完毕 · 可以继续说
+      <div class="label">保持20s聆听窗口</div>
+    </div>
+    <div class="state-connector"><div class="state-arrow"></div></div>
+    <div class="state-node s-timeout">
+      ⏹ 超时退出
+      <div class="label">淡出300ms</div>
+    </div>
+  </div>
+
+  <!-- Key constraint -->
+  <div style="margin-top:32px; padding:16px; background:#161b22; border:1px solid #30363d; border-radius:12px;">
+    <h4 style="font-size:14px; margin-bottom:8px;">⚠️ 关键约束</h4>
+    <ul style="font-size:12px; color:#8b949e; line-height:1.8; padding-left:20px;">
+      <li>动态EOS调整<strong style="color:#f85149;">仅限一次</strong>，避免无限期等待</li>
+      <li>带可变槽的说法，仅对<strong style="color:#d29922;">槽前句式部分</strong>做动态VAD</li>
+      <li>多意图说法不做判断（组合过多无法穷举）</li>
+      <li>2026年新增AI大模型功能暂不支持动态VAD</li>
+      <li>防截断等待期间若有新语音输入 → 重新进入语义VAD匹配</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 2: TYPEWRITER COMPARISON ========== -->
+<div id="page-typewriter" class="page">
+<div class="page-inner">
+  <h2 class="section-title">打字机显示对比</h2>
+  <p class="section-desc">
+    P0级改进：打字机文字就地追加而非重刷，消除体验割裂感。<br/>
+    对标理想汽车：视觉上传递"系统仍在等你说完"的信号。
+  </p>
+
+  <div class="compare-container">
+    <!-- OLD -->
+    <div class="compare-panel panel-old">
+      <div class="compare-header">❌ 旧方案：重刷（奇瑞现状）</div>
+      <div class="compare-body">
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-dot dot-1">1</div>
+            <div class="timeline-content">
+              <h4>用户说"前面有什么"</h4>
+              <div class="car-screen">
+                <div class="car-topbar"><span>🤠 聆听中...</span><span>15:25</span></div>
+                <div class="car-main">
+                  <div class="typewriter-text">前面有什么</div>
+                </div>
+              </div>
+              <div class="step-label">打字机正常显示识别结果</div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-dot dot-2">2</div>
+            <div class="timeline-content">
+              <h4>用户停顿后补充"湖"</h4>
+              <div class="car-screen">
+                <div class="car-topbar"><span>🤠 聆听中...</span><span>15:25</span></div>
+                <div class="car-main">
+                  <div class="typewriter-text" style="opacity:0.3; text-decoration:line-through;">前面有什么</div>
+                  <div style="font-size:10px; color:#f85149; margin:4px 0;">⚡ 整句重刷 ⚡</div>
+                  <div class="typewriter-text">前面有什么湖</div>
+                </div>
+              </div>
+              <div class="step-label">
+                <span class="highlight" style="color:#f85149;">问题：</span>打字机<strong style="color:#f85149;">重新刷</strong>显示完整句子<br/>
+                用户感知：系统重新识别了一次，体验割裂
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW -->
+    <div class="compare-panel panel-new">
+      <div class="compare-header">✅ 新方案：追加拼接（对标理想）</div>
+      <div class="compare-body">
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-dot dot-1">1</div>
+            <div class="timeline-content">
+              <h4>用户停顿，等待中</h4>
+              <div class="car-screen">
+                <div class="car-topbar">
+                  <span style="display:flex; align-items:center; gap:6px;">🤠 <span class="pulse"></span> 可以继续说</span>
+                  <span>15:25</span>
+                </div>
+                <div class="car-main">
+                  <div class="typewriter-text">前面有什么<span class="cursor-blink"></span></div>
+                </div>
+              </div>
+              <div class="step-label">
+                <span class="highlight">光标保持</span>，文字不退下，字尾显示「...」动效<br/>
+                视觉传递：系统仍在等你说完
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-dot dot-2">2</div>
+            <div class="timeline-content">
+              <h4>用户补充"湖"</h4>
+              <div class="car-screen">
+                <div class="car-topbar">
+                  <span style="display:flex; align-items:center; gap:6px;">🤠 <span class="pulse"></span> 可以继续说</span>
+                  <span>15:25</span>
+                </div>
+                <div class="car-main">
+                  <div class="typewriter-text">前面有什么<span style="color:#3fb950; font-weight:700;">湖</span><span class="cursor-blink"></span></div>
+                </div>
+              </div>
+              <div class="step-label">
+                <span class="highlight" style="color:#3fb950;">就地追加</span>，无闪烁，无重刷，直接拼接<br/>
+                用户感知：连贯流畅，一次对话
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-dot dot-3">3</div>
+            <div class="timeline-content">
+              <h4>VAD cut断，开始处理</h4>
+              <div class="car-screen">
+                <div class="car-topbar"><span>🤠 理解中...</span><span>15:25</span></div>
+                <div class="car-main">
+                  <div class="typewriter-text" style="color:#c9d1d9;">前面有什么湖</div>
+                </div>
+              </div>
+              <div class="step-label">完整展示最终识别结果，结束追加态</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key metrics -->
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:24px;">
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:28px; font-weight:800; color:#f85149;">重刷</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:4px;">旧方案 · 割裂感强</div>
+    </div>
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:28px; font-weight:800; color:#3fb950;">追加</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:4px;">新方案 · 连贯流畅</div>
+    </div>
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:28px; font-weight:800; color:#58a6ff;">P0</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:4px;">最高优先级</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 3: INTERACTION FLOW ========== -->
+<div id="page-flow" class="page">
+<div class="page-inner">
+  <h2 class="section-title">四类典型场景交互流程</h2>
+  <p class="section-desc">
+    连续对话中存在四类典型痛点，每类对应不同的处理策略。<br/>
+    核心设计原则：可覆盖→快速响应，不可覆盖→延迟执行，不确定→等一等。
+  </p>
+
+  <div class="flow-grid">
+    <!-- Scenario 1: 分片输入 -->
+    <div class="flow-card">
+      <div class="flow-card-header">
+        <div class="flow-icon" style="background:#1e3a5f;">🧩</div>
+        <div>
+          <h3>意图分片输入</h3>
+          <p>用户分多句说完一个完整意图</p>
+        </div>
+      </div>
+      <div class="flow-card-body">
+        <div class="scenario-card">
+          <div class="scenario-title">场景演示</div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"规划一个"</span>
+            <span class="action-tag tag-wait">延长VAD</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#8b949e;">内容生成类开头 → 等待补充</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"南京的旅游路线"</span>
+            <span class="action-tag tag-wait">继续等</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#8b949e;">同业务补充，合并槽位 → 仍不完整</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"三天两晚的就成了"</span>
+            <span class="action-tag tag-exec">执行</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#3fb950;">意图完整 → 开始规划</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 2: 内容修正 -->
+    <div class="flow-card">
+      <div class="flow-card-header">
+        <div class="flow-icon" style="background:#4a2706;">✏️</div>
+        <div>
+          <h3>内容修正补充</h3>
+          <p>用户对已执行结果进行修正</p>
+        </div>
+      </div>
+      <div class="flow-card-body">
+        <div class="scenario-card">
+          <div class="scenario-title">场景演示</div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"给我画一只老虎"</span>
+            <span class="action-tag tag-exec">静默执行</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#8b949e;">意图完整 → 静默开始生成</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"太单调了"</span>
+            <span class="action-tag tag-hold">继续听</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#8b949e;">评价性语句，无新增意图 → 保持聆听</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"加只猫在边上"</span>
+            <span class="action-tag tag-exec">重新生成</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#3fb950;">修正意图 → 重新生成"老虎+猫"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 3: 可覆盖修正 -->
+    <div class="flow-card">
+      <div class="flow-card-header">
+        <div class="flow-icon" style="background:#0a3d1f;">🔄</div>
+        <div>
+          <h3>修正意图 · 可覆盖操作</h3>
+          <p>空调温度等状态设置类指令</p>
+        </div>
+      </div>
+      <div class="flow-card-body">
+        <div class="scenario-card">
+          <div class="scenario-title">场景演示</div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"空调调到20度"</span>
+            <span class="action-tag tag-exec">直接执行</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#3fb950;">✅ 设为20度（可覆盖 → 不等）</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"不对，24度"</span>
+            <span class="action-tag tag-exec">覆盖执行</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#3fb950;">✅ 覆盖设为24度，无需回滚</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#8b949e; line-height:1.6;">
+          <strong style="color:#3fb950;">设计原则：</strong>可覆盖操作大胆执行，修正时直接覆盖旧值。<br/>
+          适用：空调温度、音量、亮度、开关状态等。
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 4: 不可覆盖修正 -->
+    <div class="flow-card">
+      <div class="flow-card-header">
+        <div class="flow-icon" style="background:#3d0a0a;">🛡️</div>
+        <div>
+          <h3>修正意图 · 不可覆盖操作</h3>
+          <p>发消息等不可撤回的动作</p>
+        </div>
+      </div>
+      <div class="flow-card-body">
+        <div class="scenario-card">
+          <div class="scenario-title">场景演示</div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"给张三发个消息"</span>
+            <span class="action-tag tag-wait">延迟窗口</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#d29922;">⏳ 不可覆盖 → 进入延迟执行窗口</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-user">用户</span>
+            <span class="speech-bubble">"等等，发给李四"</span>
+            <span class="action-tag tag-exec">替换执行</span>
+          </div>
+          <div class="scenario-line">
+            <span class="role-sys">系统</span>
+            <span class="speech-bubble" style="color:#3fb950;">✅ 窗口期内修正 → 发给李四</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#8b949e; line-height:1.6;">
+          <strong style="color:#f85149;">设计原则：</strong>不可覆盖操作强制延迟，窗口期内允许替换。<br/>
+          适用：发消息、下单、支付、添加联系人等。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barge-in section -->
+  <div style="margin-top:32px;">
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">🎤 全双工打断（Barge-in）</h3>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;">
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px; text-align:center;">
+        <div style="font-size:20px; margin-bottom:6px;">❌</div>
+        <div style="font-size:12px; font-weight:600;">"不对/错了"</div>
+        <div style="font-size:11px; color:#f85149; margin-top:4px;">立即打断 + 修正</div>
+      </div>
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px; text-align:center;">
+        <div style="font-size:20px; margin-bottom:6px;">⏸</div>
+        <div style="font-size:12px; font-weight:600;">"等等/先别"</div>
+        <div style="font-size:11px; color:#d29922; margin-top:4px;">立即打断 + 暂停</div>
+      </div>
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px; text-align:center;">
+        <div style="font-size:20px; margin-bottom:6px;">🚫</div>
+        <div style="font-size:12px; font-weight:600;">"关闭/取消"</div>
+        <div style="font-size:11px; color:#f85149; margin-top:4px;">立即打断 + 回滚</div>
+      </div>
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px; text-align:center;">
+        <div style="font-size:20px; margin-bottom:6px;">💬</div>
+        <div style="font-size:12px; font-weight:600;">无关内容</div>
+        <div style="font-size:11px; color:#6b7280; margin-top:4px;">继续播报</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 4: GENERATION ========== -->
+<div id="page-generation" class="page">
+<div class="page-inner">
+  <h2 class="section-title">语义VAD技术代际演进</h2>
+  <p class="section-desc">
+    从能量检测到流式预判，VAD技术经历四代演进。讯飞当前方案处于第二代（规则语义VAD），<br/>
+    通过黑白名单实现三档EOS动态调整，是成本可控、效果可验证的最优解。
+  </p>
+
+  <div class="gen-grid">
+    <div class="gen-card gen-1">
+      <div class="gen-num">1</div>
+      <h4>能量VAD</h4>
+      <div class="gen-tech">有没有声音？</div>
+      <div class="gen-eos">固定EOS 600~800ms</div>
+      <div style="margin-top:10px; font-size:11px; color:rgba(255,255,255,0.6);">所有传统语音系统</div>
+    </div>
+
+    <div class="gen-card gen-2 gen-current">
+      <div class="gen-num">2</div>
+      <h4>规则语义VAD</h4>
+      <div class="gen-tech">黑白名单匹配</div>
+      <div class="gen-eos">三档动态EOS</div>
+      <div style="margin-top:10px; font-size:11px; color:rgba(255,255,255,0.6);">讯飞多语种项目</div>
+    </div>
+
+    <div class="gen-card gen-3">
+      <div class="gen-num">3</div>
+      <h4>大模型语义VAD</h4>
+      <div class="gen-tech">语义完整度概率</div>
+      <div class="gen-eos">连续动态EOS</div>
+      <div style="margin-top:10px; font-size:11px; color:rgba(255,255,255,0.6);">AIUI / OpenAI</div>
+    </div>
+
+    <div class="gen-card gen-4">
+      <div class="gen-num">4</div>
+      <h4>流式语义预判</h4>
+      <div class="gen-tech">边听边判</div>
+      <div class="gen-eos">实时动态EOS</div>
+      <div style="margin-top:10px; font-size:11px; color:rgba(255,255,255,0.6);">Phoenix-VAD（预研）</div>
+    </div>
+  </div>
+
+  <!-- Industry comparison -->
+  <div style="margin-top:32px;">
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">行业竞品连续对话能力对比</h3>
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>厂商</th>
+          <th>连续对话能力</th>
+          <th>VAD等待</th>
+          <th>打字机</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>理想</strong></td>
+          <td>20s保持窗口，四音区锁定</td>
+          <td>普通1.5s / 智能体3s</td>
+          <td><span class="badge badge-p0" style="background:#3fb950;">就地追加</span></td>
+        </tr>
+        <tr>
+          <td><strong>小鹏</strong></td>
+          <td>最长30s连续指令解析</td>
+          <td>误唤醒率<0.1次/小时</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>奔驰MBUX</strong></td>
+          <td>学习用户偏好，多轮推理</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>讯飞（当前）</strong></td>
+          <td>3s VAD等待</td>
+          <td>统一≤3s</td>
+          <td><span class="badge badge-p0">重刷（待修复）</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- VAD core metrics -->
+  <div style="margin-top:32px;">
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">VAD核心技术参数（行业标准）</h3>
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:24px; font-weight:800; color:#3fb950;">< 30ms</div>
+        <div style="font-size:12px; color:#8b949e; margin-top:4px;">AEC + VAD 端到端延迟</div>
+      </div>
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:24px; font-weight:800; color:#58a6ff;">≤ 150ms</div>
+        <div style="font-size:12px; color:#8b949e; margin-top:4px;">整体打断延迟</div>
+      </div>
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:24px; font-weight:800; color:#d29922;">< 1次/h</div>
+        <div style="font-size:12px; color:#8b949e; margin-top:4px;">误触发率</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 5: PRIORITY ========== -->
+<div id="page-priority" class="page">
+<div class="page-inner">
+  <h2 class="section-title">落地优先级</h2>
+  <p class="section-desc">
+    分三阶段实施：P0（Demo前）→ P1（端侧开发）→ P2（后续迭代）
+  </p>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>优先级</th>
+        <th>改进项</th>
+        <th>预期收益</th>
+        <th>难度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-p0">P0</span></td>
+        <td><strong>打字机追加拼接（不重刷）</strong></td>
+        <td>连续说体验质的提升，消除割裂感</td>
+        <td><span class="badge badge-low">低</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p0">P0</span></td>
+        <td><strong>智能体VAD等待固定3s</strong></td>
+        <td>行程规划拼接率提升15-20%</td>
+        <td><span class="badge badge-low">低</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p0">P0</span></td>
+        <td><strong>状态分级文字显示（7阶段）</strong></td>
+        <td>用户透明感，降低操作焦虑</td>
+        <td><span class="badge badge-low">低</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td>功能反义指令断开上下文</td>
+        <td>空调/音乐准确率 33%→80%+</td>
+        <td><span class="badge badge-mid">中</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td>连续对话20s保持窗口</td>
+        <td>多轮对话免唤醒体验</td>
+        <td><span class="badge badge-mid">中</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td>语义拼接判定规则完善</td>
+        <td>上下文继承准确率提升</td>
+        <td><span class="badge badge-mid">中</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td>侧边Panel结果呈现</td>
+        <td>不遮挡导航，驾驶安全感提升</td>
+        <td><span class="badge badge-high">高</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td>追问Chip引导多轮对话</td>
+        <td>降低用户思考成本</td>
+        <td><span class="badge badge-mid">中</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td>无效拒识保护</td>
+        <td>多人用车误触发减少</td>
+        <td><span class="badge badge-high">高</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td>置信度×风险二维评估</td>
+        <td>不完整指令智能处理</td>
+        <td><span class="badge badge-high">高</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td>延迟执行窗口机制</td>
+        <td>不可覆盖操作安全保障</td>
+        <td><span class="badge badge-mid">中</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Summary cards -->
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:32px;">
+    <div style="background:rgba(248,81,73,0.1); border:1px solid #f85149; border-radius:12px; padding:18px;">
+      <div style="font-size:12px; color:#f85149; font-weight:700; margin-bottom:6px;">P0 · Demo前</div>
+      <div style="font-size:14px; font-weight:600;">3项 · 低难度</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:6px;">打字机追加 + 智能体3s + 7阶段状态</div>
+    </div>
+    <div style="background:rgba(210,153,34,0.1); border:1px solid #d29922; border-radius:12px; padding:18px;">
+      <div style="font-size:12px; color:#d29922; font-weight:700; margin-bottom:6px;">P1 · 端侧开发</div>
+      <div style="font-size:14px; font-weight:600;">4项 · 中难度</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:6px;">反义断开 + 20s窗口 + 拼接规则 + Panel</div>
+    </div>
+    <div style="background:rgba(107,114,128,0.1); border:1px solid #6b7280; border-radius:12px; padding:18px;">
+      <div style="font-size:12px; color:#6b7280; font-weight:700; margin-bottom:6px;">P2 · 后续迭代</div>
+      <div style="font-size:14px; font-weight:600;">4项 · 高难度</div>
+      <div style="font-size:12px; color:#8b949e; margin-top:6px;">追问Chip + 拒识 + 二维评估 + 延迟窗口</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  语义VAD交互设计稿 · 讯飞座舱CW28 · 王磊 · 2026-03-25<br/>
+  <a href="index.html" style="color:#58a6ff; text-decoration:none;">← 唤醒词设计稿</a>
+</div>
+
+<script>
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// Handle hash navigation
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.slice(1);
+  if (hash) {
+    const link = document.querySelector(`.nav a[onclick*="'${hash}'"]`);
+    if (link) showPage(hash, link);
+  }
+});
+</script>
+</body>
+</html>
