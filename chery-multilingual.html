@@ -3,599 +3,1614 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>奇瑞 T22FL 多语种大模型智能体方案 · 交付概览</title>
+<title>Carmind 1.5 · 大模型智能体车机界面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Microsoft YaHei','PingFang SC','Segoe UI',sans-serif; background:#0d1117; color:#f0f6fc; }
+:root {
+  --bg-deep: #060810;
+  --bg-surface: #0d1220;
+  --bg-card: #111827;
+  --bg-card-hover: #1a2235;
+  --accent-amber: #f59e0b;
+  --accent-amber-dim: #d97706;
+  --accent-blue: #3b82f6;
+  --accent-teal: #06b6d4;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.12);
+  --font-zh: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-en: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-zh);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
 /* ── Nav ── */
-.nav { background:#161b22; border-bottom:1px solid #30363d; padding:10px 24px; display:flex; gap:6px; align-items:center; position:sticky; top:0; z-index:100; flex-wrap:wrap; }
-.nav-title { color:#8b949e; font-size:12px; margin-right:10px; padding-right:10px; border-right:1px solid #30363d; white-space:nowrap; }
-.nav a { color:#c9d1d9; text-decoration:none; font-size:12px; padding:5px 12px; border-radius:6px; transition:all .2s; white-space:nowrap; cursor:pointer; }
-.nav a:hover { background:#21262d; color:#58a6ff; }
-.nav a.active { background:#1f6feb; color:white; }
-
-/* ── Pages ── */
-.page { display:none; padding:24px; min-height:calc(100vh - 46px); }
-.page.active { display:block; }
-.inner { max-width:1100px; margin:0 auto; }
-
-/* ── Typography ── */
-h2.pg-title { font-size:22px; font-weight:700; margin-bottom:6px; }
-.pg-sub { color:#8b949e; font-size:13px; margin-bottom:24px; line-height:1.6; }
-
-/* ── Stats Grid ── */
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:28px; }
-.stat-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center; }
-.stat-card .num { font-size:28px; font-weight:800; }
-.stat-card .label { font-size:11px; color:#8b949e; margin-top:4px; }
-.stat-card.blue .num { color:#58a6ff; }
-.stat-card.green .num { color:#3fb950; }
-.stat-card.yellow .num { color:#d29922; }
-.stat-card.red .num { color:#f85149; }
-.stat-card.purple .num { color:#bc8cff; }
-
-/* ── Section ── */
-.section { margin-bottom:28px; }
-.sec-title { font-size:14px; font-weight:700; color:#8b949e; text-transform:uppercase; letter-spacing:.8px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-.sec-title::after { content:''; flex:1; height:1px; background:#30363d; }
-
-/* ── Bar Chart (承接率天梯) ── */
-.bar-list { display:flex; flex-direction:column; gap:8px; }
-.bar-row { display:flex; align-items:center; gap:10px; }
-.bar-name { width:110px; font-size:12px; color:#c9d1d9; text-align:right; flex-shrink:0; }
-.bar-track { flex:1; background:#21262d; border-radius:4px; height:22px; position:relative; overflow:hidden; }
-.bar-fill { height:100%; border-radius:4px; transition:width 1s ease; display:flex; align-items:center; padding-left:8px; font-size:11px; font-weight:700; color:rgba(0,0,0,0.8); white-space:nowrap; }
-.bar-pct { width:42px; font-size:12px; font-weight:700; text-align:right; flex-shrink:0; }
-
-/* ── Pie ── */
-.pie-wrap { display:flex; align-items:center; gap:32px; flex-wrap:wrap; }
-.pie-svg { flex-shrink:0; }
-.pie-legend { display:flex; flex-direction:column; gap:10px; }
-.pie-legend-item { display:flex; align-items:center; gap:8px; font-size:13px; }
-.pie-legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-
-/* ── Timeline ── */
-.timeline { position:relative; padding-left:24px; }
-.timeline::before { content:''; position:absolute; left:7px; top:0; bottom:0; width:2px; background:#30363d; }
-.tl-item { position:relative; margin-bottom:20px; }
-.tl-dot { position:absolute; left:-20px; top:4px; width:14px; height:14px; border-radius:50%; border:2px solid; }
-.tl-date { font-size:11px; color:#8b949e; margin-bottom:3px; }
-.tl-title { font-size:13px; font-weight:600; margin-bottom:3px; }
-.tl-desc { font-size:12px; color:#8b949e; line-height:1.5; }
-.tl-done { border-color:#3fb950; background:#0a3d1f; }
-.tl-now  { border-color:#58a6ff; background:#0d2d5e; box-shadow:0 0 8px rgba(88,166,255,.5); }
-.tl-soon { border-color:#d29922; background:#3a290a; }
-.tl-future { border-color:#30363d; background:#21262d; }
-
-/* ── Arch Diagram (HTML architecture) ── */
-.arch { display:flex; flex-direction:column; gap:0; align-items:center; }
-.arch-layer { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:0; }
-.arch-arrow { text-align:center; color:#30363d; font-size:20px; line-height:1; margin:4px 0; }
-.arch-box { padding:10px 16px; border-radius:8px; font-size:12px; font-weight:600; text-align:center; min-width:120px; }
-.arch-box .sub { font-size:10px; font-weight:400; margin-top:2px; opacity:.75; }
-.box-gray  { background:#21262d; border:1px solid #30363d; }
-.box-blue  { background:#0d2d5e; border:1px solid #1f6feb; }
-.box-green { background:#0a3d1f; border:1px solid #3fb950; }
-.box-red   { background:#3d0a0a; border:1px solid #f85149; }
-.box-orange{ background:#3a290a; border:1px solid #d29922; }
-.box-purple{ background:#1e1040; border:1px solid #bc8cff; }
-.box-cyan  { background:#0a2a3a; border:1px solid #39d0d8; }
-
-/* ── Table ── */
-.tbl { width:100%; border-collapse:collapse; font-size:12px; }
-.tbl th { background:#161b22; color:#8b949e; font-weight:600; padding:8px 10px; text-align:left; border-bottom:1px solid #30363d; }
-.tbl td { padding:8px 10px; border-bottom:1px solid #21262d; }
-.tbl tr:hover td { background:#161b22; }
-.chip { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:700; }
-.chip-green { background:#0a3d1f; color:#3fb950; }
-.chip-yellow { background:#3a290a; color:#d29922; }
-.chip-red { background:#3d0a0a; color:#f85149; }
-.chip-blue { background:#0d2d5e; color:#58a6ff; }
-.chip-gray { background:#21262d; color:#8b949e; }
-
-/* ── Callout ── */
-.callout { border-radius:10px; padding:14px 16px; margin-bottom:16px; display:flex; gap:12px; align-items:flex-start; }
-.callout-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-.callout-body { flex:1; }
-.callout-title { font-size:13px; font-weight:700; margin-bottom:4px; }
-.callout-text { font-size:12px; line-height:1.6; color:rgba(255,255,255,0.85); }
-.callout-blue { background:#0d2240; border:1px solid #1f6feb; }
-.callout-green { background:#0a2a12; border:1px solid #3fb950; }
-.callout-yellow { background:#2a1e04; border:1px solid #d29922; }
-.callout-red { background:#2a0d0a; border:1px solid #f85149; }
-
-/* ── KPI Radar (SVG) ── */
-.radar-wrap { display:flex; justify-content:center; }
-
-/* ── Gantt ── */
-.gantt { overflow-x:auto; }
-.gantt-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-.gantt-label { width:130px; font-size:11px; color:#c9d1d9; text-align:right; flex-shrink:0; }
-.gantt-track { flex:1; height:24px; background:#21262d; border-radius:4px; position:relative; min-width:300px; }
-.gantt-bar { position:absolute; top:2px; height:20px; border-radius:3px; display:flex; align-items:center; padding:0 6px; font-size:10px; font-weight:700; white-space:nowrap; overflow:hidden; }
-.gantt-month { display:flex; gap:0; margin-left:138px; margin-bottom:4px; }
-.gantt-month span { flex:1; font-size:10px; color:#8b949e; text-align:center; }
-
-/* ── Risk Matrix ── */
-.risk-matrix { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; width:100%; max-width:480px; }
-.rm-cell { padding:8px; font-size:10px; border-radius:4px; text-align:center; }
-.rm-header { background:#21262d; color:#8b949e; font-weight:600; }
-.rm-low { background:#0a3d1f33; color:#3fb950; }
-.rm-med { background:#3a290a33; color:#d29922; }
-.rm-high { background:#3d0a0a33; color:#f85149; }
-.rm-crit { background:#3d0a0a; color:#f85149; font-weight:700; }
-.risk-axis-y { writing-mode:vertical-lr; transform:rotate(180deg); font-size:10px; color:#8b949e; display:flex; align-items:center; justify-content:center; padding:4px; }
-
-/* ── Responsive ── */
-@media(max-width:640px) {
-  .stats-grid { grid-template-columns:repeat(2,1fr); }
-  .bar-name { width:80px; font-size:11px; }
-  .pie-wrap { flex-direction:column; }
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 56px;
+  background: rgba(6,8,16,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
 }
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-en); font-weight: 700; font-size: 15px;
+  color: var(--text-primary); letter-spacing: -0.3px;
+}
+.nav-brand-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-amber);
+  box-shadow: 0 0 8px var(--accent-amber);
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-size: 13px; color: var(--text-muted);
+  text-decoration: none; transition: color 0.2s;
+  font-family: var(--font-zh);
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-badge {
+  background: rgba(245,158,11,0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+  font-family: var(--font-en);
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 40px 60px;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+}
+.hero-bg-gradient {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(59,130,246,0.08) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 50% at 15% 80%, rgba(245,158,11,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 40% at 85% 70%, rgba(6,182,212,0.05) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-en); font-size: 11px; font-weight: 600;
+  color: var(--accent-amber); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  display: block; width: 32px; height: 1px;
+  background: currentColor; opacity: 0.4;
+}
+
+.hero-title {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700; letter-spacing: -1.5px;
+  text-align: center; line-height: 1.1;
+  margin-bottom: 20px;
+}
+.hero-title-accent { color: var(--accent-amber); }
+.hero-subtitle {
+  font-size: 16px; color: var(--text-secondary);
+  text-align: center; max-width: 560px;
+  margin-bottom: 48px; line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ── Car Screen ── */
+.car-screen-wrapper {
+  position: relative;
+  width: min(820px, 90vw);
+  margin: 0 auto 40px;
+}
+
+.car-screen-bezel {
+  background: #080b12;
+  border-radius: 16px;
+  border: 2px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 32px 80px rgba(0,0,0,0.8),
+    0 8px 24px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.car-screen-inner {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0a0f1e 0%, #0d1529 40%, #0a1320 100%);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+/* Night ambience in background */
+.screen-bg-scene {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 75% 85%, rgba(245,158,11,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 20% 60%, rgba(59,130,246,0.06) 0%, transparent 50%);
+}
+
+/* Status Bar */
+.screen-statusbar {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 14px 4px;
+  background: rgba(8,12,24,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.status-left { display: flex; align-items: center; gap: 8px; }
+.status-range {
+  font-family: var(--font-en); font-size: 10px; font-weight: 600;
+  color: var(--accent-green);
+  background: rgba(16,185,129,0.12);
+  padding: 2px 7px; border-radius: 4px;
+}
+.status-time {
+  font-family: var(--font-en); font-size: 11px; font-weight: 500;
+  color: var(--text-secondary);
+}
+.status-icons { display: flex; align-items: center; gap: 6px; }
+.status-icon { font-size: 9px; color: var(--text-muted); }
+.status-right { display: flex; align-items: center; gap: 8px; }
+.vpa-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 2px 10px; border-radius: 10px;
+  font-size: 9px; color: var(--accent-amber); font-weight: 500;
+}
+.vpa-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent-amber);
+  animation: pulse-dot 1.5s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* Main content area */
+.screen-body {
+  flex: 1; display: flex; position: relative; z-index: 5; overflow: hidden;
+}
+
+/* Left AI Panel */
+.ai-panel {
+  width: 42%; height: 100%;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column;
+  padding: 10px;
+}
+.ai-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.agent-info { display: flex; align-items: center; gap: 6px; }
+.agent-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.agent-name { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
+.panel-close { font-size: 9px; color: var(--text-muted); cursor: pointer; opacity: 0.6; }
+
+.chat-messages { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.chat-query {
+  align-self: flex-end;
+  background: rgba(59,130,246,0.25);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 10px 10px 2px 10px;
+  padding: 6px 10px;
+  font-size: 9.5px; color: #93c5fd; max-width: 85%;
+}
+.chat-response {
+  align-self: flex-start;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px 10px 10px 10px;
+  padding: 8px 10px;
+  font-size: 9px; color: var(--text-secondary); max-width: 95%;
+  line-height: 1.6;
+}
+.chat-response-title { font-size: 9.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.chat-poi-item {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 8.5px;
+}
+.chat-poi-item:last-child { border-bottom: none; }
+.poi-dist {
+  background: rgba(245,158,11,0.2);
+  color: var(--accent-amber);
+  border-radius: 3px; padding: 1px 5px;
+  font-size: 8px; font-family: var(--font-en); font-weight: 600;
+  white-space: nowrap;
+}
+.ai-watermark {
+  font-size: 7.5px; color: var(--text-muted);
+  padding-top: 5px; margin-top: 2px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  opacity: 0.7;
+}
+
+/* Right panel: map area */
+.map-panel {
+  flex: 1; position: relative; overflow: hidden;
+}
+.map-bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(135deg, #0c1628 0%, #0f1e35 50%, #0a1520 100%);
+}
+/* CSS map grid */
+.map-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+/* Route path SVG */
+.map-route-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.map-speed-ring {
+  position: absolute; bottom: 14px; right: 12px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(8,12,24,0.85);
+  border: 2px solid rgba(59,130,246,0.3);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.speed-num {
+  font-family: var(--font-en); font-size: 14px; font-weight: 700;
+  color: var(--text-primary); line-height: 1;
+}
+.speed-unit { font-size: 7px; color: var(--text-muted); font-family: var(--font-en); }
+.map-nav-arrow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 28px; height: 28px;
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
+}
+.map-eta-card {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(8,12,24,0.85); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 7px; padding: 5px 9px;
+}
+.eta-time { font-family: var(--font-en); font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.eta-label { font-size: 7.5px; color: var(--text-muted); }
+
+/* Bottom dock */
+.screen-dock {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 6px 20px;
+  background: rgba(8,12,24,0.8);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.dock-icon {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 14px; cursor: pointer;
+}
+.dock-label { font-size: 7px; color: var(--text-muted); }
+.dock-icon.active .dock-label { color: var(--accent-amber); }
+
+/* Scenario switcher tabs */
+.scenario-tabs {
+  display: flex; gap: 8px; justify-content: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.scenario-tab {
+  padding: 7px 16px; border-radius: 20px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-muted); font-size: 12px; cursor: pointer;
+  transition: all 0.2s; font-family: var(--font-zh);
+}
+.scenario-tab:hover { color: var(--text-secondary); border-color: rgba(255,255,255,0.2); }
+.scenario-tab.active {
+  background: rgba(245,158,11,0.15);
+  border-color: rgba(245,158,11,0.4);
+  color: var(--accent-amber);
+}
+
+/* ── Section Shared ── */
+section { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-family: var(--font-en); font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--accent-amber); opacity: 0.8;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(24px, 3vw, 36px); font-weight: 700;
+  letter-spacing: -0.8px; margin-bottom: 12px;
+}
+.section-desc {
+  color: var(--text-secondary); font-size: 14px; font-weight: 300;
+  max-width: 560px; line-height: 1.8; margin-bottom: 48px;
+}
+.full-width { max-width: none; }
+
+/* ── Agent Cards ── */
+.agents-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+@media (max-width: 720px) { .agents-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.agent-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  cursor: pointer; transition: all 0.25s;
+  position: relative; overflow: hidden;
+}
+.agent-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--card-color, rgba(245,158,11,0.05)) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.25s;
+}
+.agent-card:hover, .agent-card.active {
+  border-color: var(--card-border, rgba(245,158,11,0.3));
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+.agent-card:hover::before, .agent-card.active::before { opacity: 1; }
+.agent-card.active {
+  box-shadow: 0 0 0 1px var(--card-border, rgba(245,158,11,0.3)),
+              0 8px 24px rgba(0,0,0,0.3);
+}
+.agent-card-emoji { font-size: 32px; margin-bottom: 10px; display: block; }
+.agent-card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.agent-card-tag {
+  display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 6px;
+  background: rgba(255,255,255,0.06); color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.agent-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.agent-card-active-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(245,158,11,0.2); color: var(--accent-amber);
+  border: 1px solid rgba(245,158,11,0.3);
+  font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 500;
+}
+
+/* ── VPA States ── */
+.vpa-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+@media (max-width: 720px) { .vpa-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.vpa-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+  transition: all 0.2s;
+}
+.vpa-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
+.vpa-card-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 10px;
+}
+.vpa-card-state { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.vpa-card-trigger { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; }
+.vpa-card-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Feature Tabs ── */
+.feature-tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+.feature-tab {
+  padding: 7px 18px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted);
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+  font-family: var(--font-zh);
+}
+.feature-tab:hover { color: var(--text-secondary); }
+.feature-tab.active {
+  background: rgba(59,130,246,0.15);
+  border-color: rgba(59,130,246,0.35);
+  color: #93c5fd;
+}
+.feature-panel { display: none; }
+.feature-panel.active { display: block; }
+
+.feature-demo {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; margin-bottom: 20px;
+}
+.demo-query {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(59,130,246,0.06);
+}
+.demo-query-icon { font-size: 14px; }
+.demo-query-text { font-size: 13px; color: #93c5fd; }
+.demo-response { padding: 16px; }
+.demo-response-label {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 12px; font-family: var(--font-en);
+}
+
+.poi-list { display: flex; flex-direction: column; gap: 8px; }
+.poi-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03); border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.poi-name { font-size: 13px; font-weight: 500; }
+.poi-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.poi-badge {
+  background: rgba(245,158,11,0.15);
+  color: var(--accent-amber);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-family: var(--font-en); font-weight: 600;
+  white-space: nowrap;
+}
+
+.music-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.music-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; border-radius: 8px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+}
+.music-cover {
+  width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.music-title { font-size: 12px; font-weight: 500; }
+.music-artist { font-size: 11px; color: var(--text-muted); }
+
+.trip-timeline { display: flex; flex-direction: column; gap: 0; }
+.trip-node {
+  display: flex; gap: 12px; position: relative;
+}
+.trip-node:not(:last-child)::after {
+  content: '';
+  position: absolute; left: 14px; top: 28px;
+  width: 2px; height: calc(100% - 8px);
+  background: var(--border); z-index: 0;
+}
+.trip-node-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0; position: relative; z-index: 1;
+}
+.trip-node-content { padding-bottom: 16px; flex: 1; }
+.trip-node-time { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; font-family: var(--font-en); }
+.trip-node-place { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+.trip-node-detail { font-size: 11px; color: var(--text-muted); }
+
+.aigen-showcase {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.aigen-item {
+  border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+  aspect-ratio: 4/3;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 700;
+}
+
+.agents-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.agent-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 11.5px; color: var(--text-secondary);
+  transition: all 0.2s; cursor: default;
+}
+.agent-chip:hover {
+  border-color: var(--border-strong); color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+.agent-chip-icon { font-size: 13px; }
+
+/* ── Stats ── */
+.stats-hero { display: flex; align-items: baseline; gap: 16px; margin-bottom: 32px; }
+.stats-big-num {
+  font-family: var(--font-en); font-size: clamp(64px, 8vw, 96px);
+  font-weight: 800; letter-spacing: -3px;
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stats-unit {
+  font-family: var(--font-en); font-size: 32px; font-weight: 700;
+  color: var(--accent-amber-dim);
+}
+.stats-meta { font-size: 13px; color: var(--text-muted); }
+.stats-meta span { color: var(--text-secondary); font-weight: 500; }
+
+.acceptance-counts {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px;
+}
+.count-card {
+  flex: 1; min-width: 100px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  text-align: center;
+}
+.count-num {
+  font-family: var(--font-en); font-size: 28px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.count-label { font-size: 11px; color: var(--text-muted); }
+
+/* Module bars */
+.module-bars { display: flex; flex-direction: column; gap: 12px; }
+.module-bar-item {}
+.module-bar-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 5px;
+}
+.module-bar-name { font-size: 13px; }
+.module-bar-pct {
+  font-family: var(--font-en); font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+}
+.module-bar-track {
+  height: 6px; background: rgba(255,255,255,0.05);
+  border-radius: 3px; overflow: hidden;
+}
+.module-bar-fill {
+  height: 100%; border-radius: 3px;
+  width: 0; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, var(--bar-color, #3b82f6) 0%, var(--bar-color-end, #60a5fa) 100%);
+}
+
+/* Risk cards */
+.risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 40px; }
+@media (max-width: 600px) { .risk-grid { grid-template-columns: 1fr; } }
+
+.risk-card {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 12px; padding: 16px;
+}
+.risk-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.risk-badge {
+  background: rgba(239,68,68,0.2); color: #fca5a5;
+  font-size: 9px; padding: 2px 8px; border-radius: 4px;
+  font-family: var(--font-en); font-weight: 700; letter-spacing: 0.5px;
+}
+.risk-title { font-size: 13px; font-weight: 600; }
+.risk-meta {
+  display: flex; gap: 12px; font-size: 11px;
+  color: var(--text-muted);
+}
+.risk-val { color: #fca5a5; font-weight: 600; font-family: var(--font-en); }
+.risk-target { color: var(--text-muted); }
+
+/* Milestones */
+.milestone-list { display: flex; flex-direction: column; gap: 0; margin-top: 32px; }
+.milestone-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.milestone-item:last-child { border-bottom: none; }
+.milestone-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; margin-top: 2px;
+}
+.milestone-dot.done { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); }
+.milestone-dot.warn { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); }
+.milestone-dot.future { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); }
+.milestone-date {
+  font-family: var(--font-en); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px;
+}
+.milestone-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.milestone-desc { font-size: 12px; color: var(--text-muted); }
+.milestone-count {
+  margin-left: auto; flex-shrink: 0;
+  font-family: var(--font-en); font-size: 22px; font-weight: 800;
+  color: var(--text-muted);
+}
+
+/* ── Multilingual ── */
+.multilang-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+@media (max-width: 600px) { .multilang-grid { grid-template-columns: 1fr; } }
+.multilang-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  text-align: center;
+}
+.multilang-num {
+  font-family: var(--font-en); font-size: 40px; font-weight: 800;
+  margin-bottom: 4px;
+}
+.multilang-label { font-size: 12px; color: var(--text-muted); }
+
+.lang-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.lang-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 12px;
+  font-size: 12px;
+}
+.lang-flag { font-size: 16px; }
+
+.alert-box {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 10px; padding: 14px 18px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
+.alert-text strong { color: var(--accent-amber); }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  text-align: center;
+  color: var(--text-muted); font-size: 11.5px;
+  max-width: none;
+}
+.footer-sources { margin-top: 8px; opacity: 0.6; font-size: 10.5px; }
+
+/* ── Divider ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 40px;
+}
+
+/* ── Transitions ── */
+.fade-panel { transition: opacity 0.3s, transform 0.3s; }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <span class="nav-title">奇瑞 T22FL · 多语种方案</span>
-  <a class="active" onclick="show('p-overview',this)">📊 总览</a>
-  <a onclick="show('p-acceptance',this)">📋 承接率</a>
-  <a onclick="show('p-arch',this)">🏗️ 架构</a>
-  <a onclick="show('p-milestone',this)">🗓️ 里程碑</a>
-  <a onclick="show('p-risk',this)">⚠️ 风险</a>
+<!-- Nav -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-brand-dot"></div>
+    Carmind 1.5
+  </div>
+  <div class="nav-links">
+    <a href="#screen">车机界面</a>
+    <a href="#agents">智能体</a>
+    <a href="#vpa">语音交互</a>
+    <a href="#stats">需求承接</a>
+    <a href="#multilang">多语种</a>
+  </div>
+  <div class="nav-badge">V1.0 · 2026</div>
 </nav>
 
-<!-- ═══════════════ PAGE 1: 总览 ═══════════════ -->
-<div class="page active" id="p-overview">
-<div class="inner">
-  <h2 class="pg-title">奇瑞 T22FL 多语种大模型智能体方案</h2>
-  <p class="pg-sub">V1.0 · 2026-04-15 · 方案经理：王磊（讯飞奇瑞客户群国际语音方案负责人）</p>
+<!-- ───────────────── HERO ───────────────── -->
+<div class="hero" id="screen">
+  <div class="hero-bg">
+    <div class="hero-bg-gradient"></div>
+    <div class="hero-grid"></div>
+  </div>
 
-  <div class="callout callout-blue">
-    <span class="callout-icon">🚀</span>
-    <div class="callout-body">
-      <div class="callout-title">电梯演讲</div>
-      <div class="callout-text">奇瑞 T22FL（欧盟+俄罗斯/YG）在 SA 8155 平台首次引入<strong>多语种大模型智能体 Max 版</strong>。讯飞采用 <strong>MasterAgent 云端中枢 + Yandex 信源接入</strong>联合方案。0414 需求拧合 V1 完成：整体承接率 <strong>49.8%</strong>，4 项高影响偏离需在 530 前关闭，L2/L3 记忆后置 27 年是最大结构性风险。</div>
+  <div class="hero-eyebrow">Carmind 1.5 · iFlytek × CHERY</div>
+  <h1 class="hero-title">
+    大模型智能体<br>
+    <span class="hero-title-accent">车机界面</span> 体验设计
+  </h1>
+  <p class="hero-subtitle">
+    AIOS 架构 · 18 个领域智能体 · 非模态语音窗口<br>
+    小奇同学 VPA · 多音区协同 · 端云中枢融合
+  </p>
+
+  <!-- Scenario Switcher -->
+  <div class="scenario-tabs">
+    <button class="scenario-tab active" onclick="switchScenario('poi')">📍 周边推荐</button>
+    <button class="scenario-tab" onclick="switchScenario('music')">🎵 音乐推荐</button>
+    <button class="scenario-tab" onclick="switchScenario('trip')">🗺️ 行程规划</button>
+    <button class="scenario-tab" onclick="switchScenario('aigen')">🎨 AI 生图</button>
+    <button class="scenario-tab" onclick="switchScenario('news')">📰 实时新闻</button>
+  </div>
+
+  <!-- Car Screen -->
+  <div class="car-screen-wrapper">
+    <div class="car-screen-bezel">
+      <div class="car-screen-inner">
+        <div class="screen-bg-scene"></div>
+
+        <!-- Status Bar -->
+        <div class="screen-statusbar">
+          <div class="status-left">
+            <div class="status-range">151 km WLTC</div>
+            <div class="status-time">22:14</div>
+          </div>
+          <div class="status-icons">
+            <span class="status-icon">📶</span>
+            <span class="status-icon">🔵</span>
+            <span class="status-icon">📷</span>
+            <span class="status-icon">⚡</span>
+          </div>
+          <div class="status-right">
+            <div class="vpa-pill">
+              <div class="vpa-dot"></div>
+              可以继续说
+            </div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="screen-body">
+          <!-- AI Panel -->
+          <div class="ai-panel">
+            <div class="ai-panel-header">
+              <div class="agent-info">
+                <div class="agent-avatar">🐾</div>
+                <div class="agent-name">小奇同学</div>
+              </div>
+              <div class="panel-close">✕</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+              <!-- Content injected by JS -->
+            </div>
+          </div>
+
+          <!-- Map Panel -->
+          <div class="map-panel">
+            <div class="map-bg"></div>
+            <div class="map-grid"></div>
+            <svg class="map-route-svg" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- Road lines -->
+              <line x1="0" y1="80" x2="300" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+              <line x1="150" y1="0" x2="150" y2="200" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+              <line x1="60" y1="0" x2="60" y2="200" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <line x1="0" y1="140" x2="300" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <!-- Route path -->
+              <path d="M 20 180 Q 60 160 80 130 Q 100 100 130 90 Q 155 82 180 75 Q 220 65 270 50"
+                stroke="url(#routeGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <!-- Route glow -->
+              <path d="M 20 180 Q 60 160 80 130 Q 100 100 130 90 Q 155 82 180 75 Q 220 65 270 50"
+                stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.2"/>
+              <!-- Current position -->
+              <circle cx="130" cy="90" r="5" fill="#3b82f6" opacity="0.9"/>
+              <circle cx="130" cy="90" r="10" fill="#3b82f6" opacity="0.2"/>
+              <!-- Destination -->
+              <circle cx="270" cy="50" r="4" fill="#f59e0b"/>
+              <!-- POI dots -->
+              <circle cx="160" cy="78" r="3" fill="rgba(245,158,11,0.6)"/>
+              <circle cx="200" cy="70" r="3" fill="rgba(245,158,11,0.6)"/>
+            </svg>
+
+            <!-- Navigation arrow -->
+            <svg class="map-nav-arrow" viewBox="0 0 28 28">
+              <polygon points="14,2 24,22 14,18 4,22" fill="#3b82f6" opacity="0.9"/>
+            </svg>
+
+            <!-- ETA -->
+            <div class="map-eta-card">
+              <div class="eta-time">12<span style="font-size:9px;color:var(--text-muted)"> min</span></div>
+              <div class="eta-label">预计到达</div>
+            </div>
+
+            <!-- Speed ring -->
+            <div class="map-speed-ring">
+              <div class="speed-num">0</div>
+              <div class="speed-unit">km/h</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dock -->
+        <div class="screen-dock">
+          <div class="dock-icon active">
+            <span>🏠</span>
+            <span class="dock-label">主页</span>
+          </div>
+          <div class="dock-icon">
+            <span>🗺️</span>
+            <span class="dock-label">地图</span>
+          </div>
+          <div class="dock-icon">
+            <span>🎵</span>
+            <span class="dock-label">音乐</span>
+          </div>
+          <div class="dock-icon">
+            <span>📱</span>
+            <span class="dock-label">应用</span>
+          </div>
+          <div class="dock-icon">
+            <span>⚙️</span>
+            <span class="dock-label">设置</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /car-screen-wrapper -->
+</div><!-- /hero -->
+
+<hr class="section-divider">
+
+<!-- ───────────────── AGENTS ───────────────── -->
+<section id="agents">
+  <div class="section-label">Agent Marketplace</div>
+  <h2 class="section-title">6 种智能体人格</h2>
+  <p class="section-desc">订阅制 · 按需开启 · 随时切换。每个智能体有独立的语言风格、知识域和互动策略，共 18 个领域智能体可选。</p>
+
+  <div class="agents-grid">
+    <div class="agent-card active" onclick="selectAgent(this)"
+      style="--card-color: rgba(245,158,11,0.08); --card-border: rgba(245,158,11,0.35);">
+      <div class="agent-card-active-badge">当前使用</div>
+      <span class="agent-card-emoji">🐾</span>
+      <div class="agent-card-name">小奇同学</div>
+      <div class="agent-card-tag">默认助手</div>
+      <div class="agent-card-desc">奇瑞官方 AI 助手，亲切专业，擅长行车辅助与生活服务，全能型人格。</div>
+    </div>
+
+    <div class="agent-card" onclick="selectAgent(this)"
+      style="--card-color: rgba(239,68,68,0.06); --card-border: rgba(239,68,68,0.3);">
+      <span class="agent-card-emoji">😎</span>
+      <div class="agent-card-name">抬杠大师</div>
+      <div class="agent-card-tag">辩论型</div>
+      <div class="agent-card-desc">永远挑战你的观点，提供反向思考，适合想要激发创意或享受辩论的驾驶者。</div>
+    </div>
+
+    <div class="agent-card" onclick="selectAgent(this)"
+      style="--card-color: rgba(99,102,241,0.08); --card-border: rgba(99,102,241,0.3);">
+      <span class="agent-card-emoji">👓</span>
+      <div class="agent-card-name">口语老师</div>
+      <div class="agent-card-tag">教育型</div>
+      <div class="agent-card-desc">随时随地练口语，行车时间变外语学习时间，支持多语种教学场景。</div>
+    </div>
+
+    <div class="agent-card" onclick="selectAgent(this)"
+      style="--card-color: rgba(6,182,212,0.06); --card-border: rgba(6,182,212,0.3);">
+      <span class="agent-card-emoji">🧣</span>
+      <div class="agent-card-name">东北老姨</div>
+      <div class="agent-card-tag">方言型</div>
+      <div class="agent-card-desc">地道东北话，幽默接地气，驾车聊天消除疲劳，适合长途旅行陪伴场景。</div>
+    </div>
+
+    <div class="agent-card" onclick="selectAgent(this)"
+      style="--card-color: rgba(168,85,247,0.08); --card-border: rgba(168,85,247,0.3);">
+      <span class="agent-card-emoji">🧙</span>
+      <div class="agent-card-name">故事大王</div>
+      <div class="agent-card-tag">创意型</div>
+      <div class="agent-card-desc">随机应变的故事创作者，可以根据关键词即兴编故事，儿童在车后排的最佳搭档。</div>
+    </div>
+
+    <div class="agent-card" onclick="selectAgent(this)"
+      style="--card-color: rgba(16,185,129,0.06); --card-border: rgba(16,185,129,0.3);">
+      <span class="agent-card-emoji">🥊</span>
+      <div class="agent-card-name">职业辩手</div>
+      <div class="agent-card-tag">竞技型</div>
+      <div class="agent-card-desc">专业辩论框架，逻辑严密，适合需要头脑风暴或进行决策分析的商务场景。</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ───────────────── VPA STATES ───────────────── -->
+<section id="vpa">
+  <div class="section-label">Voice Persona Avatar</div>
+  <h2 class="section-title">语音交互状态机</h2>
+  <p class="section-desc">非模态浮层设计 · 小奇同学有 6 种动画状态 · 3 分钟无操作自动收起为胶囊态 · 支持主驾/副驾/后排多音区</p>
+
+  <div class="vpa-grid">
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(100,116,139,0.15);">😴</div>
+      <div class="vpa-card-state">休眠态</div>
+      <div class="vpa-card-trigger">触发：无交互超时</div>
+      <div class="vpa-card-desc">VPA 收起至系统角落，等待唤醒词激活。最低功耗状态，不占用屏幕空间。</div>
+    </div>
+
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(245,158,11,0.15);">✨</div>
+      <div class="vpa-card-state">唤醒态</div>
+      <div class="vpa-card-trigger">触发：检测到"小奇同学"</div>
+      <div class="vpa-card-desc">播放一次性唤醒动画，显示打字机 ASR 区域，系统进入聆听就绪状态。</div>
+    </div>
+
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(59,130,246,0.15);">🎤</div>
+      <div class="vpa-card-state">聆听态</div>
+      <div class="vpa-card-trigger">触发：用户持续讲话</div>
+      <div class="vpa-card-desc">循环播放聆听动画，实时展示 ASR 转写结果，显示"打字机"动效确认语音识别中。</div>
+    </div>
+
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(16,185,129,0.15);">🔊</div>
+      <div class="vpa-card-state">播报态</div>
+      <div class="vpa-card-trigger">触发：大模型返回结果</div>
+      <div class="vpa-card-desc">6 种落域动画（播报/健康/规划/用车/闲聊/多媒体），结构化卡片展示，含 AI 水印标注。</div>
+    </div>
+
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(99,102,241,0.15);">💬</div>
+      <div class="vpa-card-state">引导态</div>
+      <div class="vpa-card-trigger">触发：待机待输入时</div>
+      <div class="vpa-card-desc">显示"可以继续说"引导文字，暗示用户可继续多轮对话，降低操作认知门槛。</div>
+    </div>
+
+    <div class="vpa-card">
+      <div class="vpa-card-icon" style="background:rgba(168,85,247,0.15);">💊</div>
+      <div class="vpa-card-state">胶囊态</div>
+      <div class="vpa-card-trigger">触发：内容生成结束 3 min</div>
+      <div class="vpa-card-desc">语音窗口收起为屏幕边缘胶囊，点击可重新展开，不打扰驾驶视线。</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ───────────────── FEATURES ───────────────── -->
+<section id="features">
+  <div class="section-label">Intelligent Scenarios</div>
+  <h2 class="section-title">场景能力演示</h2>
+  <p class="section-desc">大模型驱动的多模态结构化响应，覆盖行车全场景生活圈。</p>
+
+  <div class="feature-tabs">
+    <button class="feature-tab active" onclick="switchFeature('poi')">📍 周边推荐</button>
+    <button class="feature-tab" onclick="switchFeature('music')">🎵 音乐智能体</button>
+    <button class="feature-tab" onclick="switchFeature('trip')">🗺️ 行程规划</button>
+    <button class="feature-tab" onclick="switchFeature('aigen')">🎨 AI 生图</button>
+  </div>
+
+  <!-- POI -->
+  <div class="feature-panel active" id="panel-poi">
+    <div class="feature-demo">
+      <div class="demo-query">
+        <span class="demo-query-icon">🎤</span>
+        <span class="demo-query-text">附近有什么好吃的推荐一下</span>
+      </div>
+      <div class="demo-response">
+        <div class="demo-response-label">Carmind 大模型响应</div>
+        <div class="poi-list">
+          <div class="poi-item">
+            <div>
+              <div class="poi-name">海底捞火锅（合肥店）</div>
+              <div class="poi-meta">⭐ 4.8 · 川渝 · 人均 ¥150</div>
+            </div>
+            <div class="poi-badge">280m</div>
+          </div>
+          <div class="poi-item">
+            <div>
+              <div class="poi-name">老乡鸡（华润万象城）</div>
+              <div class="poi-meta">⭐ 4.6 · 徽菜 · 人均 ¥45</div>
+            </div>
+            <div class="poi-badge">650m</div>
+          </div>
+          <div class="poi-item">
+            <div>
+              <div class="poi-name">文和友（合肥旗舰店）</div>
+              <div class="poi-meta">⭐ 4.5 · 湘菜 · 人均 ¥90</div>
+            </div>
+            <div class="poi-badge">1.2km</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card blue"><div class="num">49.8%</div><div class="label">整体承接率</div></div>
-    <div class="stat-card green"><div class="num">269</div><div class="label">总需求条目</div></div>
-    <div class="stat-card yellow"><div class="num">72</div><div class="label">后置（26.8%）</div></div>
-    <div class="stat-card red"><div class="num">4</div><div class="label">高影响偏离</div></div>
-    <div class="stat-card purple"><div class="num">11</div><div class="label">覆盖智能体数</div></div>
-    <div class="stat-card green"><div class="num">25+</div><div class="label">欧盟语种目标</div></div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">需求分布（V1 工作台 0414）</div>
-    <div class="pie-wrap">
-      <svg class="pie-svg" width="180" height="180" id="pie-chart"></svg>
-      <div class="pie-legend" id="pie-legend"></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">平台与市场范围</div>
-    <table class="tbl">
-      <thead><tr><th>维度</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>车型</td><td>T22FL（奇瑞欧盟/YG 旗舰出海车型）</td></tr>
-        <tr><td>芯片平台</td><td>SA 8155（主，德赛系统方）/ 升级路标 8295</td></tr>
-        <tr><td>语音方案版本</td><td><span class="chip chip-blue">多语种 Max 版</span> — 大模型中枢首发</td></tr>
-        <tr><td>覆盖市场</td><td>🇷🇺 俄罗斯/CIS（YG）+ 🇪🇺 欧盟（EU 25 语种）</td></tr>
-        <tr><td>信源合作</td><td>YG：Yandex 地图/GTP/Alice；EU：HERE/TomTom（洽谈）</td></tr>
-        <tr><td>合作模式</td><td>讯飞：语音前端 + MasterAgent 云端中枢；Yandex：GTP 知识/信源（YG 侧）</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">4 项高影响偏离（530 前必须关闭）</div>
-    <table class="tbl">
-      <thead><tr><th>#</th><th>需求 ID</th><th>核心议题</th><th>差距</th><th>状态</th></tr></thead>
-      <tbody>
-        <tr><td>🔴1</td><td>中枢-002</td><td>多意图识别准确率</td><td>85% vs 奇瑞要求 95%，差 10pp</td><td><span class="chip chip-yellow">路线图中</span></td></tr>
-        <tr><td>🔴2</td><td>中枢-011</td><td>安全拒识准确率</td><td>85% vs 98%，<strong>差 13pp（最大）</strong></td><td><span class="chip chip-red">需评估</span></td></tr>
-        <tr><td>🔴3</td><td>中枢-023</td><td>L2 任务型记忆</td><td>不支持，27 年规划</td><td><span class="chip chip-red">后置</span></td></tr>
-        <tr><td>🔴4</td><td>中枢-019</td><td>联网搜索延迟</td><td>2000ms vs 目标 1500ms，超标 33%</td><td><span class="chip chip-yellow">优化中</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════ PAGE 2: 承接率 ═══════════════ -->
-<div class="page" id="p-acceptance">
-<div class="inner">
-  <h2 class="pg-title">智能体承接率天梯（V1 · 0414）</h2>
-  <p class="pg-sub">11 个智能体 · 269 条需求 · 整体承接率 49.8% · 后置主因：L2/L3 记忆体系延后 27 年</p>
-
-  <div class="callout callout-yellow">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body">
-      <div class="callout-title">核心结论</div>
-      <div class="callout-text">承接率不足五成，L2/L3 记忆是最大单一拖后腿因素。72 项后置中 55 项指向同一根因：<strong>L2/L3 记忆体系延后 27 年</strong>。车控 22.5% 承接率中 28 项后置有 22 项是 L2/L3 衍生需求。</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">承接率天梯（从高到低）</div>
-    <div class="bar-list" id="bar-chart"></div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">分层分析</div>
-    <table class="tbl">
-      <thead><tr><th>层级</th><th>智能体</th><th>承接率</th><th>核心短板</th><th>关键节点</th></tr></thead>
-      <tbody>
-        <tr><td>🟢 高承接（≥60%）</td><td>通用/基础/安全用车/中枢</td><td>63.6% – 100%</td><td>VPA Persona 5 项拒绝；L2/L3 后置</td><td>530 攻坚</td></tr>
-        <tr><td>🟡 中等（40–60%）</td><td>AI 生图/体育/新闻</td><td>40.9% – 55.6%</td><td>内部无 Agent PRD；信源未敲定</td><td>Q3 跟进</td></tr>
-        <tr><td>🔴 低承接（≤40%）</td><td>音乐/周边/导航/车控</td><td>22.5% – 38.1%</td><td>信源未签约；L2/L3 衍生；生态缺口</td><td>依赖外部</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">后置根因分析</div>
-    <table class="tbl">
-      <thead><tr><th>根因类别</th><th>影响条目数</th><th>典型智能体</th><th>关闭路径</th></tr></thead>
-      <tbody>
-        <tr><td>L2/L3 记忆体系延后</td><td><strong>55 条</strong></td><td>车控 22 条、中枢 8 条</td><td>签 MoU 锁定 27 年路标</td></tr>
-        <tr><td>外部信源未签约</td><td><strong>23 条</strong></td><td>导航/音乐/新闻/周边</td><td>奇瑞客户方统一推动采购</td></tr>
-        <tr><td>奇瑞 HMI/账号体系依赖</td><td><strong>18 条</strong></td><td>基础/车控/安全用车</td><td>明确接口边界，联调排期</td></tr>
-        <tr><td>内部 PRD 缺失</td><td><strong>12 条</strong></td><td>体育/AI 生图</td><td>立项并完成 Agent PRD</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════ PAGE 3: 架构 ═══════════════ -->
-<div class="page" id="p-arch">
-<div class="inner">
-  <h2 class="pg-title">MasterAgent 云端中枢架构</h2>
-  <p class="pg-sub">Plan-and-Execute 混合架构 · 三层：端侧语音前端 → MasterAgent 中枢 → 信源接入层</p>
-
-  <div class="section">
-    <div class="sec-title">系统架构（端到端）</div>
-    <div class="arch">
-      <!-- 车端层 -->
-      <div class="arch-layer">
-        <div class="arch-box box-gray" style="border-color:#d29922">🎤 麦克风阵列<div class="sub">4 音区 / SA 8155</div></div>
-        <div class="arch-box box-gray" style="border-color:#d29922">🔧 AIKit SDK<div class="sub">降噪 / 唤醒 / 端侧 ASR</div></div>
-        <div class="arch-box box-gray" style="border-color:#d29922">🖥️ VUI（奇瑞 HMI）<div class="sub">展开态 / 胶囊态</div></div>
+  <!-- Music -->
+  <div class="feature-panel" id="panel-music">
+    <div class="feature-demo">
+      <div class="demo-query">
+        <span class="demo-query-icon">🎤</span>
+        <span class="demo-query-text">推荐一些适合夜晚开车的歌</span>
       </div>
-      <div style="text-align:center;color:#d29922;font-size:11px;margin:3px 0">── 车端（T22FL · 德赛）──────────────────────────</div>
-      <div class="arch-arrow">↕</div>
-      <!-- 网关 -->
-      <div class="arch-layer">
-        <div class="arch-box box-blue">🌐 MPX 网关<div class="sub">WebSocket 分帧 status 0/1/2/3</div></div>
-      </div>
-      <div class="arch-arrow">↕</div>
-      <!-- 服务端 -->
-      <div class="arch-layer">
-        <div class="arch-box box-blue">☁️ 云端 ASR<div class="sub">俄/英/法/德/西...</div></div>
-        <div class="arch-box box-green">🛡️ aqua 快脑<div class="sub">语义干预 ≤200ms</div></div>
-        <div class="arch-box box-red" style="border-width:2px">🤖 MasterAgent<div class="sub">路由/多意图/拒识/FC</div></div>
-        <div class="arch-box box-blue">🧩 智能体层<div class="sub">车控/导航/音乐/新闻</div></div>
-      </div>
-      <div style="text-align:center;color:#1f6feb;font-size:11px;margin:3px 0">── 讯飞云端服务（海外节点）────────────────────────</div>
-      <div class="arch-arrow">↕</div>
-      <!-- 信源 -->
-      <div class="arch-layer">
-        <div class="arch-box box-red" style="border-color:#f78166">🗺️ Yandex Maps<div class="sub">YG 地图 POI</div></div>
-        <div class="arch-box box-red" style="border-color:#f78166">🧠 YandexGPT<div class="sub">知识/闲聊增强</div></div>
-        <div class="arch-box box-red" style="border-color:#f78166">🔊 Alice TTS<div class="sub">俄语音色</div></div>
-        <div class="arch-box box-purple">🇪🇺 欧盟信源<div class="sub">HERE/TomTom（洽谈中）</div></div>
-      </div>
-      <div style="text-align:center;color:#8b949e;font-size:11px;margin:3px 0">── 信源接入层 ─────────────────────────────────</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">MasterAgent 五大工具类</div>
-    <table class="tbl">
-      <thead><tr><th>工具类</th><th>触发场景</th><th>延迟目标</th><th>YG 适配点</th></tr></thead>
-      <tbody>
-        <tr><td><code>cbm_semantic</code></td><td>车控精确命中（"开暖气"）</td><td><span class="chip chip-green">≤200ms</span></td><td>俄语/英语 carControl 标准指令</td></tr>
-        <tr><td><code>cbm_denial</code></td><td>安全拒识 / 场景误触</td><td><span class="chip chip-green">≤300ms</span></td><td>俄语敏感词库 / 政治类直接拦截</td></tr>
-        <tr><td><code>cbm_reply</code></td><td>闲聊 / 开放问答</td><td><span class="chip chip-yellow">≤1500ms</span></td><td>YandexGPT 后端融合</td></tr>
-        <tr><td><code>cbm_reply_knowledge</code></td><td>车辆知识 / 周边查询</td><td><span class="chip chip-yellow">≤1000ms</span></td><td>Yandex 地图 POI + 信源</td></tr>
-        <tr><td><code>workflow_fc_aqua</code></td><td>多步任务（导航+充电桩）</td><td><span class="chip chip-red">≤2500ms</span></td><td>FC 二期 9 语种支持</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">YG vs 欧盟方案对比</div>
-    <table class="tbl">
-      <thead><tr><th>维度</th><th>YG（俄罗斯/CIS）</th><th>欧盟（EU 25 语种）</th></tr></thead>
-      <tbody>
-        <tr><td>重点语种</td><td>俄语/英语（S 级保障）</td><td>法/德/西/意/葡/荷/波...</td></tr>
-        <tr><td>地图信源</td><td><span class="chip chip-green">Yandex Maps（可接）</span></td><td><span class="chip chip-red">HERE/TomTom（洽谈中）</span></td></tr>
-        <tr><td>音乐曲库</td><td><span class="chip chip-yellow">YandexMusic（洽谈）</span></td><td><span class="chip chip-red">Spotify/JOOX（洽谈）</span></td></tr>
-        <tr><td>合规要求</td><td>俄罗斯本地数据法</td><td><strong>EU AI Act 2026-08 生效</strong></td></tr>
-        <tr><td>承接风险</td><td>🟡 管理平台缺失（基础-000）</td><td>🔴 导航 35.7% / 音乐 38.1%</td></tr>
-        <tr><td>推荐策略</td><td>Plan A 全功能 + Yandex 深度集成</td><td>先锁定英/法/德/西 4 语种首版</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════ PAGE 4: 里程碑 ═══════════════ -->
-<div class="page" id="p-milestone">
-<div class="inner">
-  <h2 class="pg-title">交付里程碑 & Gantt</h2>
-  <p class="pg-sub">2026 全年交付路径 · 530 是关键量产验收节点</p>
-
-  <div class="callout callout-green">
-    <span class="callout-icon">🎯</span>
-    <div class="callout-body">
-      <div class="callout-title">530 里程碑是关键</div>
-      <div class="callout-text">530 前必须关闭 4 项高影响偏离（多意图/拒识/L2 记忆/联网延迟），FC 二期 9 语种完成，多意图 2-3 意图 ≥85%，平台配置完成。</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="sec-title">关键里程碑时间轴</div>
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot tl-done"></div>
-        <div class="tl-date">2026-03-30 ✅ 已交付</div>
-        <div class="tl-title">330 里程碑</div>
-        <div class="tl-desc">东盟 7 语种基础版 + FC 一期 7 语种联调完成</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-now"></div>
-        <div class="tl-date">2026-04-15 📍 当前节点</div>
-        <div class="tl-title">需求拧合 V1 确认</div>
-        <div class="tl-desc">0414 工作台 V1 对外版完成首轮确认，整体承接率 49.8%</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-soon"></div>
-        <div class="tl-date">2026-04-30</div>
-        <div class="tl-title">430 里程碑</div>
-        <div class="tl-desc">欧盟首版部署 + MasterAgent 海外节点上线（英/俄 S 级 + 法/德/西初版）</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-soon"></div>
-        <div class="tl-date">2026-05-30 🔑 关键验收</div>
-        <div class="tl-title">530 里程碑（量产验收）</div>
-        <div class="tl-desc">FC 二期 9 语种；多意图 2-3 意图 ≥85%；4 项高影响偏离关闭</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-future"></div>
-        <div class="tl-date">2026-06-30</div>
-        <div class="tl-title">630 里程碑</div>
-        <div class="tl-desc">FC 欧盟全量；YG Yandex 信源二期接入</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-future"></div>
-        <div class="tl-date">2026-Q3</div>
-        <div class="tl-title">Q3 量产</div>
-        <div class="tl-desc">Persona 预设版（3 种）；L1 记忆全量</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-future"></div>
-        <div class="tl-date">2026-Q4</div>
-        <div class="tl-title">欧盟全量</div>
-        <div class="tl-desc">欧盟 25 语种全量；大模型 V2</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot tl-future" style="border-color:#bc8cff;background:#1e1040"></div>
-        <div class="tl-date">2027</div>
-        <div class="tl-title">27 年规划</div>
-        <div class="tl-desc">L2/L3 记忆体系；智能体管理平台；免切 ASR/TTS</div>
+      <div class="demo-response">
+        <div class="demo-response-label">音乐智能体推荐</div>
+        <div class="music-list">
+          <div class="music-item">
+            <div class="music-cover" style="background:rgba(99,102,241,0.2);">🌙</div>
+            <div>
+              <div class="music-title">夜的第七章</div>
+              <div class="music-artist">周杰伦</div>
+            </div>
+          </div>
+          <div class="music-item">
+            <div class="music-cover" style="background:rgba(6,182,212,0.2);">🌊</div>
+            <div>
+              <div class="music-title">漂洋过海来看你</div>
+              <div class="music-artist">娃娃</div>
+            </div>
+          </div>
+          <div class="music-item">
+            <div class="music-cover" style="background:rgba(245,158,11,0.2);">🌟</div>
+            <div>
+              <div class="music-title">以父之名</div>
+              <div class="music-artist">周杰伦</div>
+            </div>
+          </div>
+          <div class="music-item">
+            <div class="music-cover" style="background:rgba(168,85,247,0.2);">✨</div>
+            <div>
+              <div class="music-title">Fade</div>
+              <div class="music-artist">Alan Walker</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="sec-title">Gantt 图（2026 全年）</div>
-    <div class="gantt">
-      <div class="gantt-month">
-        <span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span>
+  <!-- Trip -->
+  <div class="feature-panel" id="panel-trip">
+    <div class="feature-demo">
+      <div class="demo-query">
+        <span class="demo-query-icon">🎤</span>
+        <span class="demo-query-text">规划一下这个周末去黄山的行程</span>
       </div>
-      <div id="gantt-rows"></div>
+      <div class="demo-response">
+        <div class="demo-response-label">行程规划智能体</div>
+        <div class="trip-timeline">
+          <div class="trip-node">
+            <div class="trip-node-dot" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);">🚗</div>
+            <div class="trip-node-content">
+              <div class="trip-node-time">SAT · 07:00</div>
+              <div class="trip-node-place">合肥出发</div>
+              <div class="trip-node-detail">高速 G3 · 预计 3h · 充电建议：汤口服务区</div>
+            </div>
+          </div>
+          <div class="trip-node">
+            <div class="trip-node-dot" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);">🏨</div>
+            <div class="trip-node-content">
+              <div class="trip-node-time">SAT · 10:00</div>
+              <div class="trip-node-place">汤口镇入住</div>
+              <div class="trip-node-detail">推荐：黄山翡翠谷酒店 · ⭐4.7 · ¥ 680/晚</div>
+            </div>
+          </div>
+          <div class="trip-node">
+            <div class="trip-node-dot" style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);">⛰️</div>
+            <div class="trip-node-content">
+              <div class="trip-node-time">SAT · 13:00</div>
+              <div class="trip-node-place">黄山景区</div>
+              <div class="trip-node-detail">北海·光明顶·迎客松 · 缆车建议提前购票</div>
+            </div>
+          </div>
+          <div class="trip-node">
+            <div class="trip-node-dot" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);">🌅</div>
+            <div class="trip-node-content">
+              <div class="trip-node-time">SUN · 05:30</div>
+              <div class="trip-node-place">观日出</div>
+              <div class="trip-node-detail">北海宾馆出发 · 光明顶东侧最佳机位</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="sec-title">语种覆盖节奏</div>
-    <table class="tbl">
-      <thead><tr><th>阶段</th><th>时间</th><th>语种范围</th><th>能力层</th></tr></thead>
-      <tbody>
-        <tr><td><span class="chip chip-green">已交付</span></td><td>2026-03-30</td><td>东盟 7 种（马/泰/印/越/缅/柬/菲）</td><td>基础语音 + FC 一期</td></tr>
-        <tr><td><span class="chip chip-yellow">即将上线</span></td><td>2026-04-30</td><td>英/俄（S 级）+ 法/德/西（A 级初版）</td><td>MasterAgent + 部分智能体</td></tr>
-        <tr><td><span class="chip chip-blue">530 验收</span></td><td>2026-05-30</td><td>FC 二期 9 语种（欧盟核心）</td><td>FC 全量 + 多意图 ≥85%</td></tr>
-        <tr><td><span class="chip chip-gray">规划中</span></td><td>2026-Q4</td><td>欧盟 25 种</td><td>全量 Max</td></tr>
-        <tr><td><span class="chip chip-gray">27年</span></td><td>2027+</td><td>爱沙尼亚/匈牙利/荷兰/挪威...</td><td>渐进接入</td></tr>
-        <tr><td><span class="chip chip-red">不规划</span></td><td>—</td><td>加泰罗尼亚/芬兰/蒙古</td><td>明确不做</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════ PAGE 5: 风险 ═══════════════ -->
-<div class="page" id="p-risk">
-<div class="inner">
-  <h2 class="pg-title">风险矩阵 & 应对策略</h2>
-  <p class="pg-sub">5 个风险领域 · 关键依赖 · 530 里程碑前必须关闭项</p>
-
-  <div class="callout callout-red">
-    <span class="callout-icon">🔴</span>
-    <div class="callout-body">
-      <div class="callout-title">P0 风险——信源依赖是 530 最大外部风险</div>
-      <div class="callout-text">欧盟 4 类信源（地图/曲库/新闻/赛事）全部未签约。导航/音乐/新闻 3 个智能体承接率均 ≤41%，信源谈判失败将直接导致交付窗口错过。<strong>建议由奇瑞客户方统一推动信源采购谈判。</strong></div>
+  <!-- AI Gen -->
+  <div class="feature-panel" id="panel-aigen">
+    <div class="feature-demo">
+      <div class="demo-query">
+        <span class="demo-query-icon">🎤</span>
+        <span class="demo-query-text">帮我画一幅赛博朋克风格的合肥夜景</span>
+      </div>
+      <div class="demo-response">
+        <div class="demo-response-label">AI 生图智能体</div>
+        <div class="aigen-showcase">
+          <div class="aigen-item" style="background:linear-gradient(135deg,#0a0a2e,#1a0033,#0d1a4d);">
+            <span>🌃</span>
+          </div>
+          <div class="aigen-item" style="background:linear-gradient(135deg,#0d1a2e,#001a33,#0a2a1a);">
+            <span>🔮</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:8px;font-size:11px;color:#c4b5fd;">
+          🎨 正在生成「赛博朋克合肥夜景」· 分辨率 1024×768 · 预计 8s
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="sec-title">风险清单（按优先级）</div>
-    <table class="tbl">
-      <thead><tr><th>风险 ID</th><th>类别</th><th>描述</th><th>概率</th><th>影响</th><th>应对</th></tr></thead>
-      <tbody>
-        <tr><td>R-01</td><td>外部信源</td><td>欧盟信源（地图/音乐/新闻）谈判失败</td><td><span class="chip chip-red">高</span></td><td><span class="chip chip-red">高</span></td><td>奇瑞客户方统一推动；630 降级方案兜底</td></tr>
-        <tr><td>R-02</td><td>技术指标</td><td>拒识准确率差距 13pp（85% vs 98%）</td><td><span class="chip chip-red">高</span></td><td><span class="chip chip-red">高</span></td><td>评估 27 年达 98% 可行性；一期承诺 ≥95%</td></tr>
-        <tr><td>R-03</td><td>记忆体系</td><td>L2/L3 记忆后置 27 年影响 55 条需求</td><td><span class="chip chip-green">确定</span></td><td><span class="chip chip-red">高</span></td><td>签 MoU 锁定 27 年路标；L1 上下文兜底</td></tr>
-        <tr><td>R-04</td><td>平台依赖</td><td>SA 8155 无端侧 LLM，延迟依赖网络</td><td><span class="chip chip-green">确定</span></td><td><span class="chip chip-yellow">中</span></td><td>海外节点优化；并行化策略</td></tr>
-        <tr><td>R-05</td><td>合规</td><td>EU AI Act 2026-08 生效，高风险合规</td><td><span class="chip chip-yellow">中</span></td><td><span class="chip chip-red">高</span></td><td>法律团队评审；提前 Q2 完成合规审计</td></tr>
-        <tr><td>R-06</td><td>OEM 依赖</td><td>奇瑞 HMI/VUI 设计进度滞后</td><td><span class="chip chip-yellow">中</span></td><td><span class="chip chip-yellow">中</span></td><td>明确接口边界；联调依赖明确到 HMI 稿时间</td></tr>
-        <tr><td>R-07</td><td>合规</td><td>YG Yandex 数据主权/俄法合规</td><td><span class="chip chip-yellow">中</span></td><td><span class="chip chip-yellow">中</span></td><td>数据本地化方案；Yandex 负责本地合规</td></tr>
-      </tbody>
-    </table>
+  <!-- All 18 agents chips -->
+  <div style="margin-top:32px;">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">全部 18 个领域智能体</div>
+    <div class="agents-chips">
+      <div class="agent-chip"><span class="agent-chip-icon">📖</span>故事智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🗣️</span>口语搭子</div>
+      <div class="agent-chip"><span class="agent-chip-icon">📰</span>AI 新闻</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🎨</span>AI 生图</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🃏</span>场景卡片</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🤖</span>GUI Agent</div>
+      <div class="agent-chip"><span class="agent-chip-icon">💊</span>健康智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🧠</span>心理健康</div>
+      <div class="agent-chip"><span class="agent-chip-icon">✨</span>生成式 HMI</div>
+      <div class="agent-chip"><span class="agent-chip-icon">📸</span>行程记者</div>
+      <div class="agent-chip"><span class="agent-chip-icon">👁️</span>看看智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🔍</span>AI 寻车</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🏔️</span>越野智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🚗</span>行车智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🗺️</span>出行智能体</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🛡️</span>增强哨兵</div>
+      <div class="agent-chip"><span class="agent-chip-icon">💫</span>情绪舱</div>
+      <div class="agent-chip"><span class="agent-chip-icon">🎵</span>哼识曲</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ───────────────── STATS ───────────────── -->
+<section id="stats" class="full-width" style="max-width:1100px;">
+  <div class="section-label">Requirement Alignment · 拧合工作台 v1</div>
+  <h2 class="section-title">需求承接率</h2>
+  <p class="section-desc">iFlytek × 奇瑞 拧合工作台 · 269 项需求全景 · 数据截至 2026-04-13</p>
+
+  <div class="stats-hero">
+    <div class="stats-big-num">49.8</div>
+    <div class="stats-unit">%</div>
+    <div class="stats-meta">
+      总计 <span>269 项</span><br>
+      520 节点 <span style="color:var(--accent-amber);">⚠ 36 项待确认</span>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="sec-title">信源依赖状态（YG vs 欧盟）</div>
-    <table class="tbl">
-      <thead><tr><th>依赖类型</th><th>YG 市场</th><th>欧盟市场</th><th>风险等级</th></tr></thead>
-      <tbody>
-        <tr><td>🗺️ 地图/导航</td><td><span class="chip chip-green">Yandex Maps 可接</span></td><td><span class="chip chip-red">HERE/TomTom 洽谈中</span></td><td><span class="chip chip-red">EU 高风险</span></td></tr>
-        <tr><td>🎵 音乐曲库</td><td><span class="chip chip-yellow">YandexMusic 洽谈</span></td><td><span class="chip chip-red">Spotify/JOOX 洽谈</span></td><td><span class="chip chip-red">高</span></td></tr>
-        <tr><td>📰 新闻信源</td><td><span class="chip chip-green">Yandex News 可接</span></td><td><span class="chip chip-red">欧盟新闻 Q3 待锁定</span></td><td><span class="chip chip-yellow">中高</span></td></tr>
-        <tr><td>🚗 Vehicle API</td><td><span class="chip chip-yellow">依赖奇瑞提供</span></td><td><span class="chip chip-yellow">依赖奇瑞提供</span></td><td><span class="chip chip-yellow">中</span></td></tr>
-        <tr><td>🅿️ 停车/充电</td><td>无</td><td><span class="chip chip-red">Parkopedia 洽谈</span></td><td><span class="chip chip-red">高</span></td></tr>
-      </tbody>
-    </table>
+  <div class="acceptance-counts">
+    <div class="count-card">
+      <div class="count-num" style="color:var(--accent-green);">134</div>
+      <div class="count-label">✅ 承接</div>
+    </div>
+    <div class="count-card">
+      <div class="count-num" style="color:var(--text-muted);">72</div>
+      <div class="count-label">⏭ 后置</div>
+    </div>
+    <div class="count-card">
+      <div class="count-num" style="color:var(--accent-amber);">36</div>
+      <div class="count-label">↗ 偏离</div>
+    </div>
+    <div class="count-card">
+      <div class="count-num" style="color:var(--accent-blue);">22</div>
+      <div class="count-label">💬 待讨论</div>
+    </div>
+    <div class="count-card">
+      <div class="count-num" style="color:var(--accent-red);">5</div>
+      <div class="count-label">✗ 拒绝</div>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="sec-title">530 关闭清单</div>
-    <div style="display:flex;flex-direction:column;gap:8px;" id="todo-list"></div>
+  <!-- Module bars -->
+  <div class="module-bars" id="moduleBars">
+    <div class="module-bar-item" data-pct="100">
+      <div class="module-bar-header">
+        <span class="module-bar-name">通用能力</span>
+        <span class="module-bar-pct">100%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#10b981;--bar-color-end:#34d399;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="75">
+      <div class="module-bar-header">
+        <span class="module-bar-name">基础功能</span>
+        <span class="module-bar-pct">75%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#10b981;--bar-color-end:#34d399;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="67">
+      <div class="module-bar-header">
+        <span class="module-bar-name">安全拒识</span>
+        <span class="module-bar-pct">67%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#3b82f6;--bar-color-end:#60a5fa;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="64">
+      <div class="module-bar-header">
+        <span class="module-bar-name">中枢大模型</span>
+        <span class="module-bar-pct">64%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#3b82f6;--bar-color-end:#60a5fa;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="56">
+      <div class="module-bar-header">
+        <span class="module-bar-name">AI 生图</span>
+        <span class="module-bar-pct">56%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#f59e0b;--bar-color-end:#fbbf24;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="52">
+      <div class="module-bar-header">
+        <span class="module-bar-name">体育资讯</span>
+        <span class="module-bar-pct">52%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#f59e0b;--bar-color-end:#fbbf24;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="41">
+      <div class="module-bar-header">
+        <span class="module-bar-name">AI 新闻</span>
+        <span class="module-bar-pct">41%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="38">
+      <div class="module-bar-header">
+        <span class="module-bar-name">周边推荐</span>
+        <span class="module-bar-pct">38%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="38">
+      <div class="module-bar-header">
+        <span class="module-bar-name">音乐智能体</span>
+        <span class="module-bar-pct">38%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="36">
+      <div class="module-bar-header">
+        <span class="module-bar-name">导航联动</span>
+        <span class="module-bar-pct">36%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
+      </div>
+    </div>
+    <div class="module-bar-item" data-pct="22">
+      <div class="module-bar-header">
+        <span class="module-bar-name">车控联动</span>
+        <span class="module-bar-pct">22%</span>
+      </div>
+      <div class="module-bar-track">
+        <div class="module-bar-fill" style="--bar-color:#dc2626;--bar-color-end:#ef4444;"></div>
+      </div>
+    </div>
   </div>
-</div>
-</div>
+
+  <!-- Risk cards -->
+  <h3 style="font-size:16px;font-weight:600;margin-top:48px;margin-bottom:20px;">
+    ⚠️ 高风险偏离项
+  </h3>
+  <div class="risk-grid">
+    <div class="risk-card">
+      <div class="risk-header">
+        <div class="risk-badge">中枢-002</div>
+        <div class="risk-title">多意图识别率</div>
+      </div>
+      <div class="risk-meta">
+        <span>当前 <span class="risk-val">85%</span></span>
+        <span>目标 <span class="risk-target">≥ 95%</span></span>
+        <span style="color:var(--accent-red);">差距 10pts</span>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-header">
+        <div class="risk-badge">中枢-011</div>
+        <div class="risk-title">安全拒识准确率</div>
+      </div>
+      <div class="risk-meta">
+        <span>当前 <span class="risk-val">85%</span></span>
+        <span>目标 <span class="risk-target">≥ 98%</span></span>
+        <span style="color:var(--accent-red);">差距 13pts</span>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-header">
+        <div class="risk-badge">中枢-014</div>
+        <div class="risk-title">路由决策延迟</div>
+      </div>
+      <div class="risk-meta">
+        <span>当前 <span class="risk-val">250-300ms</span></span>
+        <span>目标 <span class="risk-target">≤ 200ms</span></span>
+        <span style="color:var(--accent-amber);">待优化</span>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-header">
+        <div class="risk-badge">中枢-019</div>
+        <div class="risk-title">联网搜索延迟</div>
+      </div>
+      <div class="risk-meta">
+        <span>当前 <span class="risk-val">2000ms</span></span>
+        <span>目标 <span class="risk-target">≤ 1500ms</span></span>
+        <span style="color:var(--accent-amber);">待优化</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <h3 style="font-size:16px;font-weight:600;margin-top:48px;margin-bottom:4px;">
+    交付节点
+  </h3>
+  <div class="milestone-list">
+    <div class="milestone-item">
+      <div class="milestone-dot done">✓</div>
+      <div>
+        <div class="milestone-date">2026-03-30</div>
+        <div class="milestone-title">330 节点</div>
+        <div class="milestone-desc">基础能力冻结 · 通用+基础功能全部完成验收</div>
+      </div>
+      <div class="milestone-count" style="color:var(--accent-green);">✓</div>
+    </div>
+    <div class="milestone-item">
+      <div class="milestone-dot done">✓</div>
+      <div>
+        <div class="milestone-date">2026-04-30</div>
+        <div class="milestone-title">430 节点</div>
+        <div class="milestone-desc">中枢大模型 + 安全能力阶段验收</div>
+      </div>
+      <div class="milestone-count" style="color:var(--accent-green);">✓</div>
+    </div>
+    <div class="milestone-item">
+      <div class="milestone-dot warn">!</div>
+      <div>
+        <div class="milestone-date">2026-05-20</div>
+        <div class="milestone-title">520 节点 <span style="font-size:11px;color:var(--accent-amber);">⚠ 关键</span></div>
+        <div class="milestone-desc">36 项待确认 · 含 4 高风险偏离项 · 需紧急对齐</div>
+      </div>
+      <div class="milestone-count" style="color:var(--accent-amber);">36</div>
+    </div>
+    <div class="milestone-item">
+      <div class="milestone-dot future">↑</div>
+      <div>
+        <div class="milestone-date">2026-06-30</div>
+        <div class="milestone-title">630 节点 <span style="font-size:11px;color:var(--accent-blue);">最大批次</span></div>
+        <div class="milestone-desc">导航/车控/音乐全量 · 41 项需求集中交付</div>
+      </div>
+      <div class="milestone-count" style="color:var(--accent-blue);">41</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ───────────────── MULTILINGUAL ───────────────── -->
+<section id="multilang">
+  <div class="section-label">International Voice · 多语种方案</div>
+  <h2 class="section-title">全球语种覆盖现状</h2>
+  <p class="section-desc">王磊团队主导 · 25+ 语种 · 7 人 · 落后中文 1-2 年 · P0 wiki 知识库正在建设中</p>
+
+  <div class="multilang-grid">
+    <div class="multilang-stat">
+      <div class="multilang-num" style="color:var(--accent-teal);">25<span style="font-size:24px;color:var(--text-muted);">+</span></div>
+      <div class="multilang-label">支持语种数</div>
+    </div>
+    <div class="multilang-stat">
+      <div class="multilang-num" style="color:var(--accent-blue);">7</div>
+      <div class="multilang-label">团队规模</div>
+    </div>
+    <div class="multilang-stat">
+      <div class="multilang-num" style="color:var(--accent-amber);">1-2<span style="font-size:20px;color:var(--text-muted);">年</span></div>
+      <div class="multilang-label">落后中文版本</div>
+    </div>
+  </div>
+
+  <div class="lang-chips">
+    <div class="lang-chip"><span class="lang-flag">🇬🇧</span>英语 EN</div>
+    <div class="lang-chip"><span class="lang-flag">🇩🇪</span>德语 DE</div>
+    <div class="lang-chip"><span class="lang-flag">🇫🇷</span>法语 FR</div>
+    <div class="lang-chip"><span class="lang-flag">🇪🇸</span>西语 ES</div>
+    <div class="lang-chip"><span class="lang-flag">🇷🇺</span>俄语 RU</div>
+    <div class="lang-chip"><span class="lang-flag">🇸🇦</span>阿语 AR</div>
+    <div class="lang-chip"><span class="lang-flag">🇯🇵</span>日语 JA</div>
+    <div class="lang-chip"><span class="lang-flag">🇰🇷</span>韩语 KO</div>
+    <div class="lang-chip"><span class="lang-flag">🇵🇹</span>葡语 PT</div>
+    <div class="lang-chip" style="color:var(--text-muted);">+16 种</div>
+  </div>
+
+  <div class="alert-box">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <strong>P0 知识库建设中：</strong>多语种 wiki 共 12 篇 P0 文章已完成 enrich v7.0 审计，核心差距在 <strong>FC PRD 4.2 节</strong>（前车跟随+领航驾驶多语种指令集），英语/德语/法语/西语落地能力已可交付，阿拉伯语/俄语/韩语仍在母语测试阶段。低资源语种（粤语、泰语、越南语）覆盖率不足 40%，需补充训练数据。
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Footer -->
+<footer>
+  <div>Carmind 1.5 · iFlytek × CHERY · UIUE 展示</div>
+  <div class="footer-sources">
+    数据来源：Carmind 1.5 产品需求文档 V1.0 · CHERY Voice UE V1.1.13 · 拧合工作台 2026-04-13 · 多语种 P0 wiki 审计
+  </div>
+</footer>
 
 <script>
-// ── Navigation ──
-function show(pageId, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  el.classList.add('active');
+// ── Scenario data ──
+const scenarios = {
+  poi: {
+    query: '附近有什么好吃的推荐一下',
+    html: `
+      <div class="chat-query">附近有什么好吃的推荐一下</div>
+      <div class="chat-response">
+        <div class="chat-response-title">📍 周边美食</div>
+        <div class="chat-poi-item">
+          <span>🍲</span>
+          <span style="flex:1;">海底捞火锅</span>
+          <span class="poi-dist">280m</span>
+        </div>
+        <div class="chat-poi-item">
+          <span>🍗</span>
+          <span style="flex:1;">老乡鸡</span>
+          <span class="poi-dist">650m</span>
+        </div>
+        <div class="chat-poi-item">
+          <span>🌶️</span>
+          <span style="flex:1;">文和友</span>
+          <span class="poi-dist">1.2km</span>
+        </div>
+        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
+      </div>`
+  },
+  music: {
+    query: '推荐夜晚开车的歌',
+    html: `
+      <div class="chat-query">推荐夜晚开车的歌</div>
+      <div class="chat-response">
+        <div class="chat-response-title">🎵 夜驾歌单</div>
+        <div class="chat-poi-item"><span>🌙</span><span style="flex:1;">夜的第七章</span><span style="font-size:8px;color:var(--text-muted);">周杰伦</span></div>
+        <div class="chat-poi-item"><span>✨</span><span style="flex:1;">Fade</span><span style="font-size:8px;color:var(--text-muted);">Alan Walker</span></div>
+        <div class="chat-poi-item"><span>🌊</span><span style="flex:1;">漂洋过海来看你</span><span style="font-size:8px;color:var(--text-muted);">娃娃</span></div>
+        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
+      </div>`
+  },
+  trip: {
+    query: '帮我规划周末去黄山的行程',
+    html: `
+      <div class="chat-query">规划周末去黄山行程</div>
+      <div class="chat-response">
+        <div class="chat-response-title">🗺️ 黄山两日游</div>
+        <div class="chat-poi-item"><span>🚗</span><span style="flex:1;">合肥出发 07:00</span></div>
+        <div class="chat-poi-item"><span>🏨</span><span style="flex:1;">汤口入住 10:00</span></div>
+        <div class="chat-poi-item"><span>⛰️</span><span style="flex:1;">北海景区 13:00</span></div>
+        <div class="chat-poi-item"><span>🌅</span><span style="flex:1;">光明顶日出 05:30</span></div>
+        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
+      </div>`
+  },
+  aigen: {
+    query: '画一幅赛博朋克合肥夜景',
+    html: `
+      <div class="chat-query">画赛博朋克合肥夜景</div>
+      <div class="chat-response">
+        <div class="chat-response-title">🎨 AI 生图中</div>
+        <div style="text-align:center;padding:12px 0;font-size:24px;">🌃</div>
+        <div style="font-size:8.5px;color:var(--accent-amber);opacity:0.8;">正在生成 · 1024×768 · 预计 8s</div>
+        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
+      </div>`
+  },
+  news: {
+    query: '今天有什么重要新闻',
+    html: `
+      <div class="chat-query">今天有什么重要新闻</div>
+      <div class="chat-response">
+        <div class="chat-response-title">📰 今日要闻</div>
+        <div class="chat-poi-item"><span>🌍</span><span style="flex:1;">G20 峰会召开</span><span style="font-size:7px;color:var(--text-muted);">国际</span></div>
+        <div class="chat-poi-item"><span>🏀</span><span style="flex:1;">NBA 总决赛</span><span style="font-size:7px;color:var(--text-muted);">体育</span></div>
+        <div class="chat-poi-item"><span>🚗</span><span style="flex:1;">新能源销量破纪录</span><span style="font-size:7px;color:var(--text-muted);">汽车</span></div>
+        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
+      </div>`
+  }
+};
+
+function switchScenario(key) {
+  // Update tabs
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Update chat panel
+  const msgs = document.getElementById('chatMessages');
+  msgs.style.opacity = '0';
+  setTimeout(() => {
+    msgs.innerHTML = scenarios[key].html;
+    msgs.style.opacity = '1';
+  }, 200);
+  msgs.style.transition = 'opacity 0.2s';
 }
 
-// ── Pie Chart ──
-(function() {
-  const data = [
-    { label:'承接 49.8%', value:134, color:'#3fb950' },
-    { label:'后置 26.8%', value:72,  color:'#d29922' },
-    { label:'偏离 13.4%', value:36,  color:'#f85149' },
-    { label:'待讨论 8.2%', value:22, color:'#58a6ff' },
-    { label:'拒绝 1.9%',  value:5,   color:'#bc8cff' }
-  ];
-  const total = data.reduce((s,d) => s+d.value, 0);
-  const svg = document.getElementById('pie-chart');
-  const cx=90, cy=90, r=70;
-  let angle = -Math.PI/2;
-  let html = '';
-  data.forEach(d => {
-    const a = (d.value/total) * 2*Math.PI;
-    const x1 = cx + r*Math.cos(angle);
-    const y1 = cy + r*Math.sin(angle);
-    angle += a;
-    const x2 = cx + r*Math.cos(angle);
-    const y2 = cy + r*Math.sin(angle);
-    const large = a > Math.PI ? 1 : 0;
-    html += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${d.color}" opacity="0.85" stroke="#0d1117" stroke-width="2"/>`;
+function switchFeature(key) {
+  document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.feature-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + key).classList.add('active');
+}
+
+function selectAgent(card) {
+  document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.agent-card-active-badge').forEach(b => b.remove());
+  card.classList.add('active');
+  const badge = document.createElement('div');
+  badge.className = 'agent-card-active-badge';
+  badge.textContent = '当前使用';
+  card.appendChild(badge);
+}
+
+// ── Animate bars on scroll ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.module-bar-item').forEach((item, i) => {
+        const pct = item.dataset.pct;
+        const fill = item.querySelector('.module-bar-fill');
+        setTimeout(() => {
+          fill.style.width = pct + '%';
+        }, i * 80);
+      });
+      observer.unobserve(entry.target);
+    }
   });
-  svg.innerHTML = html;
-  const legend = document.getElementById('pie-legend');
-  legend.innerHTML = data.map(d =>
-    `<div class="pie-legend-item"><div class="pie-legend-dot" style="background:${d.color}"></div><span>${d.label}（${d.value} 条）</span></div>`
-  ).join('');
-})();
+}, { threshold: 0.2 });
 
-// ── Bar Chart ──
-(function() {
-  const agents = [
-    { name:'通用（性能/安全）', pct:100, color:'#3fb950' },
-    { name:'基础',           pct:75,  color:'#3fb950' },
-    { name:'安全用车',        pct:66.7, color:'#3fb950' },
-    { name:'中枢',           pct:63.6, color:'#3fb950' },
-    { name:'AI 生图',        pct:55.6, color:'#d29922' },
-    { name:'体育',           pct:52,   color:'#d29922' },
-    { name:'新闻',           pct:40.9, color:'#d29922' },
-    { name:'音乐（欧盟）',    pct:38.1, color:'#f85149' },
-    { name:'周边推荐（YG）',  pct:37.5, color:'#f85149' },
-    { name:'导航（欧盟）',    pct:35.7, color:'#f85149' },
-    { name:'车控',           pct:22.5, color:'#f85149' }
-  ];
-  const el = document.getElementById('bar-chart');
-  el.innerHTML = agents.map(a =>
-    `<div class="bar-row">
-      <div class="bar-name">${a.name}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${a.pct}%;background:${a.color};">${a.pct}%</div>
-      </div>
-      <div class="bar-pct" style="color:${a.color}">${a.pct}%</div>
-    </div>`
-  ).join('');
-})();
+const barsContainer = document.getElementById('moduleBars');
+if (barsContainer) observer.observe(barsContainer);
 
-// ── Gantt ──
-(function() {
-  // months: 03=0 ... 12=9 (10 columns)
-  const tasks = [
-    { label:'东盟 7 语种基础', start:0, end:0.5, color:'#3fb950' },
-    { label:'欧盟/YG MasterAgent', start:0.5, end:2.5, color:'#58a6ff' },
-    { label:'FC 二期 9 语种', start:1.5, end:2.5, color:'#d29922' },
-    { label:'YG Yandex 信源', start:2, end:3.5, color:'#f85149' },
-    { label:'Persona 预设版', start:3.5, end:4.5, color:'#bc8cff' },
-    { label:'欧盟 25 语种全量', start:5, end:9.5, color:'#39d0d8' },
-    { label:'L2/L3 记忆（27年）', start:9.5, end:10, color:'#484f58' }
-  ];
-  const el = document.getElementById('gantt-rows');
-  const cols = 10;
-  el.innerHTML = tasks.map(t => {
-    const left = (t.start/cols*100).toFixed(1)+'%';
-    const width = ((t.end-t.start)/cols*100).toFixed(1)+'%';
-    return `<div class="gantt-row">
-      <div class="gantt-label">${t.label}</div>
-      <div class="gantt-track">
-        <div class="gantt-bar" style="left:${left};width:${width};background:${t.color};color:rgba(0,0,0,0.8)">${t.label}</div>
-      </div>
-    </div>`;
-  }).join('');
-})();
-
-// ── 530 Todo ──
-(function() {
-  const items = [
-    { done:false, text:'多意图识别 2-3 意图达 ≥85%，输出数据 + 串行路线图' },
-    { done:false, text:'安全拒识准确率路线图：评估 27 年达 98% 可行性，一期承诺 ≥95%' },
-    { done:false, text:'L2 任务型记忆：签 MoU 锁定 27 年路标' },
-    { done:false, text:'联网搜索延迟优化方案评审（目标 ≤1500ms）' },
-    { done:false, text:'欧盟信源谈判：奇瑞推动 HERE/TomTom/Spotify 采购' },
-    { done:false, text:'Platform 配置完成（SA 8155 德赛联调）' },
-    { done:false, text:'EU AI Act 合规审计 Q2 完成' }
-  ];
-  const el = document.getElementById('todo-list');
-  el.innerHTML = items.map((t,i) =>
-    `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#161b22;border:1px solid ${t.done?'#3fb950':'#30363d'};border-radius:8px;cursor:pointer" onclick="toggleTodo(this,${i})">
-      <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${t.done?'#3fb950':'#30363d'};background:${t.done?'#3fb950':'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;color:#0d1117;flex-shrink:0">${t.done?'✓':''}</div>
-      <span style="font-size:13px;color:${t.done?'#8b949e':'#f0f6fc'};${t.done?'text-decoration:line-through':''}">${t.text}</span>
-    </div>`
-  ).join('');
-})();
-
-function toggleTodo(el, i) {
-  const box = el.querySelector('div');
-  const txt = el.querySelector('span');
-  const done = box.style.background === 'rgb(63, 185, 80)';
-  box.style.background = done ? 'transparent' : '#3fb950';
-  box.style.borderColor = done ? '#30363d' : '#3fb950';
-  box.textContent = done ? '' : '✓';
-  txt.style.color = done ? '#f0f6fc' : '#8b949e';
-  txt.style.textDecoration = done ? 'none' : 'line-through';
-  el.style.borderColor = done ? '#30363d' : '#3fb950';
-}
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Set initial chat content
+  const msgs = document.getElementById('chatMessages');
+  if (msgs) msgs.innerHTML = scenarios.poi.html;
+});
+// Also run immediately in case DOM ready
+const msgs = document.getElementById('chatMessages');
+if (msgs) msgs.innerHTML = scenarios.poi.html;
 </script>
 </body>
 </html>
