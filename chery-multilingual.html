@@ -3,1614 +3,961 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carmind 1.5 · 大模型智能体车机界面</title>
+<title>Carmind 1.5 · 车机界面体验</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-deep: #060810;
-  --bg-surface: #0d1220;
+  --bg-deep: #050810;
+  --bg-surface: #0c1220;
   --bg-card: #111827;
   --bg-card-hover: #1a2235;
-  --accent-amber: #f59e0b;
-  --accent-amber-dim: #d97706;
-  --accent-blue: #3b82f6;
-  --accent-teal: #06b6d4;
-  --accent-green: #10b981;
-  --accent-red: #ef4444;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --amber: #f59e0b;
+  --amber-dim: #d97706;
+  --amber-pale: #fbbf24;
+  --blue: #3b82f6;
+  --blue-pale: #60a5fa;
+  --teal: #06b6d4;
+  --green: #10b981;
+  --red: #ef4444;
+  --purple: #a855f7;
+  --text-1: #f1f5f9;
+  --text-2: #94a3b8;
+  --text-3: #64748b;
   --border: rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.12);
-  --font-zh: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-en: 'Inter', sans-serif;
+  --border-hi: rgba(255,255,255,0.12);
+  --zh: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --en: 'Inter', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--zh);background:var(--bg-deep);color:var(--text-1);overflow-x:hidden;line-height:1.6}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:52px;
+  background:rgba(5,8,16,0.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:var(--en);font-weight:700;font-size:15px;letter-spacing:-0.3px}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.nav-badge{
+  background:rgba(245,158,11,0.12);color:var(--amber);
+  border:1px solid rgba(245,158,11,0.25);
+  padding:3px 10px;border-radius:16px;font-size:11px;font-family:var(--en);font-weight:500
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* HERO HEADER */
+.page-header{
+  padding:100px 40px 32px;
+  max-width:1200px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  position:relative;
+}
+.page-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(59,130,246,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.eyebrow{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--en);font-size:10px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--amber);
+  margin-bottom:18px;
+}
+.eyebrow::before,.eyebrow::after{content:'';display:block;width:28px;height:1px;background:currentColor;opacity:.4}
+.page-title{font-size:clamp(32px,5vw,58px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px}
+.page-title em{font-style:normal;color:var(--amber)}
+.page-sub{font-size:14px;color:var(--text-2);font-weight:300;max-width:520px;line-height:1.8;margin-bottom:36px}
 
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--font-zh);
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  overflow-x: hidden;
-  line-height: 1.6;
+/* MAIN TABS (feature tabs) */
+.main-tabs{
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+  margin-bottom:28px;
 }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
-
-/* ── Nav ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 40px; height: 56px;
-  background: rgba(6,8,16,0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+.main-tab{
+  padding:8px 18px;border-radius:22px;
+  border:1px solid var(--border-hi);
+  background:transparent;color:var(--text-3);
+  font-size:12.5px;cursor:pointer;transition:all .2s;
+  font-family:var(--zh);white-space:nowrap;
 }
-.nav-brand {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-en); font-weight: 700; font-size: 15px;
-  color: var(--text-primary); letter-spacing: -0.3px;
-}
-.nav-brand-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent-amber);
-  box-shadow: 0 0 8px var(--accent-amber);
-}
-.nav-links { display: flex; gap: 32px; }
-.nav-links a {
-  font-size: 13px; color: var(--text-muted);
-  text-decoration: none; transition: color 0.2s;
-  font-family: var(--font-zh);
-}
-.nav-links a:hover { color: var(--text-primary); }
-.nav-badge {
-  background: rgba(245,158,11,0.15);
-  color: var(--accent-amber);
-  border: 1px solid rgba(245,158,11,0.3);
-  padding: 3px 10px; border-radius: 20px;
-  font-size: 11px; font-weight: 500;
-  font-family: var(--font-en);
+.main-tab:hover{color:var(--text-2);border-color:rgba(255,255,255,.2)}
+.main-tab.active{
+  background:rgba(245,158,11,0.15);
+  border-color:rgba(245,158,11,0.45);
+  color:var(--amber);
 }
 
-/* ── Hero ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 40px 60px;
-  position: relative; overflow: hidden;
+/* SCREEN WRAPPER */
+.screen-wrap{
+  max-width:min(900px,94vw);margin:0 auto 36px;
+  position:relative;
 }
-.hero-bg {
-  position: absolute; inset: 0; pointer-events: none;
+.screen-bezel{
+  background:#07090f;
+  border-radius:14px;
+  border:2px solid rgba(255,255,255,0.07);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03),0 40px 100px rgba(0,0,0,.85),0 8px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;aspect-ratio:16/9;
 }
-.hero-bg-gradient {
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(59,130,246,0.08) 0%, transparent 70%),
-              radial-gradient(ellipse 50% 50% at 15% 80%, rgba(245,158,11,0.05) 0%, transparent 60%),
-              radial-gradient(ellipse 40% 40% at 85% 70%, rgba(6,182,212,0.05) 0%, transparent 60%);
-}
-.hero-grid {
-  position: absolute; inset: 0;
-  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+.screen-inner{
+  width:100%;height:100%;
+  background:linear-gradient(150deg,#090f1f 0%,#0d1629 45%,#080f1c 100%);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
 }
 
-.hero-eyebrow {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-en); font-size: 11px; font-weight: 600;
-  color: var(--accent-amber); letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 24px;
-}
-.hero-eyebrow::before, .hero-eyebrow::after {
-  content: '';
-  display: block; width: 32px; height: 1px;
-  background: currentColor; opacity: 0.4;
+/* ambience */
+.screen-amb{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 72% 90%,rgba(245,158,11,0.04) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 35% at 18% 55%,rgba(59,130,246,0.07) 0%,transparent 55%);
 }
 
-.hero-title {
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 700; letter-spacing: -1.5px;
-  text-align: center; line-height: 1.1;
-  margin-bottom: 20px;
+/* STATUS BAR */
+.sbar{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 13px 4px;
+  background:rgba(6,9,20,.75);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  flex-shrink:0;
 }
-.hero-title-accent { color: var(--accent-amber); }
-.hero-subtitle {
-  font-size: 16px; color: var(--text-secondary);
-  text-align: center; max-width: 560px;
-  margin-bottom: 48px; line-height: 1.8;
-  font-weight: 300;
+.sbar-range{font-family:var(--en);font-size:9.5px;font-weight:700;color:var(--green);background:rgba(16,185,129,.12);padding:2px 7px;border-radius:4px}
+.sbar-time{font-family:var(--en);font-size:10px;font-weight:500;color:var(--text-2)}
+.sbar-icons{display:flex;gap:5px;font-size:9px;color:var(--text-3)}
+.vpa-pill{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(245,158,11,.14);
+  border:1px solid rgba(245,158,11,.3);
+  padding:2px 9px;border-radius:9px;
+  font-size:8.5px;color:var(--amber);font-weight:500;
+  font-family:var(--en);letter-spacing:.3px;
+}
+.vpa-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);animation:pdot 1.6s infinite}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+
+/* BODY */
+.sbody{flex:1;display:flex;position:relative;z-index:5;overflow:hidden;min-height:0}
+
+/* AI PANEL */
+.aip{
+  width:41%;height:100%;
+  background:rgba(255,255,255,.045);
+  backdrop-filter:blur(24px);
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;flex-direction:column;
+  padding:9px;flex-shrink:0;
+}
+.aip-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,0.05);
+  margin-bottom:7px;
+}
+.aip-agent{display:flex;align-items:center;gap:6px}
+.aip-av{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+}
+.aip-name{font-size:9.5px;font-weight:500;color:var(--text-2)}
+.aip-close{font-size:8px;color:var(--text-3);opacity:.6}
+
+.aip-msgs{flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.msg-q{
+  align-self:flex-end;
+  background:rgba(59,130,246,.22);border:1px solid rgba(59,130,246,.28);
+  border-radius:9px 9px 2px 9px;padding:5px 9px;
+  font-size:9px;color:#93c5fd;max-width:88%;
+}
+.msg-a{
+  align-self:flex-start;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07);
+  border-radius:2px 9px 9px 9px;padding:7px 9px;
+  font-size:8.5px;color:var(--text-2);max-width:97%;line-height:1.6;
+}
+.msg-a-title{font-size:9px;font-weight:600;color:var(--text-1);margin-bottom:3px}
+.poi-row{display:flex;align-items:center;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:8px}
+.poi-row:last-of-type{border:none}
+.dist-badge{background:rgba(245,158,11,.18);color:var(--amber);border-radius:3px;padding:1px 5px;font-size:7.5px;font-family:var(--en);font-weight:700;white-space:nowrap}
+.rating{color:var(--green);font-size:7.5px;font-family:var(--en)}
+.ai-wm{font-size:7px;color:var(--text-3);padding-top:4px;margin-top:2px;border-top:1px solid rgba(255,255,255,.04);opacity:.7}
+
+/* wakeup special */
+.wake-content{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding:8px}
+.wake-ring{
+  width:52px;height:52px;border-radius:50%;
+  border:2px solid var(--amber);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 0 0 4px rgba(245,158,11,.12),0 0 0 8px rgba(245,158,11,.06);
+  animation:wake-pulse 2s infinite;
+}
+@keyframes wake-pulse{0%,100%{box-shadow:0 0 0 4px rgba(245,158,11,.15),0 0 0 10px rgba(245,158,11,.07)}50%{box-shadow:0 0 0 8px rgba(245,158,11,.08),0 0 0 18px rgba(245,158,11,.03)}}
+.wake-kw{font-family:var(--en);font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.5px;text-align:center}
+.wake-hint{font-size:8px;color:var(--text-3);text-align:center}
+.asr-bar{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:6px;padding:6px 8px;width:100%;
+  font-size:8.5px;color:var(--text-2);
+}
+.asr-cursor{display:inline-block;width:1px;height:10px;background:var(--amber);margin-left:2px;animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* agent select panel */
+.agents-panel{display:flex;flex-direction:column;gap:5px}
+.agent-row{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 7px;border-radius:7px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);
+  cursor:pointer;transition:all .15s;
+}
+.agent-row:hover,.agent-row.sel{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25)}
+.ar-em{font-size:14px}
+.ar-name{font-size:9px;font-weight:600;flex:1}
+.ar-tag{font-size:7.5px;color:var(--text-3)}
+.ar-sel{width:12px;height:12px;border-radius:50%;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:8px}
+.agent-row.sel .ar-sel{background:var(--amber);border-color:var(--amber);color:#000}
+
+/* multi-zone panel */
+.zone-tabs{display:flex;gap:4px;margin-bottom:6px}
+.ztab{
+  flex:1;padding:3px 4px;border-radius:4px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  font-size:7.5px;text-align:center;cursor:pointer;color:var(--text-3);
+}
+.ztab.active{background:rgba(6,182,212,.15);border-color:rgba(6,182,212,.3);color:var(--teal)}
+.zone-msg{font-size:8px;color:var(--text-2);line-height:1.6}
+.zone-badge{display:inline-block;background:rgba(6,182,212,.12);color:var(--teal);border-radius:4px;padding:1px 6px;font-size:7.5px;margin-bottom:4px}
+
+/* MAP */
+.mapp{flex:1;position:relative;overflow:hidden}
+.map-bg{position:absolute;inset:0;background:linear-gradient(140deg,#0b1628 0%,#0f1f36 55%,#09141e 100%)}
+.map-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(59,130,246,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.065) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.map-svg{position:absolute;inset:0;width:100%;height:100%}
+.map-speed{
+  position:absolute;bottom:13px;right:11px;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(7,9,18,.88);border:2px solid rgba(59,130,246,.28);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.spd-n{font-family:var(--en);font-size:13px;font-weight:700;color:var(--text-1);line-height:1}
+.spd-u{font-size:6.5px;color:var(--text-3);font-family:var(--en)}
+.map-eta{
+  position:absolute;top:9px;left:9px;
+  background:rgba(7,9,18,.88);border:1px solid rgba(255,255,255,.07);
+  border-radius:6px;padding:4px 8px;
+}
+.eta-t{font-family:var(--en);font-size:12px;font-weight:700;color:var(--text-1)}
+.eta-l{font-size:7px;color:var(--text-3)}
+.poi-pin{
+  position:absolute;
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(245,158,11,.2);border:1.5px solid rgba(245,158,11,.6);
+  display:flex;align-items:center;justify-content:center;font-size:9px;
+  box-shadow:0 0 6px rgba(245,158,11,.3);
 }
 
-/* ── Car Screen ── */
-.car-screen-wrapper {
-  position: relative;
-  width: min(820px, 90vw);
-  margin: 0 auto 40px;
+/* Multi-zone map overlay */
+.zone-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  background:rgba(6,9,20,.6);backdrop-filter:blur(4px);
+}
+.zone-seat-row{
+  flex:1;display:flex;gap:1px;
+}
+.seat-zone{
+  flex:1;border:1px solid rgba(255,255,255,.05);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-size:8.5px;color:var(--text-3);
+}
+.seat-zone.active{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.2);color:var(--teal)}
+.seat-icon{font-size:16px}
+
+/* DOCK */
+.sdock{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-around;
+  padding:5px 16px;
+  background:rgba(6,9,20,.85);
+  border-top:1px solid rgba(255,255,255,.04);
+  flex-shrink:0;
+}
+.di{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;cursor:pointer}
+.dl{font-size:6.5px;color:var(--text-3)}
+.di.act .dl{color:var(--amber)}
+
+/* DETAIL PANEL */
+.detail-wrap{max-width:min(900px,94vw);margin:0 auto 64px;padding:0}
+.detail-panel{display:none}
+.detail-panel.active{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:700px){.detail-panel.active{grid-template-columns:1fr 1fr}}
+.det-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:11px;padding:16px;
+  transition:border-color .2s;
+}
+.det-card:hover{border-color:var(--border-hi)}
+.det-card-icon{font-size:20px;margin-bottom:8px}
+.det-card-title{font-size:12.5px;font-weight:600;margin-bottom:4px}
+.det-card-desc{font-size:11px;color:var(--text-2);line-height:1.7}
+.det-card-tag{
+  display:inline-block;font-size:9.5px;padding:2px 8px;border-radius:5px;
+  margin-top:8px;font-family:var(--en);font-weight:500;
 }
 
-.car-screen-bezel {
-  background: #080b12;
-  border-radius: 16px;
-  border: 2px solid rgba(255,255,255,0.08);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 32px 80px rgba(0,0,0,0.8),
-    0 8px 24px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  overflow: hidden;
-  aspect-ratio: 16/9;
+/* VPA states detail (special 6-col) */
+.vpa-states-grid{max-width:min(900px,94vw);margin:0 auto 64px;display:none;grid-template-columns:repeat(6,1fr);gap:10px}
+.vpa-states-grid.active{display:grid}
+@media(max-width:800px){.vpa-states-grid.active{grid-template-columns:repeat(3,1fr)}}
+.vpa-state-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;padding:14px;text-align:center;
 }
+.vsc-icon{font-size:22px;margin-bottom:7px}
+.vsc-name{font-size:11.5px;font-weight:600;margin-bottom:3px}
+.vsc-desc{font-size:9.5px;color:var(--text-3);line-height:1.5}
 
-.car-screen-inner {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #0a0f1e 0%, #0d1529 40%, #0a1320 100%);
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column;
+/* Agents detail (special) */
+.agents-big-grid{max-width:min(900px,94vw);margin:0 auto 64px;display:none;grid-template-columns:repeat(3,1fr);gap:12px}
+.agents-big-grid.active{display:grid}
+@media(max-width:700px){.agents-big-grid.active{grid-template-columns:1fr 1fr}}
+.agb{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
 }
+.agb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac,rgba(245,158,11,.06)) 0%,transparent 60%);opacity:0;transition:opacity .2s}
+.agb:hover,.agb.on{border-color:var(--bc,rgba(245,158,11,.3));background:var(--bg-card-hover)}
+.agb:hover::before,.agb.on::before{opacity:1}
+.agb-em{font-size:28px;margin-bottom:8px;display:block}
+.agb-name{font-size:14px;font-weight:600;margin-bottom:3px}
+.agb-type{font-size:9.5px;color:var(--text-3);margin-bottom:7px}
+.agb-desc{font-size:11px;color:var(--text-2);line-height:1.6}
+.agb-badge{position:absolute;top:10px;right:10px;background:rgba(245,158,11,.18);color:var(--amber);border:1px solid rgba(245,158,11,.28);font-size:8.5px;padding:2px 8px;border-radius:7px}
 
-/* Night ambience in background */
-.screen-bg-scene {
-  position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 75% 85%, rgba(245,158,11,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 20% 60%, rgba(59,130,246,0.06) 0%, transparent 50%);
+/* all 18 chips */
+.chips-wrap{max-width:min(900px,94vw);margin:0 auto 24px;display:none;flex-wrap:wrap;gap:7px}
+.chips-wrap.active{display:flex}
+.chip{
+  display:flex;align-items:center;gap:4px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:4px 11px;font-size:11px;color:var(--text-2);
+  transition:all .15s;cursor:default;
 }
+.chip:hover{border-color:var(--border-hi);color:var(--text-1)}
 
-/* Status Bar */
-.screen-statusbar {
-  position: relative; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 14px 4px;
-  background: rgba(8,12,24,0.7);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 32px;text-align:center;
+  color:var(--text-3);font-size:11px;
 }
-.status-left { display: flex; align-items: center; gap: 8px; }
-.status-range {
-  font-family: var(--font-en); font-size: 10px; font-weight: 600;
-  color: var(--accent-green);
-  background: rgba(16,185,129,0.12);
-  padding: 2px 7px; border-radius: 4px;
-}
-.status-time {
-  font-family: var(--font-en); font-size: 11px; font-weight: 500;
-  color: var(--text-secondary);
-}
-.status-icons { display: flex; align-items: center; gap: 6px; }
-.status-icon { font-size: 9px; color: var(--text-muted); }
-.status-right { display: flex; align-items: center; gap: 8px; }
-.vpa-pill {
-  display: flex; align-items: center; gap: 5px;
-  background: rgba(245,158,11,0.15);
-  border: 1px solid rgba(245,158,11,0.3);
-  padding: 2px 10px; border-radius: 10px;
-  font-size: 9px; color: var(--accent-amber); font-weight: 500;
-}
-.vpa-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--accent-amber);
-  animation: pulse-dot 1.5s infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.7); }
-}
-
-/* Main content area */
-.screen-body {
-  flex: 1; display: flex; position: relative; z-index: 5; overflow: hidden;
-}
-
-/* Left AI Panel */
-.ai-panel {
-  width: 42%; height: 100%;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255,255,255,0.06);
-  display: flex; flex-direction: column;
-  padding: 10px;
-}
-.ai-panel-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 8px;
-}
-.agent-info { display: flex; align-items: center; gap: 6px; }
-.agent-avatar {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-}
-.agent-name { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
-.panel-close { font-size: 9px; color: var(--text-muted); cursor: pointer; opacity: 0.6; }
-
-.chat-messages { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
-.chat-query {
-  align-self: flex-end;
-  background: rgba(59,130,246,0.25);
-  border: 1px solid rgba(59,130,246,0.3);
-  border-radius: 10px 10px 2px 10px;
-  padding: 6px 10px;
-  font-size: 9.5px; color: #93c5fd; max-width: 85%;
-}
-.chat-response {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 2px 10px 10px 10px;
-  padding: 8px 10px;
-  font-size: 9px; color: var(--text-secondary); max-width: 95%;
-  line-height: 1.6;
-}
-.chat-response-title { font-size: 9.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-.chat-poi-item {
-  display: flex; align-items: center; gap: 5px;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  font-size: 8.5px;
-}
-.chat-poi-item:last-child { border-bottom: none; }
-.poi-dist {
-  background: rgba(245,158,11,0.2);
-  color: var(--accent-amber);
-  border-radius: 3px; padding: 1px 5px;
-  font-size: 8px; font-family: var(--font-en); font-weight: 600;
-  white-space: nowrap;
-}
-.ai-watermark {
-  font-size: 7.5px; color: var(--text-muted);
-  padding-top: 5px; margin-top: 2px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  opacity: 0.7;
-}
-
-/* Right panel: map area */
-.map-panel {
-  flex: 1; position: relative; overflow: hidden;
-}
-.map-bg {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(135deg, #0c1628 0%, #0f1e35 50%, #0a1520 100%);
-}
-/* CSS map grid */
-.map-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(59,130,246,0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.07) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-/* Route path SVG */
-.map-route-svg {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-}
-.map-speed-ring {
-  position: absolute; bottom: 14px; right: 12px;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: rgba(8,12,24,0.85);
-  border: 2px solid rgba(59,130,246,0.3);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.speed-num {
-  font-family: var(--font-en); font-size: 14px; font-weight: 700;
-  color: var(--text-primary); line-height: 1;
-}
-.speed-unit { font-size: 7px; color: var(--text-muted); font-family: var(--font-en); }
-.map-nav-arrow {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 28px; height: 28px;
-  filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
-}
-.map-eta-card {
-  position: absolute; top: 10px; left: 10px;
-  background: rgba(8,12,24,0.85); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 7px; padding: 5px 9px;
-}
-.eta-time { font-family: var(--font-en); font-size: 13px; font-weight: 700; color: var(--text-primary); }
-.eta-label { font-size: 7.5px; color: var(--text-muted); }
-
-/* Bottom dock */
-.screen-dock {
-  position: relative; z-index: 10;
-  display: flex; align-items: center; justify-content: space-around;
-  padding: 6px 20px;
-  background: rgba(8,12,24,0.8);
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-.dock-icon {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  font-size: 14px; cursor: pointer;
-}
-.dock-label { font-size: 7px; color: var(--text-muted); }
-.dock-icon.active .dock-label { color: var(--accent-amber); }
-
-/* Scenario switcher tabs */
-.scenario-tabs {
-  display: flex; gap: 8px; justify-content: center;
-  margin-bottom: 20px; flex-wrap: wrap;
-}
-.scenario-tab {
-  padding: 7px 16px; border-radius: 20px;
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  color: var(--text-muted); font-size: 12px; cursor: pointer;
-  transition: all 0.2s; font-family: var(--font-zh);
-}
-.scenario-tab:hover { color: var(--text-secondary); border-color: rgba(255,255,255,0.2); }
-.scenario-tab.active {
-  background: rgba(245,158,11,0.15);
-  border-color: rgba(245,158,11,0.4);
-  color: var(--accent-amber);
-}
-
-/* ── Section Shared ── */
-section { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
-.section-label {
-  font-family: var(--font-en); font-size: 10px; font-weight: 700;
-  letter-spacing: 3px; text-transform: uppercase;
-  color: var(--accent-amber); opacity: 0.8;
-  margin-bottom: 12px;
-}
-.section-title {
-  font-size: clamp(24px, 3vw, 36px); font-weight: 700;
-  letter-spacing: -0.8px; margin-bottom: 12px;
-}
-.section-desc {
-  color: var(--text-secondary); font-size: 14px; font-weight: 300;
-  max-width: 560px; line-height: 1.8; margin-bottom: 48px;
-}
-.full-width { max-width: none; }
-
-/* ── Agent Cards ── */
-.agents-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-}
-@media (max-width: 720px) { .agents-grid { grid-template-columns: repeat(2, 1fr); } }
-
-.agent-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px;
-  cursor: pointer; transition: all 0.25s;
-  position: relative; overflow: hidden;
-}
-.agent-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--card-color, rgba(245,158,11,0.05)) 0%, transparent 60%);
-  opacity: 0; transition: opacity 0.25s;
-}
-.agent-card:hover, .agent-card.active {
-  border-color: var(--card-border, rgba(245,158,11,0.3));
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
-}
-.agent-card:hover::before, .agent-card.active::before { opacity: 1; }
-.agent-card.active {
-  box-shadow: 0 0 0 1px var(--card-border, rgba(245,158,11,0.3)),
-              0 8px 24px rgba(0,0,0,0.3);
-}
-.agent-card-emoji { font-size: 32px; margin-bottom: 10px; display: block; }
-.agent-card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.agent-card-tag {
-  display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 6px;
-  background: rgba(255,255,255,0.06); color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.agent-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
-.agent-card-active-badge {
-  position: absolute; top: 12px; right: 12px;
-  background: rgba(245,158,11,0.2); color: var(--accent-amber);
-  border: 1px solid rgba(245,158,11,0.3);
-  font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 500;
-}
-
-/* ── VPA States ── */
-.vpa-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-}
-@media (max-width: 720px) { .vpa-grid { grid-template-columns: repeat(2, 1fr); } }
-
-.vpa-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px; padding: 18px;
-  transition: all 0.2s;
-}
-.vpa-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
-.vpa-card-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; margin-bottom: 10px;
-}
-.vpa-card-state { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.vpa-card-trigger { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; }
-.vpa-card-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.6; }
-
-/* ── Feature Tabs ── */
-.feature-tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
-.feature-tab {
-  padding: 7px 18px; border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent; color: var(--text-muted);
-  font-size: 13px; cursor: pointer; transition: all 0.2s;
-  font-family: var(--font-zh);
-}
-.feature-tab:hover { color: var(--text-secondary); }
-.feature-tab.active {
-  background: rgba(59,130,246,0.15);
-  border-color: rgba(59,130,246,0.35);
-  color: #93c5fd;
-}
-.feature-panel { display: none; }
-.feature-panel.active { display: block; }
-
-.feature-demo {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden; margin-bottom: 20px;
-}
-.demo-query {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(59,130,246,0.06);
-}
-.demo-query-icon { font-size: 14px; }
-.demo-query-text { font-size: 13px; color: #93c5fd; }
-.demo-response { padding: 16px; }
-.demo-response-label {
-  font-size: 10px; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 12px; font-family: var(--font-en);
-}
-
-.poi-list { display: flex; flex-direction: column; gap: 8px; }
-.poi-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px;
-  background: rgba(255,255,255,0.03); border-radius: 8px;
-  border: 1px solid var(--border);
-}
-.poi-name { font-size: 13px; font-weight: 500; }
-.poi-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.poi-badge {
-  background: rgba(245,158,11,0.15);
-  color: var(--accent-amber);
-  border-radius: 6px; padding: 4px 10px;
-  font-size: 11px; font-family: var(--font-en); font-weight: 600;
-  white-space: nowrap;
-}
-
-.music-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.music-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px; border-radius: 8px;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-}
-.music-cover {
-  width: 36px; height: 36px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
-}
-.music-title { font-size: 12px; font-weight: 500; }
-.music-artist { font-size: 11px; color: var(--text-muted); }
-
-.trip-timeline { display: flex; flex-direction: column; gap: 0; }
-.trip-node {
-  display: flex; gap: 12px; position: relative;
-}
-.trip-node:not(:last-child)::after {
-  content: '';
-  position: absolute; left: 14px; top: 28px;
-  width: 2px; height: calc(100% - 8px);
-  background: var(--border); z-index: 0;
-}
-.trip-node-dot {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; flex-shrink: 0; position: relative; z-index: 1;
-}
-.trip-node-content { padding-bottom: 16px; flex: 1; }
-.trip-node-time { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; font-family: var(--font-en); }
-.trip-node-place { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
-.trip-node-detail { font-size: 11px; color: var(--text-muted); }
-
-.aigen-showcase {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
-.aigen-item {
-  border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
-  aspect-ratio: 4/3;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; font-weight: 700;
-}
-
-.agents-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.agent-chip {
-  display: flex; align-items: center; gap: 5px;
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 11.5px; color: var(--text-secondary);
-  transition: all 0.2s; cursor: default;
-}
-.agent-chip:hover {
-  border-color: var(--border-strong); color: var(--text-primary);
-  background: var(--bg-card-hover);
-}
-.agent-chip-icon { font-size: 13px; }
-
-/* ── Stats ── */
-.stats-hero { display: flex; align-items: baseline; gap: 16px; margin-bottom: 32px; }
-.stats-big-num {
-  font-family: var(--font-en); font-size: clamp(64px, 8vw, 96px);
-  font-weight: 800; letter-spacing: -3px;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.stats-unit {
-  font-family: var(--font-en); font-size: 32px; font-weight: 700;
-  color: var(--accent-amber-dim);
-}
-.stats-meta { font-size: 13px; color: var(--text-muted); }
-.stats-meta span { color: var(--text-secondary); font-weight: 500; }
-
-.acceptance-counts {
-  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px;
-}
-.count-card {
-  flex: 1; min-width: 100px;
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 16px;
-  text-align: center;
-}
-.count-num {
-  font-family: var(--font-en); font-size: 28px; font-weight: 700;
-  margin-bottom: 4px;
-}
-.count-label { font-size: 11px; color: var(--text-muted); }
-
-/* Module bars */
-.module-bars { display: flex; flex-direction: column; gap: 12px; }
-.module-bar-item {}
-.module-bar-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 5px;
-}
-.module-bar-name { font-size: 13px; }
-.module-bar-pct {
-  font-family: var(--font-en); font-size: 12px; font-weight: 600;
-  color: var(--text-secondary);
-}
-.module-bar-track {
-  height: 6px; background: rgba(255,255,255,0.05);
-  border-radius: 3px; overflow: hidden;
-}
-.module-bar-fill {
-  height: 100%; border-radius: 3px;
-  width: 0; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(90deg, var(--bar-color, #3b82f6) 0%, var(--bar-color-end, #60a5fa) 100%);
-}
-
-/* Risk cards */
-.risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 40px; }
-@media (max-width: 600px) { .risk-grid { grid-template-columns: 1fr; } }
-
-.risk-card {
-  background: rgba(239,68,68,0.06);
-  border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 12px; padding: 16px;
-}
-.risk-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.risk-badge {
-  background: rgba(239,68,68,0.2); color: #fca5a5;
-  font-size: 9px; padding: 2px 8px; border-radius: 4px;
-  font-family: var(--font-en); font-weight: 700; letter-spacing: 0.5px;
-}
-.risk-title { font-size: 13px; font-weight: 600; }
-.risk-meta {
-  display: flex; gap: 12px; font-size: 11px;
-  color: var(--text-muted);
-}
-.risk-val { color: #fca5a5; font-weight: 600; font-family: var(--font-en); }
-.risk-target { color: var(--text-muted); }
-
-/* Milestones */
-.milestone-list { display: flex; flex-direction: column; gap: 0; margin-top: 32px; }
-.milestone-item {
-  display: flex; align-items: flex-start; gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
-}
-.milestone-item:last-child { border-bottom: none; }
-.milestone-dot {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0; margin-top: 2px;
-}
-.milestone-dot.done { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); }
-.milestone-dot.warn { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); }
-.milestone-dot.future { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); }
-.milestone-date {
-  font-family: var(--font-en); font-size: 11px; font-weight: 700;
-  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px;
-}
-.milestone-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.milestone-desc { font-size: 12px; color: var(--text-muted); }
-.milestone-count {
-  margin-left: auto; flex-shrink: 0;
-  font-family: var(--font-en); font-size: 22px; font-weight: 800;
-  color: var(--text-muted);
-}
-
-/* ── Multilingual ── */
-.multilang-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-  margin-bottom: 32px;
-}
-@media (max-width: 600px) { .multilang-grid { grid-template-columns: 1fr; } }
-.multilang-stat {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-  text-align: center;
-}
-.multilang-num {
-  font-family: var(--font-en); font-size: 40px; font-weight: 800;
-  margin-bottom: 4px;
-}
-.multilang-label { font-size: 12px; color: var(--text-muted); }
-
-.lang-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-.lang-chip {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px;
-  font-size: 12px;
-}
-.lang-flag { font-size: 16px; }
-
-.alert-box {
-  background: rgba(245,158,11,0.08);
-  border: 1px solid rgba(245,158,11,0.25);
-  border-radius: 10px; padding: 14px 18px;
-  display: flex; gap: 10px; align-items: flex-start;
-}
-.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-.alert-text { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
-.alert-text strong { color: var(--accent-amber); }
-
-/* ── Footer ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 40px;
-  text-align: center;
-  color: var(--text-muted); font-size: 11.5px;
-  max-width: none;
-}
-.footer-sources { margin-top: 8px; opacity: 0.6; font-size: 10.5px; }
-
-/* ── Divider ── */
-.section-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 40px;
-}
-
-/* ── Transitions ── */
-.fade-panel { transition: opacity 0.3s, transform 0.3s; }
 </style>
 </head>
 <body>
 
-<!-- Nav -->
 <nav>
-  <div class="nav-brand">
-    <div class="nav-brand-dot"></div>
-    Carmind 1.5
-  </div>
-  <div class="nav-links">
-    <a href="#screen">车机界面</a>
-    <a href="#agents">智能体</a>
-    <a href="#vpa">语音交互</a>
-    <a href="#stats">需求承接</a>
-    <a href="#multilang">多语种</a>
-  </div>
-  <div class="nav-badge">V1.0 · 2026</div>
+  <div class="nav-logo"><div class="nav-dot"></div>Carmind 1.5</div>
+  <div class="nav-badge">OMODA · iFlytek × CHERY · 2026</div>
 </nav>
 
-<!-- ───────────────── HERO ───────────────── -->
-<div class="hero" id="screen">
-  <div class="hero-bg">
-    <div class="hero-bg-gradient"></div>
-    <div class="hero-grid"></div>
-  </div>
-
-  <div class="hero-eyebrow">Carmind 1.5 · iFlytek × CHERY</div>
-  <h1 class="hero-title">
-    大模型智能体<br>
-    <span class="hero-title-accent">车机界面</span> 体验设计
-  </h1>
-  <p class="hero-subtitle">
-    AIOS 架构 · 18 个领域智能体 · 非模态语音窗口<br>
-    小奇同学 VPA · 多音区协同 · 端云中枢融合
+<!-- HEADER -->
+<div class="page-header">
+  <div class="eyebrow">Car Intelligence OS · AIOS Architecture</div>
+  <h1 class="page-title">大模型智能体<br><em>车机界面</em>体验</h1>
+  <p class="page-sub">
+    端云中枢融合 · 18 个领域智能体 · 非模态语音窗口<br>
+    "Hello OMODA" 唤醒 · 多音区协同 · 实时 ASR 转写
   </p>
 
-  <!-- Scenario Switcher -->
-  <div class="scenario-tabs">
-    <button class="scenario-tab active" onclick="switchScenario('poi')">📍 周边推荐</button>
-    <button class="scenario-tab" onclick="switchScenario('music')">🎵 音乐推荐</button>
-    <button class="scenario-tab" onclick="switchScenario('trip')">🗺️ 行程规划</button>
-    <button class="scenario-tab" onclick="switchScenario('aigen')">🎨 AI 生图</button>
-    <button class="scenario-tab" onclick="switchScenario('news')">📰 实时新闻</button>
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="switchTab('wake')">🗣️ 唤醒交互</button>
+    <button class="main-tab" onclick="switchTab('poi')">📍 周边推荐</button>
+    <button class="main-tab" onclick="switchTab('music')">🎵 音乐智能体</button>
+    <button class="main-tab" onclick="switchTab('trip')">🗺️ 行程规划</button>
+    <button class="main-tab" onclick="switchTab('aigen')">🎨 AI 生图</button>
+    <button class="main-tab" onclick="switchTab('news')">📰 实时新闻</button>
+    <button class="main-tab" onclick="switchTab('agents')">🤖 智能体广场</button>
+    <button class="main-tab" onclick="switchTab('zone')">👥 多音区</button>
   </div>
+</div>
 
-  <!-- Car Screen -->
-  <div class="car-screen-wrapper">
-    <div class="car-screen-bezel">
-      <div class="car-screen-inner">
-        <div class="screen-bg-scene"></div>
+<!-- CAR SCREEN -->
+<div class="screen-wrap">
+  <div class="screen-bezel">
+    <div class="screen-inner">
+      <div class="screen-amb"></div>
 
-        <!-- Status Bar -->
-        <div class="screen-statusbar">
-          <div class="status-left">
-            <div class="status-range">151 km WLTC</div>
-            <div class="status-time">22:14</div>
-          </div>
-          <div class="status-icons">
-            <span class="status-icon">📶</span>
-            <span class="status-icon">🔵</span>
-            <span class="status-icon">📷</span>
-            <span class="status-icon">⚡</span>
-          </div>
-          <div class="status-right">
-            <div class="vpa-pill">
-              <div class="vpa-dot"></div>
-              可以继续说
+      <!-- STATUS BAR -->
+      <div class="sbar">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="sbar-range">151 km WLTC</div>
+          <div class="sbar-time">22:14</div>
+        </div>
+        <div class="sbar-icons">
+          <span>📶</span><span>🔵</span><span>📷</span><span>⚡</span>
+        </div>
+        <div id="vpaPill" class="vpa-pill">
+          <div class="vpa-dot"></div>
+          Hello OMODA
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="sbody">
+        <!-- AI Panel -->
+        <div class="aip">
+          <div class="aip-head">
+            <div class="aip-agent">
+              <div class="aip-av" id="agentAv">🐾</div>
+              <div class="aip-name" id="agentName">小奇同学</div>
             </div>
+            <div class="aip-close">✕</div>
           </div>
+          <div class="aip-msgs" id="aiMsgs"></div>
         </div>
 
-        <!-- Body -->
-        <div class="screen-body">
-          <!-- AI Panel -->
-          <div class="ai-panel">
-            <div class="ai-panel-header">
-              <div class="agent-info">
-                <div class="agent-avatar">🐾</div>
-                <div class="agent-name">小奇同学</div>
+        <!-- Map Panel -->
+        <div class="mapp" id="mapPanel">
+          <div class="map-bg"></div>
+          <div class="map-grid"></div>
+          <svg class="map-svg" viewBox="0 0 320 210" preserveAspectRatio="xMidYMid slice" id="mapSvg">
+            <defs>
+              <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#3b82f6" stop-opacity=".3"/>
+                <stop offset="100%" stop-color="#06b6d4" stop-opacity=".8"/>
+              </linearGradient>
+            </defs>
+            <!-- roads -->
+            <line x1="0" y1="85" x2="320" y2="85" stroke="rgba(255,255,255,.055)" stroke-width="11"/>
+            <line x1="160" y1="0" x2="160" y2="210" stroke="rgba(255,255,255,.055)" stroke-width="8"/>
+            <line x1="65" y1="0" x2="65" y2="210" stroke="rgba(255,255,255,.04)" stroke-width="5"/>
+            <line x1="0" y1="148" x2="320" y2="148" stroke="rgba(255,255,255,.04)" stroke-width="5"/>
+            <!-- route glow -->
+            <path d="M22 188 Q65 165 88 133 Q108 105 138 93 Q162 84 188 77 Q228 66 280 50" stroke="#3b82f6" stroke-width="7" fill="none" stroke-linecap="round" opacity=".18"/>
+            <path d="M22 188 Q65 165 88 133 Q108 105 138 93 Q162 84 188 77 Q228 66 280 50" stroke="url(#rg)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- position -->
+            <circle cx="138" cy="93" r="5" fill="#3b82f6" opacity=".9"/>
+            <circle cx="138" cy="93" r="11" fill="#3b82f6" opacity=".18"/>
+            <!-- dest -->
+            <circle cx="280" cy="50" r="4" fill="#f59e0b"/>
+            <!-- pois -->
+            <circle id="poi1" cx="168" cy="80" r="3.5" fill="rgba(245,158,11,.65)" display="none"/>
+            <circle id="poi2" cx="205" cy="72" r="3.5" fill="rgba(245,158,11,.65)" display="none"/>
+            <circle id="poi3" cx="125" cy="110" r="3.5" fill="rgba(245,158,11,.65)" display="none"/>
+          </svg>
+
+          <svg style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;filter:drop-shadow(0 0 5px rgba(59,130,246,.6))" viewBox="0 0 26 26">
+            <polygon points="13,2 22,21 13,17 4,21" fill="#3b82f6" opacity=".92"/>
+          </svg>
+
+          <div class="map-eta">
+            <div class="eta-t">12<span style="font-size:8px;color:var(--text-3)"> min</span></div>
+            <div class="eta-l">预计到达</div>
+          </div>
+
+          <div class="map-speed">
+            <div class="spd-n">0</div>
+            <div class="spd-u">km/h</div>
+          </div>
+
+          <!-- Zone overlay (hidden by default) -->
+          <div id="zoneOverlay" class="zone-overlay" style="display:none">
+            <div style="padding:6px 8px;background:rgba(6,9,20,.7);border-bottom:1px solid rgba(255,255,255,.05);font-size:8.5px;color:var(--teal);font-family:var(--en);font-weight:600;letter-spacing:1px">MULTI-ZONE · 多音区协同</div>
+            <div class="zone-seat-row">
+              <div class="seat-zone active">
+                <div class="seat-icon">🧑</div>
+                <div>主驾</div>
+                <div style="font-size:7px;color:var(--teal)">活跃</div>
               </div>
-              <div class="panel-close">✕</div>
+              <div class="seat-zone">
+                <div class="seat-icon">🧑</div>
+                <div>副驾</div>
+                <div style="font-size:7px">待机</div>
+              </div>
             </div>
-
-            <div class="chat-messages" id="chatMessages">
-              <!-- Content injected by JS -->
-            </div>
-          </div>
-
-          <!-- Map Panel -->
-          <div class="map-panel">
-            <div class="map-bg"></div>
-            <div class="map-grid"></div>
-            <svg class="map-route-svg" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">
-              <defs>
-                <linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
-                  <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.7"/>
-                </linearGradient>
-              </defs>
-              <!-- Road lines -->
-              <line x1="0" y1="80" x2="300" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
-              <line x1="150" y1="0" x2="150" y2="200" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
-              <line x1="60" y1="0" x2="60" y2="200" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
-              <line x1="0" y1="140" x2="300" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
-              <!-- Route path -->
-              <path d="M 20 180 Q 60 160 80 130 Q 100 100 130 90 Q 155 82 180 75 Q 220 65 270 50"
-                stroke="url(#routeGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <!-- Route glow -->
-              <path d="M 20 180 Q 60 160 80 130 Q 100 100 130 90 Q 155 82 180 75 Q 220 65 270 50"
-                stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.2"/>
-              <!-- Current position -->
-              <circle cx="130" cy="90" r="5" fill="#3b82f6" opacity="0.9"/>
-              <circle cx="130" cy="90" r="10" fill="#3b82f6" opacity="0.2"/>
-              <!-- Destination -->
-              <circle cx="270" cy="50" r="4" fill="#f59e0b"/>
-              <!-- POI dots -->
-              <circle cx="160" cy="78" r="3" fill="rgba(245,158,11,0.6)"/>
-              <circle cx="200" cy="70" r="3" fill="rgba(245,158,11,0.6)"/>
-            </svg>
-
-            <!-- Navigation arrow -->
-            <svg class="map-nav-arrow" viewBox="0 0 28 28">
-              <polygon points="14,2 24,22 14,18 4,22" fill="#3b82f6" opacity="0.9"/>
-            </svg>
-
-            <!-- ETA -->
-            <div class="map-eta-card">
-              <div class="eta-time">12<span style="font-size:9px;color:var(--text-muted)"> min</span></div>
-              <div class="eta-label">预计到达</div>
-            </div>
-
-            <!-- Speed ring -->
-            <div class="map-speed-ring">
-              <div class="speed-num">0</div>
-              <div class="speed-unit">km/h</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dock -->
-        <div class="screen-dock">
-          <div class="dock-icon active">
-            <span>🏠</span>
-            <span class="dock-label">主页</span>
-          </div>
-          <div class="dock-icon">
-            <span>🗺️</span>
-            <span class="dock-label">地图</span>
-          </div>
-          <div class="dock-icon">
-            <span>🎵</span>
-            <span class="dock-label">音乐</span>
-          </div>
-          <div class="dock-icon">
-            <span>📱</span>
-            <span class="dock-label">应用</span>
-          </div>
-          <div class="dock-icon">
-            <span>⚙️</span>
-            <span class="dock-label">设置</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /car-screen-wrapper -->
-</div><!-- /hero -->
-
-<hr class="section-divider">
-
-<!-- ───────────────── AGENTS ───────────────── -->
-<section id="agents">
-  <div class="section-label">Agent Marketplace</div>
-  <h2 class="section-title">6 种智能体人格</h2>
-  <p class="section-desc">订阅制 · 按需开启 · 随时切换。每个智能体有独立的语言风格、知识域和互动策略，共 18 个领域智能体可选。</p>
-
-  <div class="agents-grid">
-    <div class="agent-card active" onclick="selectAgent(this)"
-      style="--card-color: rgba(245,158,11,0.08); --card-border: rgba(245,158,11,0.35);">
-      <div class="agent-card-active-badge">当前使用</div>
-      <span class="agent-card-emoji">🐾</span>
-      <div class="agent-card-name">小奇同学</div>
-      <div class="agent-card-tag">默认助手</div>
-      <div class="agent-card-desc">奇瑞官方 AI 助手，亲切专业，擅长行车辅助与生活服务，全能型人格。</div>
-    </div>
-
-    <div class="agent-card" onclick="selectAgent(this)"
-      style="--card-color: rgba(239,68,68,0.06); --card-border: rgba(239,68,68,0.3);">
-      <span class="agent-card-emoji">😎</span>
-      <div class="agent-card-name">抬杠大师</div>
-      <div class="agent-card-tag">辩论型</div>
-      <div class="agent-card-desc">永远挑战你的观点，提供反向思考，适合想要激发创意或享受辩论的驾驶者。</div>
-    </div>
-
-    <div class="agent-card" onclick="selectAgent(this)"
-      style="--card-color: rgba(99,102,241,0.08); --card-border: rgba(99,102,241,0.3);">
-      <span class="agent-card-emoji">👓</span>
-      <div class="agent-card-name">口语老师</div>
-      <div class="agent-card-tag">教育型</div>
-      <div class="agent-card-desc">随时随地练口语，行车时间变外语学习时间，支持多语种教学场景。</div>
-    </div>
-
-    <div class="agent-card" onclick="selectAgent(this)"
-      style="--card-color: rgba(6,182,212,0.06); --card-border: rgba(6,182,212,0.3);">
-      <span class="agent-card-emoji">🧣</span>
-      <div class="agent-card-name">东北老姨</div>
-      <div class="agent-card-tag">方言型</div>
-      <div class="agent-card-desc">地道东北话，幽默接地气，驾车聊天消除疲劳，适合长途旅行陪伴场景。</div>
-    </div>
-
-    <div class="agent-card" onclick="selectAgent(this)"
-      style="--card-color: rgba(168,85,247,0.08); --card-border: rgba(168,85,247,0.3);">
-      <span class="agent-card-emoji">🧙</span>
-      <div class="agent-card-name">故事大王</div>
-      <div class="agent-card-tag">创意型</div>
-      <div class="agent-card-desc">随机应变的故事创作者，可以根据关键词即兴编故事，儿童在车后排的最佳搭档。</div>
-    </div>
-
-    <div class="agent-card" onclick="selectAgent(this)"
-      style="--card-color: rgba(16,185,129,0.06); --card-border: rgba(16,185,129,0.3);">
-      <span class="agent-card-emoji">🥊</span>
-      <div class="agent-card-name">职业辩手</div>
-      <div class="agent-card-tag">竞技型</div>
-      <div class="agent-card-desc">专业辩论框架，逻辑严密，适合需要头脑风暴或进行决策分析的商务场景。</div>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ───────────────── VPA STATES ───────────────── -->
-<section id="vpa">
-  <div class="section-label">Voice Persona Avatar</div>
-  <h2 class="section-title">语音交互状态机</h2>
-  <p class="section-desc">非模态浮层设计 · 小奇同学有 6 种动画状态 · 3 分钟无操作自动收起为胶囊态 · 支持主驾/副驾/后排多音区</p>
-
-  <div class="vpa-grid">
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(100,116,139,0.15);">😴</div>
-      <div class="vpa-card-state">休眠态</div>
-      <div class="vpa-card-trigger">触发：无交互超时</div>
-      <div class="vpa-card-desc">VPA 收起至系统角落，等待唤醒词激活。最低功耗状态，不占用屏幕空间。</div>
-    </div>
-
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(245,158,11,0.15);">✨</div>
-      <div class="vpa-card-state">唤醒态</div>
-      <div class="vpa-card-trigger">触发：检测到"小奇同学"</div>
-      <div class="vpa-card-desc">播放一次性唤醒动画，显示打字机 ASR 区域，系统进入聆听就绪状态。</div>
-    </div>
-
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(59,130,246,0.15);">🎤</div>
-      <div class="vpa-card-state">聆听态</div>
-      <div class="vpa-card-trigger">触发：用户持续讲话</div>
-      <div class="vpa-card-desc">循环播放聆听动画，实时展示 ASR 转写结果，显示"打字机"动效确认语音识别中。</div>
-    </div>
-
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(16,185,129,0.15);">🔊</div>
-      <div class="vpa-card-state">播报态</div>
-      <div class="vpa-card-trigger">触发：大模型返回结果</div>
-      <div class="vpa-card-desc">6 种落域动画（播报/健康/规划/用车/闲聊/多媒体），结构化卡片展示，含 AI 水印标注。</div>
-    </div>
-
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(99,102,241,0.15);">💬</div>
-      <div class="vpa-card-state">引导态</div>
-      <div class="vpa-card-trigger">触发：待机待输入时</div>
-      <div class="vpa-card-desc">显示"可以继续说"引导文字，暗示用户可继续多轮对话，降低操作认知门槛。</div>
-    </div>
-
-    <div class="vpa-card">
-      <div class="vpa-card-icon" style="background:rgba(168,85,247,0.15);">💊</div>
-      <div class="vpa-card-state">胶囊态</div>
-      <div class="vpa-card-trigger">触发：内容生成结束 3 min</div>
-      <div class="vpa-card-desc">语音窗口收起为屏幕边缘胶囊，点击可重新展开，不打扰驾驶视线。</div>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ───────────────── FEATURES ───────────────── -->
-<section id="features">
-  <div class="section-label">Intelligent Scenarios</div>
-  <h2 class="section-title">场景能力演示</h2>
-  <p class="section-desc">大模型驱动的多模态结构化响应，覆盖行车全场景生活圈。</p>
-
-  <div class="feature-tabs">
-    <button class="feature-tab active" onclick="switchFeature('poi')">📍 周边推荐</button>
-    <button class="feature-tab" onclick="switchFeature('music')">🎵 音乐智能体</button>
-    <button class="feature-tab" onclick="switchFeature('trip')">🗺️ 行程规划</button>
-    <button class="feature-tab" onclick="switchFeature('aigen')">🎨 AI 生图</button>
-  </div>
-
-  <!-- POI -->
-  <div class="feature-panel active" id="panel-poi">
-    <div class="feature-demo">
-      <div class="demo-query">
-        <span class="demo-query-icon">🎤</span>
-        <span class="demo-query-text">附近有什么好吃的推荐一下</span>
-      </div>
-      <div class="demo-response">
-        <div class="demo-response-label">Carmind 大模型响应</div>
-        <div class="poi-list">
-          <div class="poi-item">
-            <div>
-              <div class="poi-name">海底捞火锅（合肥店）</div>
-              <div class="poi-meta">⭐ 4.8 · 川渝 · 人均 ¥150</div>
-            </div>
-            <div class="poi-badge">280m</div>
-          </div>
-          <div class="poi-item">
-            <div>
-              <div class="poi-name">老乡鸡（华润万象城）</div>
-              <div class="poi-meta">⭐ 4.6 · 徽菜 · 人均 ¥45</div>
-            </div>
-            <div class="poi-badge">650m</div>
-          </div>
-          <div class="poi-item">
-            <div>
-              <div class="poi-name">文和友（合肥旗舰店）</div>
-              <div class="poi-meta">⭐ 4.5 · 湘菜 · 人均 ¥90</div>
-            </div>
-            <div class="poi-badge">1.2km</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Music -->
-  <div class="feature-panel" id="panel-music">
-    <div class="feature-demo">
-      <div class="demo-query">
-        <span class="demo-query-icon">🎤</span>
-        <span class="demo-query-text">推荐一些适合夜晚开车的歌</span>
-      </div>
-      <div class="demo-response">
-        <div class="demo-response-label">音乐智能体推荐</div>
-        <div class="music-list">
-          <div class="music-item">
-            <div class="music-cover" style="background:rgba(99,102,241,0.2);">🌙</div>
-            <div>
-              <div class="music-title">夜的第七章</div>
-              <div class="music-artist">周杰伦</div>
-            </div>
-          </div>
-          <div class="music-item">
-            <div class="music-cover" style="background:rgba(6,182,212,0.2);">🌊</div>
-            <div>
-              <div class="music-title">漂洋过海来看你</div>
-              <div class="music-artist">娃娃</div>
-            </div>
-          </div>
-          <div class="music-item">
-            <div class="music-cover" style="background:rgba(245,158,11,0.2);">🌟</div>
-            <div>
-              <div class="music-title">以父之名</div>
-              <div class="music-artist">周杰伦</div>
-            </div>
-          </div>
-          <div class="music-item">
-            <div class="music-cover" style="background:rgba(168,85,247,0.2);">✨</div>
-            <div>
-              <div class="music-title">Fade</div>
-              <div class="music-artist">Alan Walker</div>
+            <div class="zone-seat-row">
+              <div class="seat-zone">
+                <div class="seat-icon">👤</div>
+                <div>后排左</div>
+                <div style="font-size:7px">待机</div>
+              </div>
+              <div class="seat-zone">
+                <div class="seat-icon">👤</div>
+                <div>后排右</div>
+                <div style="font-size:7px">待机</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Trip -->
-  <div class="feature-panel" id="panel-trip">
-    <div class="feature-demo">
-      <div class="demo-query">
-        <span class="demo-query-icon">🎤</span>
-        <span class="demo-query-text">规划一下这个周末去黄山的行程</span>
-      </div>
-      <div class="demo-response">
-        <div class="demo-response-label">行程规划智能体</div>
-        <div class="trip-timeline">
-          <div class="trip-node">
-            <div class="trip-node-dot" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);">🚗</div>
-            <div class="trip-node-content">
-              <div class="trip-node-time">SAT · 07:00</div>
-              <div class="trip-node-place">合肥出发</div>
-              <div class="trip-node-detail">高速 G3 · 预计 3h · 充电建议：汤口服务区</div>
-            </div>
-          </div>
-          <div class="trip-node">
-            <div class="trip-node-dot" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);">🏨</div>
-            <div class="trip-node-content">
-              <div class="trip-node-time">SAT · 10:00</div>
-              <div class="trip-node-place">汤口镇入住</div>
-              <div class="trip-node-detail">推荐：黄山翡翠谷酒店 · ⭐4.7 · ¥ 680/晚</div>
-            </div>
-          </div>
-          <div class="trip-node">
-            <div class="trip-node-dot" style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);">⛰️</div>
-            <div class="trip-node-content">
-              <div class="trip-node-time">SAT · 13:00</div>
-              <div class="trip-node-place">黄山景区</div>
-              <div class="trip-node-detail">北海·光明顶·迎客松 · 缆车建议提前购票</div>
-            </div>
-          </div>
-          <div class="trip-node">
-            <div class="trip-node-dot" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);">🌅</div>
-            <div class="trip-node-content">
-              <div class="trip-node-time">SUN · 05:30</div>
-              <div class="trip-node-place">观日出</div>
-              <div class="trip-node-detail">北海宾馆出发 · 光明顶东侧最佳机位</div>
-            </div>
-          </div>
-        </div>
+      <!-- DOCK -->
+      <div class="sdock">
+        <div class="di act"><span>🏠</span><span class="dl">主页</span></div>
+        <div class="di"><span>🗺️</span><span class="dl">地图</span></div>
+        <div class="di"><span>🎵</span><span class="dl">音乐</span></div>
+        <div class="di"><span>📱</span><span class="dl">应用</span></div>
+        <div class="di"><span>⚙️</span><span class="dl">设置</span></div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- AI Gen -->
-  <div class="feature-panel" id="panel-aigen">
-    <div class="feature-demo">
-      <div class="demo-query">
-        <span class="demo-query-icon">🎤</span>
-        <span class="demo-query-text">帮我画一幅赛博朋克风格的合肥夜景</span>
-      </div>
-      <div class="demo-response">
-        <div class="demo-response-label">AI 生图智能体</div>
-        <div class="aigen-showcase">
-          <div class="aigen-item" style="background:linear-gradient(135deg,#0a0a2e,#1a0033,#0d1a4d);">
-            <span>🌃</span>
-          </div>
-          <div class="aigen-item" style="background:linear-gradient(135deg,#0d1a2e,#001a33,#0a2a1a);">
-            <span>🔮</span>
-          </div>
-        </div>
-        <div style="margin-top:12px;padding:10px 12px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:8px;font-size:11px;color:#c4b5fd;">
-          🎨 正在生成「赛博朋克合肥夜景」· 分辨率 1024×768 · 预计 8s
-        </div>
-      </div>
-    </div>
+<!-- DETAIL: wake -->
+<div class="detail-panel active" id="det-wake">
+  <div class="det-card">
+    <div class="det-card-icon">🗣️</div>
+    <div class="det-card-title">"Hello OMODA" 唤醒词</div>
+    <div class="det-card-desc">专为奇瑞 OMODA 车系定制的唤醒词，支持车内多方向麦克风阵列远场识别，误唤醒率低于 0.2 次/小时。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">VAD + 唤醒联动</div>
   </div>
-
-  <!-- All 18 agents chips -->
-  <div style="margin-top:32px;">
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">全部 18 个领域智能体</div>
-    <div class="agents-chips">
-      <div class="agent-chip"><span class="agent-chip-icon">📖</span>故事智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🗣️</span>口语搭子</div>
-      <div class="agent-chip"><span class="agent-chip-icon">📰</span>AI 新闻</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🎨</span>AI 生图</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🃏</span>场景卡片</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🤖</span>GUI Agent</div>
-      <div class="agent-chip"><span class="agent-chip-icon">💊</span>健康智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🧠</span>心理健康</div>
-      <div class="agent-chip"><span class="agent-chip-icon">✨</span>生成式 HMI</div>
-      <div class="agent-chip"><span class="agent-chip-icon">📸</span>行程记者</div>
-      <div class="agent-chip"><span class="agent-chip-icon">👁️</span>看看智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🔍</span>AI 寻车</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🏔️</span>越野智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🚗</span>行车智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🗺️</span>出行智能体</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🛡️</span>增强哨兵</div>
-      <div class="agent-chip"><span class="agent-chip-icon">💫</span>情绪舱</div>
-      <div class="agent-chip"><span class="agent-chip-icon">🎵</span>哼识曲</div>
-    </div>
+  <div class="det-card">
+    <div class="det-card-icon">⌨️</div>
+    <div class="det-card-title">打字机实时 ASR</div>
+    <div class="det-card-desc">语音识别结果以打字机动效实时呈现，首字出现延迟 &lt; 300ms，让用户感知到「被听到」，降低交互焦虑。</div>
+    <div class="det-card-tag" style="background:rgba(59,130,246,.12);color:var(--blue-pale)">ASR 流式输出</div>
   </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ───────────────── STATS ───────────────── -->
-<section id="stats" class="full-width" style="max-width:1100px;">
-  <div class="section-label">Requirement Alignment · 拧合工作台 v1</div>
-  <h2 class="section-title">需求承接率</h2>
-  <p class="section-desc">iFlytek × 奇瑞 拧合工作台 · 269 项需求全景 · 数据截至 2026-04-13</p>
-
-  <div class="stats-hero">
-    <div class="stats-big-num">49.8</div>
-    <div class="stats-unit">%</div>
-    <div class="stats-meta">
-      总计 <span>269 项</span><br>
-      520 节点 <span style="color:var(--accent-amber);">⚠ 36 项待确认</span>
-    </div>
+  <div class="det-card">
+    <div class="det-card-icon">🔄</div>
+    <div class="det-card-title">6 态状态机</div>
+    <div class="det-card-desc">VPA 小奇同学拥有休眠→唤醒→聆听→播报→引导→胶囊 6 种动画状态，每种状态独立动效，含 6 类落域播报动画。</div>
+    <div class="det-card-tag" style="background:rgba(168,85,247,.12);color:var(--purple)">动效驱动 UX</div>
   </div>
+</div>
 
-  <div class="acceptance-counts">
-    <div class="count-card">
-      <div class="count-num" style="color:var(--accent-green);">134</div>
-      <div class="count-label">✅ 承接</div>
-    </div>
-    <div class="count-card">
-      <div class="count-num" style="color:var(--text-muted);">72</div>
-      <div class="count-label">⏭ 后置</div>
-    </div>
-    <div class="count-card">
-      <div class="count-num" style="color:var(--accent-amber);">36</div>
-      <div class="count-label">↗ 偏离</div>
-    </div>
-    <div class="count-card">
-      <div class="count-num" style="color:var(--accent-blue);">22</div>
-      <div class="count-label">💬 待讨论</div>
-    </div>
-    <div class="count-card">
-      <div class="count-num" style="color:var(--accent-red);">5</div>
-      <div class="count-label">✗ 拒绝</div>
-    </div>
+<!-- VPA states detail (wake tab bonus) -->
+<div class="vpa-states-grid active" id="vpa-states">
+  <div class="vpa-state-card">
+    <div class="vsc-icon">😴</div>
+    <div class="vsc-name">休眠态</div>
+    <div class="vsc-desc">收起等待，最低功耗，不占屏幕</div>
   </div>
-
-  <!-- Module bars -->
-  <div class="module-bars" id="moduleBars">
-    <div class="module-bar-item" data-pct="100">
-      <div class="module-bar-header">
-        <span class="module-bar-name">通用能力</span>
-        <span class="module-bar-pct">100%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#10b981;--bar-color-end:#34d399;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="75">
-      <div class="module-bar-header">
-        <span class="module-bar-name">基础功能</span>
-        <span class="module-bar-pct">75%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#10b981;--bar-color-end:#34d399;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="67">
-      <div class="module-bar-header">
-        <span class="module-bar-name">安全拒识</span>
-        <span class="module-bar-pct">67%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#3b82f6;--bar-color-end:#60a5fa;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="64">
-      <div class="module-bar-header">
-        <span class="module-bar-name">中枢大模型</span>
-        <span class="module-bar-pct">64%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#3b82f6;--bar-color-end:#60a5fa;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="56">
-      <div class="module-bar-header">
-        <span class="module-bar-name">AI 生图</span>
-        <span class="module-bar-pct">56%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#f59e0b;--bar-color-end:#fbbf24;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="52">
-      <div class="module-bar-header">
-        <span class="module-bar-name">体育资讯</span>
-        <span class="module-bar-pct">52%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#f59e0b;--bar-color-end:#fbbf24;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="41">
-      <div class="module-bar-header">
-        <span class="module-bar-name">AI 新闻</span>
-        <span class="module-bar-pct">41%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="38">
-      <div class="module-bar-header">
-        <span class="module-bar-name">周边推荐</span>
-        <span class="module-bar-pct">38%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="38">
-      <div class="module-bar-header">
-        <span class="module-bar-name">音乐智能体</span>
-        <span class="module-bar-pct">38%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="36">
-      <div class="module-bar-header">
-        <span class="module-bar-name">导航联动</span>
-        <span class="module-bar-pct">36%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#ef4444;--bar-color-end:#f87171;"></div>
-      </div>
-    </div>
-    <div class="module-bar-item" data-pct="22">
-      <div class="module-bar-header">
-        <span class="module-bar-name">车控联动</span>
-        <span class="module-bar-pct">22%</span>
-      </div>
-      <div class="module-bar-track">
-        <div class="module-bar-fill" style="--bar-color:#dc2626;--bar-color-end:#ef4444;"></div>
-      </div>
-    </div>
+  <div class="vpa-state-card" style="border-color:rgba(245,158,11,.2)">
+    <div class="vsc-icon">✨</div>
+    <div class="vsc-name">唤醒态</div>
+    <div class="vsc-desc">"Hello OMODA" 触发，播放一次性动画</div>
   </div>
-
-  <!-- Risk cards -->
-  <h3 style="font-size:16px;font-weight:600;margin-top:48px;margin-bottom:20px;">
-    ⚠️ 高风险偏离项
-  </h3>
-  <div class="risk-grid">
-    <div class="risk-card">
-      <div class="risk-header">
-        <div class="risk-badge">中枢-002</div>
-        <div class="risk-title">多意图识别率</div>
-      </div>
-      <div class="risk-meta">
-        <span>当前 <span class="risk-val">85%</span></span>
-        <span>目标 <span class="risk-target">≥ 95%</span></span>
-        <span style="color:var(--accent-red);">差距 10pts</span>
-      </div>
-    </div>
-    <div class="risk-card">
-      <div class="risk-header">
-        <div class="risk-badge">中枢-011</div>
-        <div class="risk-title">安全拒识准确率</div>
-      </div>
-      <div class="risk-meta">
-        <span>当前 <span class="risk-val">85%</span></span>
-        <span>目标 <span class="risk-target">≥ 98%</span></span>
-        <span style="color:var(--accent-red);">差距 13pts</span>
-      </div>
-    </div>
-    <div class="risk-card">
-      <div class="risk-header">
-        <div class="risk-badge">中枢-014</div>
-        <div class="risk-title">路由决策延迟</div>
-      </div>
-      <div class="risk-meta">
-        <span>当前 <span class="risk-val">250-300ms</span></span>
-        <span>目标 <span class="risk-target">≤ 200ms</span></span>
-        <span style="color:var(--accent-amber);">待优化</span>
-      </div>
-    </div>
-    <div class="risk-card">
-      <div class="risk-header">
-        <div class="risk-badge">中枢-019</div>
-        <div class="risk-title">联网搜索延迟</div>
-      </div>
-      <div class="risk-meta">
-        <span>当前 <span class="risk-val">2000ms</span></span>
-        <span>目标 <span class="risk-target">≤ 1500ms</span></span>
-        <span style="color:var(--accent-amber);">待优化</span>
-      </div>
-    </div>
+  <div class="vpa-state-card">
+    <div class="vsc-icon">🎤</div>
+    <div class="vsc-name">聆听态</div>
+    <div class="vsc-desc">循环动画 + 打字机 ASR 实时转写</div>
   </div>
-
-  <!-- Milestones -->
-  <h3 style="font-size:16px;font-weight:600;margin-top:48px;margin-bottom:4px;">
-    交付节点
-  </h3>
-  <div class="milestone-list">
-    <div class="milestone-item">
-      <div class="milestone-dot done">✓</div>
-      <div>
-        <div class="milestone-date">2026-03-30</div>
-        <div class="milestone-title">330 节点</div>
-        <div class="milestone-desc">基础能力冻结 · 通用+基础功能全部完成验收</div>
-      </div>
-      <div class="milestone-count" style="color:var(--accent-green);">✓</div>
-    </div>
-    <div class="milestone-item">
-      <div class="milestone-dot done">✓</div>
-      <div>
-        <div class="milestone-date">2026-04-30</div>
-        <div class="milestone-title">430 节点</div>
-        <div class="milestone-desc">中枢大模型 + 安全能力阶段验收</div>
-      </div>
-      <div class="milestone-count" style="color:var(--accent-green);">✓</div>
-    </div>
-    <div class="milestone-item">
-      <div class="milestone-dot warn">!</div>
-      <div>
-        <div class="milestone-date">2026-05-20</div>
-        <div class="milestone-title">520 节点 <span style="font-size:11px;color:var(--accent-amber);">⚠ 关键</span></div>
-        <div class="milestone-desc">36 项待确认 · 含 4 高风险偏离项 · 需紧急对齐</div>
-      </div>
-      <div class="milestone-count" style="color:var(--accent-amber);">36</div>
-    </div>
-    <div class="milestone-item">
-      <div class="milestone-dot future">↑</div>
-      <div>
-        <div class="milestone-date">2026-06-30</div>
-        <div class="milestone-title">630 节点 <span style="font-size:11px;color:var(--accent-blue);">最大批次</span></div>
-        <div class="milestone-desc">导航/车控/音乐全量 · 41 项需求集中交付</div>
-      </div>
-      <div class="milestone-count" style="color:var(--accent-blue);">41</div>
-    </div>
+  <div class="vpa-state-card">
+    <div class="vsc-icon">🔊</div>
+    <div class="vsc-name">播报态</div>
+    <div class="vsc-desc">6 种落域动画：播报/健康/规划/用车/闲聊/多媒体</div>
   </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ───────────────── MULTILINGUAL ───────────────── -->
-<section id="multilang">
-  <div class="section-label">International Voice · 多语种方案</div>
-  <h2 class="section-title">全球语种覆盖现状</h2>
-  <p class="section-desc">王磊团队主导 · 25+ 语种 · 7 人 · 落后中文 1-2 年 · P0 wiki 知识库正在建设中</p>
-
-  <div class="multilang-grid">
-    <div class="multilang-stat">
-      <div class="multilang-num" style="color:var(--accent-teal);">25<span style="font-size:24px;color:var(--text-muted);">+</span></div>
-      <div class="multilang-label">支持语种数</div>
-    </div>
-    <div class="multilang-stat">
-      <div class="multilang-num" style="color:var(--accent-blue);">7</div>
-      <div class="multilang-label">团队规模</div>
-    </div>
-    <div class="multilang-stat">
-      <div class="multilang-num" style="color:var(--accent-amber);">1-2<span style="font-size:20px;color:var(--text-muted);">年</span></div>
-      <div class="multilang-label">落后中文版本</div>
-    </div>
+  <div class="vpa-state-card">
+    <div class="vsc-icon">💬</div>
+    <div class="vsc-name">引导态</div>
+    <div class="vsc-desc">"可以继续说" 多轮引导，降低操作门槛</div>
   </div>
-
-  <div class="lang-chips">
-    <div class="lang-chip"><span class="lang-flag">🇬🇧</span>英语 EN</div>
-    <div class="lang-chip"><span class="lang-flag">🇩🇪</span>德语 DE</div>
-    <div class="lang-chip"><span class="lang-flag">🇫🇷</span>法语 FR</div>
-    <div class="lang-chip"><span class="lang-flag">🇪🇸</span>西语 ES</div>
-    <div class="lang-chip"><span class="lang-flag">🇷🇺</span>俄语 RU</div>
-    <div class="lang-chip"><span class="lang-flag">🇸🇦</span>阿语 AR</div>
-    <div class="lang-chip"><span class="lang-flag">🇯🇵</span>日语 JA</div>
-    <div class="lang-chip"><span class="lang-flag">🇰🇷</span>韩语 KO</div>
-    <div class="lang-chip"><span class="lang-flag">🇵🇹</span>葡语 PT</div>
-    <div class="lang-chip" style="color:var(--text-muted);">+16 种</div>
+  <div class="vpa-state-card">
+    <div class="vsc-icon">💊</div>
+    <div class="vsc-name">胶囊态</div>
+    <div class="vsc-desc">3 min 超时收为边缘胶囊，可重新展开</div>
   </div>
+</div>
 
-  <div class="alert-box">
-    <div class="alert-icon">⚠️</div>
-    <div class="alert-text">
-      <strong>P0 知识库建设中：</strong>多语种 wiki 共 12 篇 P0 文章已完成 enrich v7.0 审计，核心差距在 <strong>FC PRD 4.2 节</strong>（前车跟随+领航驾驶多语种指令集），英语/德语/法语/西语落地能力已可交付，阿拉伯语/俄语/韩语仍在母语测试阶段。低资源语种（粤语、泰语、越南语）覆盖率不足 40%，需补充训练数据。
-    </div>
+<!-- DETAIL: poi -->
+<div class="detail-panel" id="det-poi">
+  <div class="det-card">
+    <div class="det-card-icon">📍</div>
+    <div class="det-card-title">周边推荐智能体</div>
+    <div class="det-card-desc">基于实时位置 + 大模型语义理解，识别用户意图（美食/停车/充电/景点），返回距离排序的结构化卡片。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">POI 结构化响应</div>
   </div>
-</section>
+  <div class="det-card">
+    <div class="det-card-icon">🗺️</div>
+    <div class="det-card-title">地图联动导航</div>
+    <div class="det-card-desc">选择 POI 后一键导航，地图侧实时展示目的地距离徽章（橙色），路线自动规划，无需手动切换应用。</div>
+    <div class="det-card-tag" style="background:rgba(59,130,246,.12);color:var(--blue-pale)">导航联动承接 36%</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🔍</div>
+    <div class="det-card-title">联网实时搜索</div>
+    <div class="det-card-desc">营业状态/评分/停车费用通过联网搜索实时验证，当前联网响应目标 ≤ 1500ms，现状 ~2000ms（高风险偏离项）。</div>
+    <div class="det-card-tag" style="background:rgba(239,68,68,.1);color:#fca5a5">中枢-019 偏离</div>
+  </div>
+</div>
 
-<hr class="section-divider">
+<!-- DETAIL: music -->
+<div class="detail-panel" id="det-music">
+  <div class="det-card">
+    <div class="det-card-icon">🎵</div>
+    <div class="det-card-title">音乐智能体</div>
+    <div class="det-card-desc">根据驾驶场景（夜晚/高速/拥堵/长途）和用户情绪偏好，大模型主动推荐歌单，支持哼唱识曲。</div>
+    <div class="det-card-tag" style="background:rgba(168,85,247,.12);color:var(--purple)">承接率 38%</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🎤</div>
+    <div class="det-card-title">哼识曲智能体</div>
+    <div class="det-card-desc">哼唱 5 秒即可识别歌曲并自动播放，支持方言哼唱，是 18 个智能体中最受欢迎的娱乐场景之一。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">哼识曲智能体</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🎭</div>
+    <div class="det-card-title">场景感知推荐</div>
+    <div class="det-card-desc">接入车机传感器（速度/时段/路况），动态调整推荐策略：高速路段推荐节奏强曲目，拥堵时推荐舒缓音乐。</div>
+    <div class="det-card-tag" style="background:rgba(16,185,129,.1);color:var(--green)">情境智能</div>
+  </div>
+</div>
 
-<!-- Footer -->
+<!-- DETAIL: trip -->
+<div class="detail-panel" id="det-trip">
+  <div class="det-card">
+    <div class="det-card-icon">🗺️</div>
+    <div class="det-card-title">行程规划智能体</div>
+    <div class="det-card-desc">输入目的地或主题（"周末去黄山"），自动规划多日行程：路线/住宿/景点/充电桩，生成结构化时间轴卡片。</div>
+    <div class="det-card-tag" style="background:rgba(6,182,212,.12);color:var(--teal)">行程记者智能体</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">⚡</div>
+    <div class="det-card-title">充电路径优化</div>
+    <div class="det-card-desc">结合当前续航（151km WLTC），智能规划充电站节点，自动计算各程段电量消耗，避免焦虑里程情绪。</div>
+    <div class="det-card-tag" style="background:rgba(16,185,129,.1);color:var(--green)">EV 专属能力</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">📸</div>
+    <div class="det-card-title">行程记者</div>
+    <div class="det-card-desc">旅途中自动记录行程亮点（打卡地/里程/时长），生成图文旅行日记，一键分享，是 18 智能体中的特色场景。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">旅途之眼</div>
+  </div>
+</div>
+
+<!-- DETAIL: aigen -->
+<div class="detail-panel" id="det-aigen">
+  <div class="det-card">
+    <div class="det-card-icon">🎨</div>
+    <div class="det-card-title">AI 生图智能体</div>
+    <div class="det-card-desc">车内语音描述即可生成图像，支持风格指定（写实/动漫/水彩/赛博朋克），生成时间约 8-15s，结果展示于右侧大屏。</div>
+    <div class="det-card-tag" style="background:rgba(168,85,247,.12);color:var(--purple)">承接率 56%</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🛡️</div>
+    <div class="det-card-title">AI 内容水印</div>
+    <div class="det-card-desc">所有 AI 生成内容强制显示「以上内容由 Carmind 大模型生成」水印，同时嵌入不可见 DFT 数字水印，满足合规要求。</div>
+    <div class="det-card-tag" style="background:rgba(239,68,68,.1);color:#fca5a5">合规强制项</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🖼️</div>
+    <div class="det-card-title">生成式 HMI</div>
+    <div class="det-card-desc">AI 生图能力延伸至 HMI 个性化：用户可生成专属车载壁纸，实时渲染为车机背景，打造独一无二的座舱体验。</div>
+    <div class="det-card-tag" style="background:rgba(6,182,212,.12);color:var(--teal)">生成式 HMI 智能体</div>
+  </div>
+</div>
+
+<!-- DETAIL: news -->
+<div class="detail-panel" id="det-news">
+  <div class="det-card">
+    <div class="det-card-icon">📰</div>
+    <div class="det-card-title">AI 新闻智能体</div>
+    <div class="det-card-desc">聚合多源新闻，大模型自动摘要为 30 秒可听版本，按分类（时事/体育/财经/科技）展示，支持驾驶中收听。</div>
+    <div class="det-card-tag" style="background:rgba(59,130,246,.12);color:var(--blue-pale)">承接率 41%</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🏀</div>
+    <div class="det-card-title">体育资讯智能体</div>
+    <div class="det-card-desc">NBA/足球/F1 等实时赛况，支持「今天快船赢了没」的口语化查询，返回比分+关键节点，承接率 52%。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">承接率 52%</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🔊</div>
+    <div class="det-card-title">AI 免打扰模式</div>
+    <div class="det-card-desc">驾驶时开启 AI 免打扰：纯文字信息→仅播报，结构化卡片→语音+小屏，重要新闻不遮挡主驾视线。</div>
+    <div class="det-card-tag" style="background:rgba(16,185,129,.1);color:var(--green)">安全驾驶优先</div>
+  </div>
+</div>
+
+<!-- DETAIL: agents (6-card layout) -->
+<div class="agents-big-grid" id="det-agents">
+  <div class="agb on" onclick="selAgent(this)" style="--ac:rgba(245,158,11,.08);--bc:rgba(245,158,11,.3)">
+    <div class="agb-badge">当前</div>
+    <span class="agb-em">🐾</span>
+    <div class="agb-name">小奇同学</div>
+    <div class="agb-type">默认全能助手</div>
+    <div class="agb-desc">奇瑞官方 AI 人格，亲切专业，行车辅助与生活服务全覆盖。</div>
+  </div>
+  <div class="agb" onclick="selAgent(this)" style="--ac:rgba(239,68,68,.06);--bc:rgba(239,68,68,.28)">
+    <span class="agb-em">😎</span>
+    <div class="agb-name">抬杠大师</div>
+    <div class="agb-type">辩论型</div>
+    <div class="agb-desc">永远挑战你的观点，反向思考，让驾驶不无聊。</div>
+  </div>
+  <div class="agb" onclick="selAgent(this)" style="--ac:rgba(99,102,241,.08);--bc:rgba(99,102,241,.3)">
+    <span class="agb-em">👓</span>
+    <div class="agb-name">口语老师</div>
+    <div class="agb-type">教育型</div>
+    <div class="agb-desc">通勤时间变外语学习时间，支持多语种口语练习。</div>
+  </div>
+  <div class="agb" onclick="selAgent(this)" style="--ac:rgba(6,182,212,.06);--bc:rgba(6,182,212,.28)">
+    <span class="agb-em">🧣</span>
+    <div class="agb-name">东北老姨</div>
+    <div class="agb-type">方言型</div>
+    <div class="agb-desc">地道东北话，幽默接地气，长途旅行消除疲劳。</div>
+  </div>
+  <div class="agb" onclick="selAgent(this)" style="--ac:rgba(168,85,247,.08);--bc:rgba(168,85,247,.3)">
+    <span class="agb-em">🧙</span>
+    <div class="agb-name">故事大王</div>
+    <div class="agb-type">创意型</div>
+    <div class="agb-desc">随机应变的故事创作者，儿童后排最佳伙伴。</div>
+  </div>
+  <div class="agb" onclick="selAgent(this)" style="--ac:rgba(16,185,129,.06);--bc:rgba(16,185,129,.28)">
+    <span class="agb-em">🥊</span>
+    <div class="agb-name">职业辩手</div>
+    <div class="agb-type">竞技型</div>
+    <div class="agb-desc">专业辩论框架，逻辑严密，商务决策头脑风暴。</div>
+  </div>
+</div>
+
+<!-- All 18 chips (agents tab) -->
+<div class="chips-wrap" id="chips-18">
+  <div class="chip">📖 故事智能体</div>
+  <div class="chip">🗣️ 口语搭子</div>
+  <div class="chip">📰 AI 新闻</div>
+  <div class="chip">🎨 AI 生图</div>
+  <div class="chip">🃏 场景卡片</div>
+  <div class="chip">🤖 GUI Agent</div>
+  <div class="chip">💊 健康智能体</div>
+  <div class="chip">🧠 心理健康</div>
+  <div class="chip">✨ 生成式 HMI</div>
+  <div class="chip">📸 行程记者</div>
+  <div class="chip">👁️ 看看智能体</div>
+  <div class="chip">🔍 AI 寻车</div>
+  <div class="chip">🏔️ 越野智能体</div>
+  <div class="chip">🚗 行车智能体</div>
+  <div class="chip">🗺️ 出行智能体</div>
+  <div class="chip">🛡️ 增强哨兵</div>
+  <div class="chip">💫 情绪舱</div>
+  <div class="chip">🎵 哼识曲</div>
+</div>
+
+<!-- DETAIL: zone -->
+<div class="detail-panel" id="det-zone">
+  <div class="det-card">
+    <div class="det-card-icon">🎯</div>
+    <div class="det-card-title">双音区低配</div>
+    <div class="det-card-desc">主驾+副驾双独立音区，各自拥有独立唤醒词响应，互不干扰。主驾优先级高于副驾，碰撞时自动降级。</div>
+    <div class="det-card-tag" style="background:rgba(6,182,212,.12);color:var(--teal)">双麦克风阵列</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">👥</div>
+    <div class="det-card-title">多音区二排</div>
+    <div class="det-card-desc">后排乘客可通过独立触控屏发起对话请求，不依赖主驾许可。故事大王/口语老师专为后排场景优化。</div>
+    <div class="det-card-tag" style="background:rgba(168,85,247,.12);color:var(--purple)">后排独立智能体</div>
+  </div>
+  <div class="det-card">
+    <div class="det-card-icon">🔊</div>
+    <div class="det-card-title">多音区三排</div>
+    <div class="det-card-desc">7 座车型专属配置，三排独立音区，每区可选不同智能体人格，满足家庭出行中「每人都有专属 AI」的需求。</div>
+    <div class="det-card-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">7 座专属</div>
+  </div>
+</div>
+
 <footer>
-  <div>Carmind 1.5 · iFlytek × CHERY · UIUE 展示</div>
-  <div class="footer-sources">
-    数据来源：Carmind 1.5 产品需求文档 V1.0 · CHERY Voice UE V1.1.13 · 拧合工作台 2026-04-13 · 多语种 P0 wiki 审计
-  </div>
+  Carmind 1.5 · iFlytek × CHERY OMODA · 车机界面体验展示<br>
+  <span style="opacity:.5;font-size:10px">数据来源：Carmind PRD V1.0 · CHERY Voice UE V1.1.13 · 拧合工作台 2026-04-13 · 合肥实车测试截图</span>
 </footer>
 
 <script>
-// ── Scenario data ──
-const scenarios = {
+const tabs = {
+  wake: {
+    pill: 'Hello OMODA',
+    av: '🐾', name: '小奇同学',
+    msgs: `<div class="wake-content">
+      <div class="wake-ring">🐾</div>
+      <div class="wake-kw">Hello OMODA</div>
+      <div class="wake-hint">正在聆听…</div>
+      <div class="asr-bar">你好，帮我<span class="asr-cursor"></span></div>
+    </div>`,
+    pois: false, zone: false
+  },
   poi: {
-    query: '附近有什么好吃的推荐一下',
-    html: `
-      <div class="chat-query">附近有什么好吃的推荐一下</div>
-      <div class="chat-response">
-        <div class="chat-response-title">📍 周边美食</div>
-        <div class="chat-poi-item">
-          <span>🍲</span>
-          <span style="flex:1;">海底捞火锅</span>
-          <span class="poi-dist">280m</span>
-        </div>
-        <div class="chat-poi-item">
-          <span>🍗</span>
-          <span style="flex:1;">老乡鸡</span>
-          <span class="poi-dist">650m</span>
-        </div>
-        <div class="chat-poi-item">
-          <span>🌶️</span>
-          <span style="flex:1;">文和友</span>
-          <span class="poi-dist">1.2km</span>
-        </div>
-        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
-      </div>`
+    pill: '可以继续说',
+    av: '🐾', name: '小奇同学',
+    msgs: `<div class="msg-q">附近有什么好吃的</div>
+    <div class="msg-a">
+      <div class="msg-a-title">📍 周边美食</div>
+      <div class="poi-row"><span>🍲</span><span style="flex:1">海底捞火锅</span><span class="rating">4.8★</span><span class="dist-badge">280m</span></div>
+      <div class="poi-row"><span>🍗</span><span style="flex:1">老乡鸡</span><span class="rating">4.6★</span><span class="dist-badge">650m</span></div>
+      <div class="poi-row"><span>🌶️</span><span style="flex:1">文和友</span><span class="rating">4.5★</span><span class="dist-badge">1.2km</span></div>
+      <div class="ai-wm">以上内容由 Carmind 大模型生成</div>
+    </div>`,
+    pois: true, zone: false
   },
   music: {
-    query: '推荐夜晚开车的歌',
-    html: `
-      <div class="chat-query">推荐夜晚开车的歌</div>
-      <div class="chat-response">
-        <div class="chat-response-title">🎵 夜驾歌单</div>
-        <div class="chat-poi-item"><span>🌙</span><span style="flex:1;">夜的第七章</span><span style="font-size:8px;color:var(--text-muted);">周杰伦</span></div>
-        <div class="chat-poi-item"><span>✨</span><span style="flex:1;">Fade</span><span style="font-size:8px;color:var(--text-muted);">Alan Walker</span></div>
-        <div class="chat-poi-item"><span>🌊</span><span style="flex:1;">漂洋过海来看你</span><span style="font-size:8px;color:var(--text-muted);">娃娃</span></div>
-        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
-      </div>`
+    pill: '可以继续说',
+    av: '🎵', name: '音乐智能体',
+    msgs: `<div class="msg-q">推荐夜晚开车的歌</div>
+    <div class="msg-a">
+      <div class="msg-a-title">🎵 夜驾歌单</div>
+      <div class="poi-row"><span>🌙</span><span style="flex:1">夜的第七章</span><span style="font-size:7.5px;color:var(--text-3)">周杰伦</span></div>
+      <div class="poi-row"><span>✨</span><span style="flex:1">Fade</span><span style="font-size:7.5px;color:var(--text-3)">Alan Walker</span></div>
+      <div class="poi-row"><span>🌊</span><span style="flex:1">漂洋过海来看你</span><span style="font-size:7.5px;color:var(--text-3)">娃娃</span></div>
+      <div class="poi-row"><span>🎸</span><span style="flex:1">以父之名</span><span style="font-size:7.5px;color:var(--text-3)">周杰伦</span></div>
+      <div class="ai-wm">以上内容由 Carmind 大模型生成</div>
+    </div>`,
+    pois: false, zone: false
   },
   trip: {
-    query: '帮我规划周末去黄山的行程',
-    html: `
-      <div class="chat-query">规划周末去黄山行程</div>
-      <div class="chat-response">
-        <div class="chat-response-title">🗺️ 黄山两日游</div>
-        <div class="chat-poi-item"><span>🚗</span><span style="flex:1;">合肥出发 07:00</span></div>
-        <div class="chat-poi-item"><span>🏨</span><span style="flex:1;">汤口入住 10:00</span></div>
-        <div class="chat-poi-item"><span>⛰️</span><span style="flex:1;">北海景区 13:00</span></div>
-        <div class="chat-poi-item"><span>🌅</span><span style="flex:1;">光明顶日出 05:30</span></div>
-        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
-      </div>`
+    pill: '可以继续说',
+    av: '🗺️', name: '行程智能体',
+    msgs: `<div class="msg-q">规划周末去黄山</div>
+    <div class="msg-a">
+      <div class="msg-a-title">🗺️ 黄山两日游</div>
+      <div class="poi-row"><span>🚗</span><span style="flex:1">合肥出发 07:00</span></div>
+      <div class="poi-row"><span>⚡</span><span style="flex:1">汤口充电 09:30</span><span class="dist-badge">+82km</span></div>
+      <div class="poi-row"><span>🏨</span><span style="flex:1">翡翠谷入住 10:00</span></div>
+      <div class="poi-row"><span>⛰️</span><span style="flex:1">北海景区 13:00</span></div>
+      <div class="poi-row"><span>🌅</span><span style="flex:1">光明顶日出 05:30</span></div>
+      <div class="ai-wm">以上内容由 Carmind 大模型生成</div>
+    </div>`,
+    pois: false, zone: false
   },
   aigen: {
-    query: '画一幅赛博朋克合肥夜景',
-    html: `
-      <div class="chat-query">画赛博朋克合肥夜景</div>
-      <div class="chat-response">
-        <div class="chat-response-title">🎨 AI 生图中</div>
-        <div style="text-align:center;padding:12px 0;font-size:24px;">🌃</div>
-        <div style="font-size:8.5px;color:var(--accent-amber);opacity:0.8;">正在生成 · 1024×768 · 预计 8s</div>
-        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
-      </div>`
+    pill: '可以继续说',
+    av: '🎨', name: 'AI 生图',
+    msgs: `<div class="msg-q">画赛博朋克合肥夜景</div>
+    <div class="msg-a">
+      <div class="msg-a-title">🎨 AI 生图</div>
+      <div style="text-align:center;padding:14px 0">
+        <div style="font-size:26px;margin-bottom:6px">🌃</div>
+        <div style="font-size:7.5px;color:var(--amber)">生成中 · 1024×768 · 预计 8s</div>
+        <div style="margin-top:6px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:65%;background:linear-gradient(90deg,var(--amber),var(--amber-pale));border-radius:2px"></div>
+        </div>
+      </div>
+      <div class="ai-wm">以上内容由 Carmind 大模型生成</div>
+    </div>`,
+    pois: false, zone: false
   },
   news: {
-    query: '今天有什么重要新闻',
-    html: `
-      <div class="chat-query">今天有什么重要新闻</div>
-      <div class="chat-response">
-        <div class="chat-response-title">📰 今日要闻</div>
-        <div class="chat-poi-item"><span>🌍</span><span style="flex:1;">G20 峰会召开</span><span style="font-size:7px;color:var(--text-muted);">国际</span></div>
-        <div class="chat-poi-item"><span>🏀</span><span style="flex:1;">NBA 总决赛</span><span style="font-size:7px;color:var(--text-muted);">体育</span></div>
-        <div class="chat-poi-item"><span>🚗</span><span style="flex:1;">新能源销量破纪录</span><span style="font-size:7px;color:var(--text-muted);">汽车</span></div>
-        <div class="ai-watermark">以上内容由 Carmind 大模型生成</div>
-      </div>`
+    pill: '可以继续说',
+    av: '📰', name: 'AI 新闻',
+    msgs: `<div class="msg-q">今天有什么重要新闻</div>
+    <div class="msg-a">
+      <div class="msg-a-title">📰 今日要闻</div>
+      <div class="poi-row"><span>🌍</span><span style="flex:1">G20 峰会开幕</span><span style="font-size:7px;color:var(--text-3)">国际</span></div>
+      <div class="poi-row"><span>🏀</span><span style="flex:1">NBA 总决赛 G4</span><span style="font-size:7px;color:var(--text-3)">体育</span></div>
+      <div class="poi-row"><span>🚗</span><span style="flex:1">新能源销量破纪录</span><span style="font-size:7px;color:var(--text-3)">汽车</span></div>
+      <div class="poi-row"><span>🤖</span><span style="flex:1">大模型新进展</span><span style="font-size:7px;color:var(--text-3)">科技</span></div>
+      <div class="ai-wm">以上内容由 Carmind 大模型生成</div>
+    </div>`,
+    pois: false, zone: false
+  },
+  agents: {
+    pill: '智能体广场',
+    av: '🤖', name: '智能体广场',
+    msgs: `<div style="font-size:8.5px;color:var(--text-3);margin-bottom:6px">选择你的 AI 人格</div>
+    <div class="agents-panel">
+      <div class="agent-row sel"><span class="ar-em">🐾</span><span class="ar-name">小奇同学</span><span class="ar-tag">全能</span><div class="ar-sel">✓</div></div>
+      <div class="agent-row"><span class="ar-em">😎</span><span class="ar-name">抬杠大师</span><span class="ar-tag">辩论</span><div class="ar-sel"></div></div>
+      <div class="agent-row"><span class="ar-em">👓</span><span class="ar-name">口语老师</span><span class="ar-tag">教育</span><div class="ar-sel"></div></div>
+      <div class="agent-row"><span class="ar-em">🧣</span><span class="ar-name">东北老姨</span><span class="ar-tag">方言</span><div class="ar-sel"></div></div>
+      <div class="agent-row"><span class="ar-em">🧙</span><span class="ar-name">故事大王</span><span class="ar-tag">创意</span><div class="ar-sel"></div></div>
+    </div>`,
+    pois: false, zone: false
+  },
+  zone: {
+    pill: '多音区模式',
+    av: '👥', name: '多音区协同',
+    msgs: `<div class="zone-badge">MULTI-ZONE ACTIVE</div>
+    <div class="zone-tabs">
+      <div class="ztab active">主驾</div>
+      <div class="ztab">副驾</div>
+      <div class="ztab">后排</div>
+    </div>
+    <div class="zone-msg">
+      <b style="color:var(--teal)">主驾音区</b> · 活跃<br>
+      唤醒词：<b>Hello OMODA</b><br>
+      当前智能体：小奇同学<br><br>
+      <span style="color:var(--text-3)">副驾/后排待机，可独立唤醒</span><br>
+      <span style="color:var(--text-3)">三排各自拥有独立人格选择</span>
+    </div>`,
+    pois: false, zone: true
   }
 };
 
-function switchScenario(key) {
-  // Update tabs
-  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+function switchTab(key) {
+  const d = tabs[key];
+  // tabs
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
 
-  // Update chat panel
-  const msgs = document.getElementById('chatMessages');
+  // pill
+  const pill = document.getElementById('vpaPill');
+  pill.childNodes[pill.childNodes.length-1].textContent = ' ' + d.pill;
+
+  // agent avatar & name
+  document.getElementById('agentAv').textContent = d.av;
+  document.getElementById('agentName').textContent = d.name;
+
+  // messages with fade
+  const msgs = document.getElementById('aiMsgs');
+  msgs.style.transition = 'opacity .18s';
   msgs.style.opacity = '0';
-  setTimeout(() => {
-    msgs.innerHTML = scenarios[key].html;
-    msgs.style.opacity = '1';
-  }, 200);
-  msgs.style.transition = 'opacity 0.2s';
+  setTimeout(() => { msgs.innerHTML = d.msgs; msgs.style.opacity = '1'; }, 190);
+
+  // POI pins on map
+  ['poi1','poi2','poi3'].forEach(id => {
+    document.getElementById(id).setAttribute('display', d.pois ? 'block' : 'none');
+  });
+
+  // Zone overlay
+  document.getElementById('zoneOverlay').style.display = d.zone ? 'flex' : 'none';
+  document.getElementById('zoneOverlay').style.flexDirection = 'column';
+
+  // Detail panels
+  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('active'));
+  const det = document.getElementById('det-' + key);
+  if (det) det.classList.add('active');
+
+  // VPA states (only for wake)
+  const vpaStates = document.getElementById('vpa-states');
+  vpaStates.classList.toggle('active', key === 'wake');
+
+  // Agents grid (only for agents)
+  const agGrid = document.getElementById('det-agents');
+  agGrid.classList.toggle('active', key === 'agents');
+  document.getElementById('chips-18').classList.toggle('active', key === 'agents');
 }
 
-function switchFeature(key) {
-  document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('.feature-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + key).classList.add('active');
-}
-
-function selectAgent(card) {
-  document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('active'));
-  document.querySelectorAll('.agent-card-active-badge').forEach(b => b.remove());
-  card.classList.add('active');
-  const badge = document.createElement('div');
-  badge.className = 'agent-card-active-badge';
-  badge.textContent = '当前使用';
-  card.appendChild(badge);
-}
-
-// ── Animate bars on scroll ──
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.querySelectorAll('.module-bar-item').forEach((item, i) => {
-        const pct = item.dataset.pct;
-        const fill = item.querySelector('.module-bar-fill');
-        setTimeout(() => {
-          fill.style.width = pct + '%';
-        }, i * 80);
-      });
-      observer.unobserve(entry.target);
+function selAgent(el) {
+  document.querySelectorAll('.agb').forEach(a => a.classList.remove('on'));
+  el.classList.add('on');
+  // also update screen panel selection
+  const name = el.querySelector('.agb-name').textContent;
+  const em = el.querySelector('.agb-em').textContent;
+  document.getElementById('agentAv').textContent = em;
+  document.getElementById('agentName').textContent = name;
+  const rows = document.querySelectorAll('.agent-row');
+  rows.forEach(r => {
+    r.classList.remove('sel');
+    if (r.querySelector('.ar-name')?.textContent === name) {
+      r.classList.add('sel');
+      r.querySelector('.ar-sel').textContent = '✓';
+    } else {
+      if(r.querySelector('.ar-sel')) r.querySelector('.ar-sel').textContent = '';
     }
   });
-}, { threshold: 0.2 });
+}
 
-const barsContainer = document.getElementById('moduleBars');
-if (barsContainer) observer.observe(barsContainer);
-
-// ── Init ──
+// Init
 document.addEventListener('DOMContentLoaded', () => {
-  // Set initial chat content
-  const msgs = document.getElementById('chatMessages');
-  if (msgs) msgs.innerHTML = scenarios.poi.html;
+  document.getElementById('aiMsgs').innerHTML = tabs.wake.msgs;
 });
-// Also run immediately in case DOM ready
-const msgs = document.getElementById('chatMessages');
-if (msgs) msgs.innerHTML = scenarios.poi.html;
+document.getElementById('aiMsgs').innerHTML = tabs.wake.msgs;
 </script>
 </body>
 </html>
