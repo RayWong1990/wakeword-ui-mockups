@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案选型决策树 — AI 提效 2.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#050810;color:#e2e8f0;min-height:100vh;padding:24px 16px}
+h1{text-align:center;font-size:1.4rem;background:linear-gradient(90deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.sub{text-align:center;color:#64748b;font-size:.82rem;margin-bottom:28px}
+.tree{display:flex;flex-direction:column;align-items:center;gap:0;max-width:800px;margin:0 auto}
+.node{display:inline-flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;padding:14px 20px;font-size:.85rem;font-weight:600;transition:all .3s;cursor:pointer;position:relative;max-width:320px}
+.node:hover{transform:scale(1.05);box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.question{background:rgba(99,102,241,.12);border:2px solid rgba(99,102,241,.4);color:#a5b4fc;clip-path:polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);padding:20px 40px;min-width:280px}
+.result-yes{background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.4);color:#86efac}
+.result-no{background:rgba(248,81,73,.12);border:2px solid rgba(248,81,73,.4);color:#fca5a5}
+.result-action{background:rgba(59,130,246,.12);border:2px solid rgba(59,130,246,.4);color:#93c5fd}
+.branch{display:flex;justify-content:center;gap:60px;width:100%}
+.branch-arm{display:flex;flex-direction:column;align-items:center;gap:0}
+.connector{color:#475569;font-size:.75rem;padding:4px 0;display:flex;flex-direction:column;align-items:center}
+.connector .line{width:2px;height:20px;background:linear-gradient(180deg,rgba(99,102,241,.6),rgba(99,102,241,.2))}
+.connector .label{background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px;font-size:.7rem;margin:2px 0}
+.label-yes{color:#86efac}
+.label-no{color:#fca5a5}
+.glow-green{box-shadow:0 0 20px rgba(34,197,94,.3);border-color:#22c55e;animation:pulse-green 2s infinite}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.2)}50%{box-shadow:0 0 30px rgba(34,197,94,.4)}}
+.excluded{max-width:800px;margin:28px auto 0;display:flex;flex-direction:column;gap:10px}
+.excluded-title{font-size:.9rem;font-weight:700;color:#f87171;text-align:center;margin-bottom:8px}
+.excluded-item{display:flex;align-items:flex-start;gap:10px;background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.15);border-radius:10px;padding:10px 14px;font-size:.78rem}
+.excluded-item .x{color:#f87171;font-weight:700;font-size:1rem;flex-shrink:0}
+.excluded-item .reason{color:#94a3b8}
+.footer{text-align:center;margin-top:20px;font-size:.65rem;color:#334155}
+</style>
+</head>
+<body>
+<h1>🌳 方案选型决策树</h1>
+<p class="sub">AI 提效 2.0 · 逐步排除 → 精准推荐</p>
+
+<div class="tree">
+  <!-- Level 1 -->
+  <div class="node question">部门已全员拿到<br>Claude Code？</div>
+  <div class="branch">
+    <div class="branch-arm">
+      <div class="connector"><div class="line"></div><span class="label label-no">否</span><div class="line"></div></div>
+      <div class="node result-no">❌ 先完成工具铺开<br><span style="font-size:.72rem;font-weight:400">不适用本方案</span></div>
+    </div>
+    <div class="branch-arm">
+      <div class="connector"><div class="line"></div><span class="label label-yes">是 ✓</span><div class="line"></div></div>
+      <!-- Level 2 -->
+      <div class="node question">使用深度<br>是否均匀？</div>
+      <div class="branch">
+        <div class="branch-arm">
+          <div class="connector"><div class="line"></div><span class="label label-yes">均匀</span><div class="line"></div></div>
+          <div class="node result-action">直接进入<br>场景标准化</div>
+        </div>
+        <div class="branch-arm">
+          <div class="connector"><div class="line"></div><span class="label label-no">不均匀</span><div class="line"></div></div>
+          <!-- Level 3 -->
+          <div class="node question">有种子用户<br>（A 类）吗？</div>
+          <div class="branch">
+            <div class="branch-arm">
+              <div class="connector"><div class="line"></div><span class="label label-no">无</span><div class="line"></div></div>
+              <div class="node result-action">先培养 2-3 个<br>Champion</div>
+            </div>
+            <div class="branch-arm">
+              <div class="connector"><div class="line"></div><span class="label label-yes">有 ✓</span><div class="line"></div></div>
+              <!-- Level 4 -->
+              <div class="node question">有运行机制<br>（道场/资产库）？</div>
+              <div class="branch">
+                <div class="branch-arm">
+                  <div class="connector"><div class="line"></div><span class="label label-yes">有</span><div class="line"></div></div>
+                  <div class="node result-yes glow-green">✅ 进入能力运营<br><span style="font-size:.72rem;font-weight:400">（本方案适用）</span></div>
+                </div>
+                <div class="branch-arm">
+                  <div class="connector"><div class="line"></div><span class="label label-no">无</span><div class="line"></div></div>
+                  <div class="node result-yes glow-green">✅ 建立机制<br><span style="font-size:.72rem;font-weight:400">（本方案核心）</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="excluded">
+  <div class="excluded-title">❌ 已排除的方案</div>
+  <div class="excluded-item"><span class="x">✕</span><div><b>全员泛培训</b><br><span class="reason">已过"推广采用"阶段；仅 36% 员工认为 AI 培训充分</span></div></div>
+  <div class="excluded-item"><span class="x">✕</span><div><b>外购 AI 平台（Copilot）</b><br><span class="reason">公司已选 Claude Code；Copilot CEO 承认 "integrations don't really work"</span></div></div>
+  <div class="excluded-item"><span class="x">✕</span><div><b>纯知识库共享</b><br><span class="reason">知识库只是一小部分；缺规则化判断、流程 Agent、运营度量</span></div></div>
+  <div class="excluded-item"><span class="x">✕</span><div><b>个人英雄主义</b><br><span class="reason">王磊一个人很会用 ≠ 部门提效；必须制度化</span></div></div>
+</div>
+
+<p class="footer">方案系统部 AI 提效 2.0 · SOL-AIEFF-2026-001 · 排除法先行 · Generated by Claude Code</p>
+</body>
+</html>

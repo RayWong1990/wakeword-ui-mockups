@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五层能力运营架构 — AI 提效 2.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#050810;color:#e2e8f0;min-height:100vh;padding:24px 16px;overflow-x:hidden}
+h1{text-align:center;font-size:1.5rem;background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.sub{text-align:center;color:#64748b;font-size:.82rem;margin-bottom:28px}
+.stack{display:flex;flex-direction:column;gap:0;max-width:900px;margin:0 auto;position:relative}
+.layer{position:relative;border-radius:14px;padding:18px 20px;transition:all .3s;cursor:pointer;border:1px solid transparent}
+.layer:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.layer.active{border-color:rgba(255,255,255,.2)}
+.layer-tag{position:absolute;top:-10px;left:20px;font-size:.65rem;padding:2px 10px;border-radius:10px;font-weight:700;letter-spacing:1px}
+.layer-title{font-size:1.05rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.layer-title .icon{font-size:1.3rem}
+.layer-items{display:flex;flex-wrap:wrap;gap:8px}
+.item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 14px;font-size:.8rem;transition:all .2s;position:relative}
+.item:hover{background:rgba(255,255,255,.12);transform:scale(1.03)}
+.item .detail{display:none;position:absolute;top:100%;left:0;right:0;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px;margin-top:6px;font-size:.75rem;z-index:10;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.item:hover .detail{display:block}
+/* Layer 5: Management - Green */
+.l5{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04))}
+.l5:hover{background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(34,197,94,.08))}
+.l5 .layer-tag{background:#22c55e;color:#052e16}
+.l5 .layer-title{color:#86efac}
+/* Layer 4: Governance - Orange */
+.l4{background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(249,115,22,.04))}
+.l4:hover{background:linear-gradient(135deg,rgba(249,115,22,.2),rgba(249,115,22,.08))}
+.l4 .layer-tag{background:#f97316;color:#431407}
+.l4 .layer-title{color:#fdba74}
+/* Layer 3: Asset - Blue */
+.l3{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(59,130,246,.04))}
+.l3:hover{background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(59,130,246,.08))}
+.l3 .layer-tag{background:#3b82f6;color:#1e1b4b}
+.l3 .layer-title{color:#93c5fd}
+/* Layer 2: Capability - Purple */
+.l2{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.04))}
+.l2:hover{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(139,92,246,.08))}
+.l2 .layer-tag{background:#8b5cf6;color:#1e1b4b}
+.l2 .layer-title{color:#c4b5fd}
+/* Layer 1: Touchpoint - Slate */
+.l1{background:linear-gradient(135deg,rgba(148,163,184,.12),rgba(148,163,184,.04))}
+.l1:hover{background:linear-gradient(135deg,rgba(148,163,184,.2),rgba(148,163,184,.08))}
+.l1 .layer-tag{background:#94a3b8;color:#0f172a}
+.l1 .layer-title{color:#cbd5e1}
+.arrow{text-align:center;color:#475569;font-size:1.2rem;padding:2px 0;user-select:none}
+.legend{max-width:900px;margin:24px auto 0;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:#94a3b8}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.footer{text-align:center;margin-top:20px;font-size:.65rem;color:#334155}
+@media(max-width:600px){.item{font-size:.72rem;padding:6px 10px}.layer{padding:14px 12px}}
+</style>
+</head>
+<body>
+<h1>🏛️ 五层能力运营架构</h1>
+<p class="sub">方案系统部 AI 提效 2.0 · 触点层 → 能力层 → 资产层 → 治理层 → 管理层</p>
+
+<div class="stack">
+  <div class="layer l5" onclick="this.classList.toggle('active')">
+    <span class="layer-tag">L5 管理层</span>
+    <div class="layer-title"><span class="icon">🏛️</span> 四维经营指标</div>
+    <div class="layer-items">
+      <div class="item">📊 效率指标<div class="detail">响应周期 ≤2天<br>材料准备时长<br>应答速度</div></div>
+      <div class="item">✅ 质量指标<div class="detail">返工率 ↓30%<br>评审一次通过率 ≥70%</div></div>
+      <div class="item">📦 资产指标<div class="detail">新增 Skill 数<br>模板复用次数 ≥60%</div></div>
+      <div class="item">🏢 组织指标<div class="detail">覆盖人数 12/12<br>活跃场景数 ≥4</div></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer l4" onclick="this.classList.toggle('active')">
+    <span class="layer-tag">L4 治理层</span>
+    <div class="layer-title"><span class="icon">🛡️</span> 审核 / 安全 / 版本</div>
+    <div class="layer-items">
+      <div class="item">🔒 数据安全合规<div class="detail">讯飞内部数据安全要求<br>安全事件目标 = 0</div></div>
+      <div class="item">👁️ 人工审核机制<div class="detail">对客输出 100% 人工审核<br>AI 永远是辅助不是替代</div></div>
+      <div class="item">📝 版本与责任人<div class="detail">Git 版本控制<br>每个资产有明确 Owner</div></div>
+      <div class="item">📈 质量把关门槛<div class="detail">≥3 次真实验证才能发布<br>追踪复用率</div></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer l3" onclick="this.classList.toggle('active')">
+    <span class="layer-tag">L3 资产层</span>
+    <div class="layer-title"><span class="icon">📦</span> 五类可复用资产</div>
+    <div class="layer-items">
+      <div class="item">📝 Prompt 资产<div class="detail">"SOR 缺项分析 Prompt v2.0"<br>目标 ≥10 条/季</div></div>
+      <div class="item">⚙️ Skill / 脚本<div class="detail">"VUI 场景设计 Skill"<br>目标 ≥5 个/季</div></div>
+      <div class="item">📋 模板资产<div class="detail">"多语种方案模板 v1.0"<br>目标 ≥3 套/季</div></div>
+      <div class="item">📖 案例资产<div class="detail">"T28 方案骨架：3天→0.5天"<br>目标 ≥6 张/季</div></div>
+      <div class="item">⚠️ 失败教训<div class="detail">反案例库 + 道场分享<br>目标 ≥2 条/季</div></div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer l2" onclick="this.classList.toggle('active')">
+    <span class="layer-tag">L2 能力层</span>
+    <div class="layer-title"><span class="icon">🧠</span> 8 类 AI 辅助判断</div>
+    <div class="layer-items">
+      <div class="item">🔍 需求理解</div>
+      <div class="item">📐 方案判断</div>
+      <div class="item">⚠️ 风险识别</div>
+      <div class="item">♻️ 经验复用</div>
+      <div class="item">📄 文档确认</div>
+      <div class="item">🏗️ 骨架生成</div>
+      <div class="item">✅ 评审准备</div>
+      <div class="item">💰 工作量估算</div>
+    </div>
+  </div>
+  <div class="arrow">▼</div>
+
+  <div class="layer l1" onclick="this.classList.toggle('active')">
+    <span class="layer-tag">L1 触点层</span>
+    <div class="layer-title"><span class="icon">📱</span> 统一入口</div>
+    <div class="layer-items">
+      <div class="item">🤖 i讯飞群机器人<div class="detail">群内 Q&A + 卡片推送<br>命中率 ≥70%</div></div>
+      <div class="item">💻 Claude Code<div class="detail">全员 license 已下发<br>Skill + CLAUDE.md 统一加载</div></div>
+      <div class="item">📊 经营看板<div class="detail">Obsidian Dataview + Charts<br>双周刷新</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>管理层 — 经营指标</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>治理层 — 安全审核</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>资产层 — 五类资产</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>能力层 — AI 判断</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>触点层 — 统一入口</div>
+</div>
+<p class="footer">方案系统部 AI 提效 2.0 · SOL-AIEFF-2026-001 · 悬停查看详情 · Generated by Claude Code</p>
+</body>
+</html>

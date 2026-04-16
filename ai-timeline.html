@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 提效 2.0 关键里程碑 — 时间线</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#050810;color:#e2e8f0;min-height:100vh;padding:24px 16px}
+h1{text-align:center;font-size:1.4rem;background:linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.sub{text-align:center;color:#64748b;font-size:.82rem;margin-bottom:28px}
+.timeline{position:relative;max-width:800px;margin:0 auto;padding:20px 0}
+.timeline::before{content:'';position:absolute;left:50%;width:3px;background:linear-gradient(180deg,#38bdf8,#22c55e,#f59e0b,#ef4444);top:0;bottom:0;transform:translateX(-50%);border-radius:3px}
+.event{position:relative;width:44%;padding:14px 18px;margin-bottom:20px;border-radius:12px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);font-size:.82rem}
+.event.left{left:0;text-align:right}
+.event.right{left:56%}
+.event::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;top:18px;z-index:1}
+.event.left::after{right:-32px}
+.event.right::after{left:-32px}
+.event.task{background:rgba(56,139,253,.06)}
+.event.task::after{background:#58a6ff;box-shadow:0 0 8px rgba(88,166,255,.5)}
+.event.milestone{background:rgba(248,81,73,.08);border-color:rgba(248,81,73,.25)}
+.event.milestone::after{background:#f85149;box-shadow:0 0 12px rgba(248,81,73,.6)}
+.event.phase-end{background:rgba(63,185,80,.07);border-color:rgba(63,185,80,.25)}
+.event.phase-end::after{background:#3fb950;box-shadow:0 0 10px rgba(63,185,80,.5)}
+.event.dojo{background:rgba(210,153,34,.06)}
+.event.dojo::after{background:#d29922;box-shadow:0 0 8px rgba(210,153,34,.5)}
+.date{font-size:.72rem;color:#8b949e;margin-bottom:3px;font-weight:600}
+.title{font-size:.9rem;font-weight:700;margin-bottom:3px}
+.desc{font-size:.75rem;color:#8b949e}
+.phase-label{text-align:center;font-size:1rem;font-weight:700;margin:16px 0 8px;padding:8px 16px;display:inline-block;border-radius:8px}
+.phase-wrap{text-align:center;margin:12px 0}
+.p1{background:rgba(56,139,253,.12);color:#58a6ff}
+.p2{background:rgba(210,153,34,.12);color:#d29922}
+.p3{background:rgba(63,185,80,.12);color:#3fb950}
+.summary{max-width:800px;margin:24px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.summary-card{border-radius:12px;padding:16px;text-align:center}
+.summary-card .num{font-size:1.6rem;font-weight:800}
+.summary-card .label{font-size:.75rem;color:#94a3b8;margin-top:4px}
+.sc1{background:rgba(56,139,253,.08);border:1px solid rgba(56,139,253,.2)}
+.sc1 .num{color:#58a6ff}
+.sc2{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.2)}
+.sc2 .num{color:#d29922}
+.sc3{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2)}
+.sc3 .num{color:#3fb950}
+.footer{text-align:center;margin-top:20px;font-size:.65rem;color:#334155}
+@media(max-width:600px){.timeline::before{left:20px}.event{width:calc(100% - 50px);left:45px!important;text-align:left!important}.event::after{left:-30px!important;right:auto!important}.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>🗓️ AI 提效 2.0 关键里程碑</h1>
+<p class="sub">三阶段推进：收敛 → 复用 → 映射（2026.04 — 2026.10）</p>
+
+<div class="timeline">
+  <div class="phase-wrap"><span class="phase-label p1">Phase 1: 收敛场景（6 周）</span></div>
+  <div class="event left task"><div class="date">4.16 — 4.20</div><div class="title">📋 基线摸底</div><div class="desc">12 人 AI 使用基线 + A/B/C 分类</div></div>
+  <div class="event right task"><div class="date">4.21 — 4.27</div><div class="title">🤖 S1 Agent MVP</div><div class="desc">文档确认 Agent 原型 + 测试用例</div></div>
+  <div class="event left milestone"><div class="date">🔴 4.30</div><div class="title">全员 100% 应用硬截止</div><div class="desc">PBC_002 Q2 硬性指标</div></div>
+  <div class="event right dojo"><div class="date">5.01 — 5.04</div><div class="title">🎓 首次双周道场</div><div class="desc">案例分享 + 资产拆解 + 失败教训</div></div>
+  <div class="event left task"><div class="date">5.05 — 5.11</div><div class="title">🏅 Champion 认证</div><div class="desc">刘洋 + 1 人正式认证</div></div>
+  <div class="event right task"><div class="date">5.12 — 5.18</div><div class="title">📦 资产库 v0.1</div><div class="desc">首批 5 个 Prompt 入库</div></div>
+  <div class="event left phase-end"><div class="date">✅ 5.31</div><div class="title">Phase 1 验收</div><div class="desc">S1 场景跑通 · 12 人月活 100%</div></div>
+
+  <div class="phase-wrap"><span class="phase-label p2">Phase 2: 形成方法（10 周）</span></div>
+  <div class="event right task"><div class="date">6.01 — 6.30</div><div class="title">🛠️ S2 方案骨架上线</div><div class="desc">模板 + 参数 → 首稿自动生成</div></div>
+  <div class="event left milestone"><div class="date">🔴 6.30</div><div class="title">LLM-as-Judge 上线</div><div class="desc">AI 产出自动质量评分</div></div>
+  <div class="event right task"><div class="date">7.01 — 8.15</div><div class="title">📈 S3-S4 扩展 + 看板运行</div><div class="desc">风险抽取 + 纪要转任务 + 双周刷新</div></div>
+  <div class="event left phase-end"><div class="date">✅ 8.15</div><div class="title">Phase 2 验收</div><div class="desc">方案周期 ≤2 天 · 资产复用率 ≥40%</div></div>
+
+  <div class="phase-wrap"><span class="phase-label p3">Phase 3: 经营映射（10+ 周）</span></div>
+  <div class="event right task"><div class="date">8.16 — 10.31</div><div class="title">🌐 经营映射 + 横向复制</div><div class="desc">全 6 场景覆盖 + 经营结果量化</div></div>
+  <div class="event left milestone"><div class="date">🏆 10.31</div><div class="title">事业部样板汇报</div><div class="desc">AI-native 方案工作流样板间 → 事业部推广</div></div>
+</div>
+
+<div class="summary">
+  <div class="summary-card sc1"><div class="num">6 周</div><div class="label">Phase 1 收敛</div></div>
+  <div class="summary-card sc2"><div class="num">10 周</div><div class="label">Phase 2 复用</div></div>
+  <div class="summary-card sc3"><div class="num">10+ 周</div><div class="label">Phase 3 映射</div></div>
+</div>
+
+<p class="footer">方案系统部 AI 提效 2.0 · SOL-AIEFF-2026-001 · Generated by Claude Code</p>
+</body>
+</html>

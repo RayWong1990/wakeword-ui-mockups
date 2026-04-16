@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据流全景 — AI 提效 2.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#050810;color:#e2e8f0;min-height:100vh;padding:24px 16px}
+h1{text-align:center;font-size:1.4rem;background:linear-gradient(90deg,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.sub{text-align:center;color:#64748b;font-size:.82rem;margin-bottom:24px}
+.flow{display:flex;justify-content:center;align-items:flex-start;gap:0;max-width:1100px;margin:0 auto;flex-wrap:nowrap;overflow-x:auto;padding:10px 0}
+.phase{display:flex;flex-direction:column;gap:10px;min-width:180px;max-width:220px;flex:1}
+.phase-header{text-align:center;padding:10px 8px;border-radius:10px;font-weight:700;font-size:.85rem;letter-spacing:1px}
+.ph-input .phase-header{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.ph-process .phase-header{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+.ph-human .phase-header{background:rgba(249,115,22,.15);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+.ph-output .phase-header{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+.node{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center;font-size:.78rem;transition:all .3s;cursor:pointer;position:relative}
+.node:hover{background:rgba(255,255,255,.1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.node .icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.node .name{font-weight:600;margin-bottom:2px}
+.node .desc{color:#64748b;font-size:.7rem}
+.connector{display:flex;align-items:center;justify-content:center;min-width:40px;color:#475569;font-size:1.6rem;padding-top:50px;flex-shrink:0}
+.connector .arrow-line{width:40px;height:2px;background:linear-gradient(90deg,rgba(99,102,241,.4),rgba(99,102,241,.8));position:relative}
+.connector .arrow-line::after{content:'▶';position:absolute;right:-8px;top:-9px;color:#6366f1;font-size:.9rem}
+.flywheel{max-width:1100px;margin:20px auto 0;text-align:center}
+.flywheel-box{display:inline-flex;align-items:center;gap:12px;background:rgba(234,179,8,.08);border:1px dashed rgba(234,179,8,.3);border-radius:12px;padding:12px 20px;font-size:.8rem;color:#fbbf24}
+.flywheel-box .loop{font-size:1.4rem;animation:spin 4s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.footer{text-align:center;margin-top:20px;font-size:.65rem;color:#334155}
+@media(max-width:800px){.flow{flex-direction:column;align-items:center}.connector{padding-top:0;transform:rotate(90deg);min-width:auto;min-height:40px}}
+</style>
+</head>
+<body>
+<h1>⚙️ 数据流全景：从输入到沉淀</h1>
+<p class="sub">AI 提效 2.0 · 四阶段流转：输入 → AI 处理 → 人工裁决 → 产出沉淀</p>
+
+<div class="flow">
+  <div class="phase ph-input">
+    <div class="phase-header">📥 输入源</div>
+    <div class="node"><span class="icon">📄</span><div class="name">SOR / 需求文档</div><div class="desc">客户提供的系统需求规格</div></div>
+    <div class="node"><span class="icon">💬</span><div class="name">会议 / 群聊</div><div class="desc">口头承诺、讨论记录</div></div>
+    <div class="node"><span class="icon">📁</span><div class="name">历史方案</div><div class="desc">可复用的过往项目</div></div>
+    <div class="node"><span class="icon">📨</span><div class="name">客户反馈</div><div class="desc">评审意见、变更请求</div></div>
+  </div>
+
+  <div class="connector"><div class="arrow-line"></div></div>
+
+  <div class="phase ph-process">
+    <div class="phase-header">⚙️ AI 处理层</div>
+    <div class="node"><span class="icon">🔍</span><div class="name">文档确认 Agent</div><div class="desc">SOR 比对 → 缺项清单<br>准确率 ≥90%</div></div>
+    <div class="node"><span class="icon">🏗️</span><div class="name">方案骨架生成器</div><div class="desc">模板 + 参数 → 首稿<br>覆盖率 ≥80%</div></div>
+    <div class="node"><span class="icon">⚠️</span><div class="name">风险 / 依赖抽取器</div><div class="desc">自动扫描 → 矩阵输出<br>召回率 ≥90%</div></div>
+    <div class="node"><span class="icon">📋</span><div class="name">纪要转任务 Agent</div><div class="desc">结构化抽取 → 任务分配<br>准确率 ≥85%</div></div>
+  </div>
+
+  <div class="connector"><div class="arrow-line"></div></div>
+
+  <div class="phase ph-human">
+    <div class="phase-header">👤 人工裁决层</div>
+    <div class="node"><span class="icon">👁️</span><div class="name">方案经理审核裁决</div><div class="desc">100% 人工审核<br>AI ≠ 替代，AI = 辅助</div></div>
+    <div class="node"><span class="icon">✅</span><div class="name">技术评审</div><div class="desc">通过 / 打回<br>一次通过率 ≥70%</div></div>
+  </div>
+
+  <div class="connector"><div class="arrow-line"></div></div>
+
+  <div class="phase ph-output">
+    <div class="phase-header">📤 产出 + 沉淀</div>
+    <div class="node"><span class="icon">📑</span><div class="name">交付方案</div><div class="desc">可交付客户的成品</div></div>
+    <div class="node"><span class="icon">📖</span><div class="name">案例卡</div><div class="desc">场景 / 做法 / 数据 / 教训</div></div>
+    <div class="node"><span class="icon">⚙️</span><div class="name">Skill / 模板</div><div class="desc">经 ≥3 次验证的标准资产</div></div>
+    <div class="node"><span class="icon">📚</span><div class="name">RAW 知识库</div><div class="desc">有效打法自动回流</div></div>
+  </div>
+</div>
+
+<div class="flywheel">
+  <div class="flywheel-box">
+    <span class="loop">🔄</span>
+    <span>飞轮回流：使用越多 → 资产越厚 → 下次越快 → 知识库自动回流到 AI 处理层</span>
+    <span class="loop">🔄</span>
+  </div>
+</div>
+
+<p class="footer">方案系统部 AI 提效 2.0 · SOL-AIEFF-2026-001 · Generated by Claude Code</p>
+</body>
+</html>
