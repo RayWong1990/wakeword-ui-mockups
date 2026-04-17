@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双周 AI 实战道场 · 2 小时时间流</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    color: #e2e8f0;
+    padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 22px; text-align: center; margin-bottom: 6px;
+    background: linear-gradient(90deg, #f43f5e, #f59e0b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+
+  .roles {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .role {
+    padding: 6px 12px; background: rgba(244, 63, 94, 0.15); border: 1px solid #f43f5e;
+    border-radius: 16px; font-size: 11px; color: #fda4af;
+  }
+  .role strong { color: #fff; margin-right: 4px; }
+
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(180deg, #f43f5e, #f59e0b);
+  }
+  .slot {
+    margin-bottom: 14px; position: relative;
+    padding: 14px 14px 14px 14px;
+    background: #1e293b; border-radius: 10px; border-left: 3px solid #f43f5e;
+  }
+  .slot::before {
+    content: ''; position: absolute; left: -33px; top: 18px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #f43f5e; border: 3px solid #0f172a;
+    box-shadow: 0 0 0 2px #f43f5e;
+    animation: ring 2s ease-in-out infinite;
+  }
+  .slot:nth-child(even)::before {
+    background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b;
+  }
+  @keyframes ring {
+    0%, 100% { box-shadow: 0 0 0 2px currentColor; }
+    50% { box-shadow: 0 0 0 6px transparent; }
+  }
+  .slot-head {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .slot-time {
+    font-size: 14px; font-weight: 700; color: #f59e0b;
+    font-family: 'SF Mono', Monaco, monospace;
+  }
+  .slot-dur {
+    font-size: 11px; color: #94a3b8; padding: 2px 6px;
+    background: rgba(245, 158, 11, 0.15); border-radius: 4px;
+  }
+  .slot-title { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+  .slot-body { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 8px; }
+  .slot-out {
+    display: inline-block; padding: 4px 10px;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 4px; font-size: 11px; color: #fff;
+  }
+
+  .outputs {
+    margin-top: 20px; padding: 16px; border-radius: 10px;
+    background: rgba(16, 185, 129, 0.1); border: 1px dashed #10b981;
+  }
+  .outputs-title {
+    font-size: 13px; color: #34d399; font-weight: 700; margin-bottom: 10px;
+  }
+  .outputs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .out-card {
+    padding: 10px 8px; background: #064e3b; border-radius: 6px;
+    text-align: center; font-size: 11px; color: #d1fae5;
+  }
+  .out-card .num {
+    display: block; font-size: 20px; font-weight: 800; margin-bottom: 3px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  @media (max-width: 768px) {
+    .outputs-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>双周 AI 实战道场 · 2 小时时间流</h1>
+  <div class="subtitle">不是讲堂 · 不是分享会 · 是打靶场——每期必出 5 件物料</div>
+
+  <div class="roles">
+    <div class="role"><strong>👨‍🏫 主持人</strong>Champion 轮值</div>
+    <div class="role"><strong>🎯 战例人</strong>B/A 类轮流</div>
+    <div class="role"><strong>⚖️ 裁判组</strong>3 位 C/B 类</div>
+    <div class="role"><strong>📝 记录员</strong>1 位</div>
+    <div class="role"><strong>👀 旁观者</strong>其余成员</div>
+  </div>
+
+  <div class="timeline">
+    <div class="slot">
+      <div class="slot-head">
+        <div class="slot-time">00:00-00:15</div>
+        <div class="slot-dur">15 分钟</div>
+        <div class="slot-title">战例回顾</div>
+      </div>
+      <div class="slot-body">
+        上期缺口池复盘——哪些条目已闭环、哪些卡住、本期战例人自我介绍并带出当周真实问题。
+      </div>
+      <div class="slot-out">📤 产出：缺口池更新</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-head">
+        <div class="slot-time">00:15-00:45</div>
+        <div class="slot-dur">30 分钟</div>
+        <div class="slot-title">真实问题开战</div>
+      </div>
+      <div class="slot-body">
+        战例人现场演示从输入材料（SOR / PBC / 客户邮件）到使用 AI 的尝试,展示具体 Prompt、实际产出、卡住的节点。不看幻灯片,看真实屏幕。
+      </div>
+      <div class="slot-out">📤 产出：问题定义书</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-head">
+        <div class="slot-time">00:45-01:15</div>
+        <div class="slot-dur">30 分钟</div>
+        <div class="slot-title">现场拆打法</div>
+      </div>
+      <div class="slot-body">
+        主持人带全员拆解战例人的卡点——Prompt 怎么改、上下文如何补、工具链怎么组合。讨论产物抽象为可复用的 Prompt 模板和工作流步骤。
+      </div>
+      <div class="slot-out">📤 产出：1 个 Prompt 资产草稿</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-head">
+        <div class="slot-time">01:15-01:40</div>
+        <div class="slot-dur">25 分钟</div>
+        <div class="slot-title">反面演练</div>
+      </div>
+      <div class="slot-body">
+        故意让 AI 出错——喂模糊需求、喂错误前提、喂超长上下文。识别"人类必须介入"的节点,写入失败教训卡。这个环节是道场不陷入自嗨的关键。
+      </div>
+      <div class="slot-out">📤 产出：1 条失败教训卡</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-head">
+        <div class="slot-time">01:40-02:00</div>
+        <div class="slot-dur">20 分钟</div>
+        <div class="slot-title">沉淀与认领</div>
+      </div>
+      <div class="slot-body">
+        记录员念产出清单,全员确认。Champion 宣布下期战例人选(从缺口池或本期未解决问题中挑)——下期战例认领书当场签字。
+      </div>
+      <div class="slot-out">📤 产出：资产卡 + 下期认领书</div>
+    </div>
+  </div>
+
+  <div class="outputs">
+    <div class="outputs-title">⚡ 强制产出清单——少一件视为道场未达标</div>
+    <div class="outputs-grid">
+      <div class="out-card"><span class="num">①</span>案例卡<br>（真实案例）</div>
+      <div class="out-card"><span class="num">②</span>Prompt 资产草稿<br>（Prompt）</div>
+      <div class="out-card"><span class="num">③</span>失败教训卡<br>（失败案例）</div>
+      <div class="out-card"><span class="num">④</span>缺口池条目<br>1-2 条</div>
+      <div class="out-card"><span class="num">⑤</span>下期认领书<br>（战例）</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

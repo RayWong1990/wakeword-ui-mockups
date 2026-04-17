@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案系统部 AI 提效经营看板 · 12 人 v1</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0b1220;
+    color: #e2e8f0;
+    padding: 20px 16px; min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #1e293b;
+  }
+  h1 {
+    font-size: 20px;
+    background: linear-gradient(90deg, #22d3ee, #3b82f6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .meta { font-size: 11px; color: #64748b; }
+  .meta .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; margin-right: 4px; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .kpi {
+    padding: 14px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 10px; border: 1px solid #1e293b; position: relative; overflow: hidden;
+  }
+  .kpi::after {
+    content: ''; position: absolute; top: 0; right: 0; width: 50%; height: 2px;
+    background: var(--tone); opacity: 0.5;
+  }
+  .kpi.good { --tone: #10b981; }
+  .kpi.warn { --tone: #f59e0b; }
+  .kpi.bad { --tone: #ef4444; }
+  .kpi-label { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+  .kpi-val { font-size: 26px; font-weight: 800; color: var(--tone); line-height: 1; }
+  .kpi-val .unit { font-size: 13px; opacity: 0.7; margin-left: 3px; }
+  .kpi-trend {
+    font-size: 11px; margin-top: 4px; display: flex; align-items: center; gap: 4px;
+    color: #cbd5e1;
+  }
+  .kpi-trend.down { color: #34d399; }
+
+  .grid-6 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+  .panel {
+    background: #0f172a; border-radius: 10px; padding: 14px;
+    border: 1px solid #1e293b;
+  }
+  .panel-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #1e293b;
+  }
+  .panel-title { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+  .panel-badge {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: rgba(59, 130, 246, 0.2); color: #60a5fa;
+  }
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px dashed #1e293b; font-size: 12px;
+  }
+  .row:last-child { border-bottom: none; }
+  .row-label { color: #94a3b8; }
+  .row-val { display: flex; align-items: center; gap: 6px; }
+  .bar {
+    width: 60px; height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; background: var(--tone); transition: width 0.8s;
+    animation: fill 2s ease-out;
+  }
+  @keyframes fill { from { width: 0 !important; } }
+  .num {
+    color: var(--tone); font-weight: 700; font-family: 'SF Mono', Monaco, monospace;
+    min-width: 52px; text-align: right;
+  }
+  .row.g { --tone: #10b981; }
+  .row.w { --tone: #f59e0b; }
+  .row.b { --tone: #ef4444; }
+
+  .alerts {
+    padding: 12px 14px; background: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444; border-radius: 6px; margin-bottom: 10px;
+  }
+  .alerts-title { font-size: 11px; color: #f87171; font-weight: 700; margin-bottom: 4px; }
+  .alerts-body { font-size: 11px; color: #cbd5e1; line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .kpi-row { grid-template-columns: 1fr; }
+    .grid-6 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="topbar">
+    <h1>方案系统部 AI 提效经营看板 · v1</h1>
+    <div class="meta"><span class="dot"></span>12 人基线 · 2026-04 月度数据 · 刷新：每月 1 号</div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi good">
+      <div class="kpi-label">方案首稿周期（工时）</div>
+      <div class="kpi-val">3.1<span class="unit">天</span></div>
+      <div class="kpi-trend down">▼ 40% · 原 5.2 天 · Pass ✅</div>
+    </div>
+    <div class="kpi good">
+      <div class="kpi-label">方案并发数（人均在研）</div>
+      <div class="kpi-val">2.8<span class="unit">份</span></div>
+      <div class="kpi-trend down">▲ 33% · 原 2.1 份 · Pass ✅</div>
+    </div>
+    <div class="kpi good">
+      <div class="kpi-label">方案返工率</div>
+      <div class="kpi-val">19<span class="unit">%</span></div>
+      <div class="kpi-trend down">▼ 32% · 原 28% · Pass ✅</div>
+    </div>
+  </div>
+
+  <div class="grid-6">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🎯 场景推进</div>
+        <div class="panel-badge">2 项</div>
+      </div>
+      <div class="row g">
+        <div class="row-label">高价值场景认领覆盖率</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 100%"></div></div>
+          <span class="num">6/6</span>
+        </div>
+      </div>
+      <div class="row w">
+        <div class="row-label">样板场景上线数</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 50%"></div></div>
+          <span class="num">1/2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📦 资产沉淀</div>
+        <div class="panel-badge">3 项</div>
+      </div>
+      <div class="row g">
+        <div class="row-label">部门级 Prompt 资产数</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 75%"></div></div>
+          <span class="num">30/40</span>
+        </div>
+      </div>
+      <div class="row g">
+        <div class="row-label">模板/Skill 资产数</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 75%"></div></div>
+          <span class="num">9/12</span>
+        </div>
+      </div>
+      <div class="row g">
+        <div class="row-label">案例卡月增量</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 100%"></div></div>
+          <span class="num">4/月</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🥋 实践活跃</div>
+        <div class="panel-badge">2 项</div>
+      </div>
+      <div class="row g">
+        <div class="row-label">道场出席率</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 83%"></div></div>
+          <span class="num">10/12</span>
+        </div>
+      </div>
+      <div class="row g">
+        <div class="row-label">战例人轮值完成率</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 100%"></div></div>
+          <span class="num">3/3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📈 质量变化</div>
+        <div class="panel-badge">2 项</div>
+      </div>
+      <div class="row g">
+        <div class="row-label">方案返工率</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 63%"></div></div>
+          <span class="num">19%</span>
+        </div>
+      </div>
+      <div class="row g">
+        <div class="row-label">风险项前置发现数</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 100%"></div></div>
+          <span class="num">2.4/案</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">⚠️ 缺口风险</div>
+        <div class="panel-badge">2 项</div>
+      </div>
+      <div class="row g">
+        <div class="row-label">缺口池在册数</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 47%"></div></div>
+          <span class="num">7 条</span>
+        </div>
+      </div>
+      <div class="row w">
+        <div class="row-label">缺口池月清理率</div>
+        <div class="row-val">
+          <div class="bar"><div class="bar-fill" style="width: 43%"></div></div>
+          <span class="num">43%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🔔 红线警戒</div>
+        <div class="panel-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">0 触发</div>
+      </div>
+      <div class="alerts">
+        <div class="alerts-title">连续 2 月触碰红线触发专项复盘</div>
+        <div class="alerts-body">
+          · 方案首稿周期 > 6 天<br>
+          · 方案返工率 > 30%<br>
+          · 道场出席率 < 70%<br>
+          · 缺口池积压 > 15 条
+        </div>
+      </div>
+      <div style="font-size: 11px; color: #94a3b8; padding-top: 4px;">
+        责任人：王磊 + 对应场景主责人 + Champion
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

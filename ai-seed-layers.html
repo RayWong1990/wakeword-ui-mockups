@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 人种子用户分层 · A/B/C 三类流动通道</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg, #0c1220 0%, #1e1b4b 100%);
+    color: #e2e8f0;
+    padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 22px; text-align: center; margin-bottom: 6px;
+    background: linear-gradient(90deg, #34d399, #60a5fa, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+
+  .people-bar {
+    display: flex; gap: 4px; padding: 14px; background: rgba(15, 23, 42, 0.6);
+    border-radius: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;
+  }
+  .person {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+    border: 2px solid transparent; transition: all 0.3s; cursor: pointer;
+    position: relative;
+  }
+  .person.a { background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; }
+  .person.b { background: linear-gradient(135deg, #3b82f6, #2563eb); border-color: #60a5fa; }
+  .person.c { background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-color: #a78bfa; }
+  .person:hover { transform: scale(1.1); box-shadow: 0 0 12px currentColor; }
+  .person .tip {
+    position: absolute; bottom: -20px; font-size: 10px; color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .layer {
+    padding: 16px; border-radius: 12px; background: #1e293b;
+    border-top: 4px solid var(--tone); position: relative;
+  }
+  .layer.a { --tone: #10b981; }
+  .layer.b { --tone: #3b82f6; }
+  .layer.c { --tone: #8b5cf6; }
+  .layer-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .layer-label { font-size: 14px; font-weight: 700; color: var(--tone); }
+  .layer-count { font-size: 24px; font-weight: 800; color: var(--tone); }
+  .layer-count .unit { font-size: 11px; opacity: 0.6; font-weight: 400; }
+  .layer-sub { font-size: 11px; color: #94a3b8; margin-bottom: 10px; font-style: italic; }
+  .layer-block { margin-bottom: 10px; font-size: 11px; }
+  .layer-block .block-title { color: #f1f5f9; font-weight: 600; margin-bottom: 4px; font-size: 12px; }
+  .layer-block ul { list-style: none; padding-left: 0; }
+  .layer-block li { padding: 3px 0; color: #cbd5e1; position: relative; padding-left: 12px; line-height: 1.5; }
+  .layer-block li::before {
+    content: '▸'; position: absolute; left: 0; color: var(--tone);
+  }
+
+  .flows {
+    margin-top: 20px; padding: 14px; background: rgba(15, 23, 42, 0.4);
+    border-radius: 10px; border: 1px dashed #475569;
+  }
+  .flows-title { font-size: 12px; color: #f59e0b; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
+  .flow-lanes { display: flex; justify-content: space-around; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .lane {
+    font-size: 11px; display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px; background: #0f172a; border-radius: 20px;
+    border: 1px solid #334155;
+  }
+  .lane .fat-arrow {
+    display: inline-block; animation: fwd 2s ease-in-out infinite;
+  }
+  .lane.up { border-color: #10b981; color: #34d399; }
+  .lane.down { border-color: #ef4444; color: #f87171; }
+  @keyframes fwd {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+  }
+
+  @media (max-width: 768px) {
+    .layers { grid-template-columns: 1fr; }
+    .person { width: 36px; height: 36px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>12 人种子用户分层</h1>
+  <div class="subtitle">A 类 / B 类 / C 类三档运营 · 每档有职责、有激励、有流动通道</div>
+
+  <div class="people-bar">
+    <div class="person a" title="A 类 · 深度用户">A1</div>
+    <div class="person a" title="A 类 · 深度用户">A2</div>
+    <div class="person b" title="B 类 · 一般用户">B1</div>
+    <div class="person b">B2</div>
+    <div class="person b">B3</div>
+    <div class="person b">B4</div>
+    <div class="person b">B5</div>
+    <div class="person b">B6</div>
+    <div class="person b">B7</div>
+    <div class="person c" title="C 类 · 浅层用户">C1</div>
+    <div class="person c">C2</div>
+    <div class="person c">C3</div>
+  </div>
+
+  <div class="layers">
+    <div class="layer a">
+      <div class="layer-head">
+        <div class="layer-label">A 类 · 深度用户</div>
+        <div class="layer-count">2<span class="unit">/12</span></div>
+      </div>
+      <div class="layer-sub">Champion 候选池</div>
+      <div class="layer-block">
+        <div class="block-title">判定标准</div>
+        <ul>
+          <li>近 30 天 ≥2 个高价值场景持续使用</li>
+          <li>有 Prompt 库或工作流笔记</li>
+          <li>有分享意愿</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">动作</div>
+        <ul>
+          <li>每双周主持一次道场</li>
+          <li>每季度交付 1 个场景级资产</li>
+          <li>担任资产库主评审</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">激励</div>
+        <ul>
+          <li>思南半年大会颁发认证</li>
+          <li>部门 OKR 加权</li>
+          <li>优先参加公司级 AI 项目</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layer b">
+      <div class="layer-head">
+        <div class="layer-label">B 类 · 一般用户</div>
+        <div class="layer-count">7<span class="unit">/12</span></div>
+      </div>
+      <div class="layer-sub">战例人 / 共创人</div>
+      <div class="layer-block">
+        <div class="block-title">判定标准</div>
+        <ul>
+          <li>会用 AI 但停在单点场景</li>
+          <li>未形成工作流</li>
+          <li>单点场景如润色 / 格式 / 翻译</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">动作</div>
+        <ul>
+          <li>每季度 ≥1 次担任战例提供人</li>
+          <li>参与 ≥2 次资产共创</li>
+          <li>复用资产库内容到自己的方案</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">激励</div>
+        <ul>
+          <li>战例人纳入季度评价</li>
+          <li>优秀资产共创公开表彰</li>
+          <li>积分满后晋升 A 类</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layer c">
+      <div class="layer-head">
+        <div class="layer-label">C 类 · 浅层用户</div>
+        <div class="layer-count">3<span class="unit">/12</span></div>
+      </div>
+      <div class="layer-sub">裁判 / 旁观者</div>
+      <div class="layer-block">
+        <div class="block-title">判定标准</div>
+        <ul>
+          <li>知道 Claude Code 偶尔尝试</li>
+          <li>遇到不熟的场景退回传统</li>
+          <li>Prompt 未写顺过</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">动作</div>
+        <ul>
+          <li>道场担任裁判组成员</li>
+          <li>从低门槛场景先入门</li>
+          <li>一个月后升 B 类</li>
+        </ul>
+      </div>
+      <div class="layer-block">
+        <div class="block-title">激励</div>
+        <ul>
+          <li>低门槛场景上线即获"AI 新兵"认定</li>
+          <li>升 B 类进入主流通道</li>
+          <li>无考核压力的起步窗口</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="flows">
+    <div class="flows-title">↕ 三档不是固化标签 · 流动是激励机制的一部分</div>
+    <div class="flow-lanes">
+      <div class="lane up"><span>C 类</span><span class="fat-arrow">→</span><span>B 类（1 个月）</span></div>
+      <div class="lane up"><span>B 类</span><span class="fat-arrow">→</span><span>A 类（半年）</span></div>
+      <div class="lane down"><span>A 类</span><span class="fat-arrow">→</span><span>B 类（连续 2 届不达标）</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

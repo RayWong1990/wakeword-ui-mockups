@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 运行机制闭环 · 场景认领 → 缺口池</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at center, #1e1b4b 0%, #0b1220 70%);
+    color: #e2e8f0;
+    padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 22px; text-align: center; margin-bottom: 6px;
+    background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 28px; }
+
+  .loop {
+    position: relative; width: 100%; max-width: 640px;
+    height: 640px; margin: 0 auto;
+  }
+  .center-core {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle, #312e81, #0f172a);
+    border: 2px solid #818cf8;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 12px; color: #c7d2fe; text-align: center; padding: 10px;
+    box-shadow: 0 0 40px rgba(129, 140, 248, 0.4);
+    animation: core-pulse 3s ease-in-out infinite;
+  }
+  .center-core strong {
+    font-size: 16px; color: #fff; display: block; margin-bottom: 6px;
+    background: linear-gradient(135deg, #22d3ee, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  @keyframes core-pulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(129, 140, 248, 0.4); }
+    50% { box-shadow: 0 0 60px rgba(167, 139, 250, 0.7); }
+  }
+
+  .node {
+    position: absolute; width: 200px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 12px; padding: 12px 14px;
+    border: 1px solid var(--tone);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s;
+  }
+  .node:hover { transform: scale(1.05); z-index: 10; }
+  .node::before {
+    content: ''; position: absolute; top: -1px; left: -1px; right: -1px;
+    height: 3px; background: var(--tone); border-radius: 12px 12px 0 0;
+  }
+  .node-head {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  }
+  .node-ico { font-size: 18px; }
+  .node-title { font-size: 13px; font-weight: 700; color: var(--tone); }
+  .node-body { font-size: 11px; color: #cbd5e1; line-height: 1.5; }
+  .node-tag {
+    display: inline-block; margin-top: 6px;
+    padding: 2px 6px; background: rgba(255,255,255,0.05);
+    border-radius: 3px; font-size: 10px; color: #94a3b8;
+  }
+
+  /* 五个节点的位置 — 围绕中心 */
+  .node.n1 { top: 0; left: 50%; transform: translateX(-50%); --tone: #34d399; }
+  .node.n2 { top: 28%; right: 0; --tone: #60a5fa; }
+  .node.n3 { bottom: 18%; right: 5%; --tone: #a78bfa; }
+  .node.n4 { bottom: 18%; left: 5%; --tone: #f472b6; }
+  .node.n5 { top: 28%; left: 0; --tone: #f59e0b; }
+
+  /* SVG 连线 */
+  .lines {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .lines path {
+    fill: none; stroke-width: 2;
+    stroke-dasharray: 6 4;
+    animation: dash 2s linear infinite;
+  }
+  @keyframes dash {
+    to { stroke-dashoffset: -20; }
+  }
+
+  .legend {
+    margin-top: 32px; padding: 16px;
+    background: rgba(15, 23, 42, 0.6); border-radius: 10px;
+    border: 1px dashed #475569;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .legend-item {
+    display: flex; align-items: start; gap: 8px; font-size: 11px; color: #cbd5e1;
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%; margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .legend-item strong { color: #f1f5f9; display: block; margin-bottom: 2px; }
+
+  @media (max-width: 768px) {
+    .loop { height: auto; display: flex; flex-direction: column; gap: 10px; }
+    .node { position: static !important; transform: none !important; width: 100%; }
+    .center-core { position: static !important; transform: none !important; margin: 10px auto; }
+    .lines { display: none; }
+    .legend { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>5 运行机制闭环</h1>
+  <div class="subtitle">场景认领 → 案例回流 → 资产发布 → 质量把关 → 缺口池——循环一次,能力库长一层</div>
+
+  <div class="loop">
+    <svg class="lines" viewBox="0 0 640 640" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#34d399"/>
+          <stop offset="100%" stop-color="#60a5fa"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="100%" stop-color="#a78bfa"/>
+        </linearGradient>
+        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#a78bfa"/>
+          <stop offset="100%" stop-color="#f472b6"/>
+        </linearGradient>
+        <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f472b6"/>
+          <stop offset="100%" stop-color="#f59e0b"/>
+        </linearGradient>
+        <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f59e0b"/>
+          <stop offset="100%" stop-color="#34d399"/>
+        </linearGradient>
+      </defs>
+      <path d="M 380 60 Q 540 130 560 230" stroke="url(#g1)"/>
+      <path d="M 560 310 Q 540 450 450 500" stroke="url(#g2)"/>
+      <path d="M 360 520 Q 260 530 190 500" stroke="url(#g3)"/>
+      <path d="M 80 430 Q 50 300 80 230" stroke="url(#g4)"/>
+      <path d="M 100 160 Q 200 80 260 60" stroke="url(#g5)"/>
+    </svg>
+
+    <div class="center-core">
+      <strong>能力库</strong>
+      <span>每月新增<br>资产 12+<br>缺口闭环 6+</span>
+    </div>
+
+    <div class="node n1">
+      <div class="node-head">
+        <span class="node-ico">🎯</span>
+        <span class="node-title">① 场景认领机制</span>
+      </div>
+      <div class="node-body">
+        6 高价值场景由 A/B 类认领主责<br>
+        每季度一轮 rotate,一人一场景
+      </div>
+      <div class="node-tag">输入：场景地图</div>
+    </div>
+
+    <div class="node n2">
+      <div class="node-head">
+        <span class="node-ico">🔄</span>
+        <span class="node-title">② 案例回流机制</span>
+      </div>
+      <div class="node-body">
+        每周 ≥1 条真实战例入库<br>
+        成功 / 失败 / 边缘全收,不做美化
+      </div>
+      <div class="node-tag">输入：道场 + 日常</div>
+    </div>
+
+    <div class="node n3">
+      <div class="node-head">
+        <span class="node-ico">📦</span>
+        <span class="node-title">③ 资产发布机制</span>
+      </div>
+      <div class="node-body">
+        每双周道场 ≥1 个 Prompt/模板<br>
+        版本号 + 责任人 + 适用范围
+      </div>
+      <div class="node-tag">产出：资产库</div>
+    </div>
+
+    <div class="node n4">
+      <div class="node-head">
+        <span class="node-ico">⚖️</span>
+        <span class="node-title">④ 质量把关机制</span>
+      </div>
+      <div class="node-body">
+        A 类 Champion 复核 + 裁判组打分<br>
+        未达标退回重做,不放水
+      </div>
+      <div class="node-tag">关卡：入库前</div>
+    </div>
+
+    <div class="node n5">
+      <div class="node-head">
+        <span class="node-ico">⚠️</span>
+        <span class="node-title">⑤ 缺口池机制</span>
+      </div>
+      <div class="node-body">
+        AI 失败 / 不适用 / 边界场景全登记<br>
+        月清理率 ≥ 60%,积压超 15 条预警
+      </div>
+      <div class="node-tag">反哺：下期战例</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background: linear-gradient(90deg, #34d399, #60a5fa);"></div>
+      <div>
+        <strong>顺时针流转</strong>
+        场景 → 案例 → 资产 → 把关 → 缺口 → 下个场景
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #818cf8;"></div>
+      <div>
+        <strong>能力库为中心</strong>
+        每转一圈,Prompt/模板/案例/失败教训 沉淀一层
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #f472b6;"></div>
+      <div>
+        <strong>任意节点失效 = 系统停转</strong>
+        比如 ④ 不把关 → ③ 掺水 → ② 失去信任 → ① 无人认领
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一阶段 → 第二阶段 · 升级判断</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+    color: #e2e8f0;
+    padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 22px; text-align: center; margin-bottom: 6px;
+    background: linear-gradient(90deg, #f59e0b, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 22px; }
+  .stages { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; align-items: stretch; }
+  .stage-card {
+    background: #1e293b; border-radius: 12px; padding: 18px 16px;
+    border: 1px solid #334155; position: relative; overflow: hidden;
+  }
+  .stage-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--tone);
+  }
+  .stage-card.p1 { --tone: #64748b; }
+  .stage-card.p2 { --tone: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
+  .stage-label {
+    font-size: 11px; color: var(--tone); font-weight: 700; letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .stage-title { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+  .stage-subtitle { font-size: 11px; color: #94a3b8; margin-bottom: 14px; font-style: italic; }
+  .feat {
+    display: flex; align-items: start; gap: 8px; padding: 8px 0;
+    border-bottom: 1px dashed #334155; font-size: 12px;
+  }
+  .feat:last-child { border-bottom: none; }
+  .feat-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .arrow-col {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #f59e0b;
+  }
+  .arrow-big {
+    font-size: 32px; animation: slide 2s ease-in-out infinite;
+  }
+  .arrow-label {
+    font-size: 10px; color: #f59e0b; writing-mode: vertical-rl;
+    margin-top: 8px; letter-spacing: 4px;
+  }
+  @keyframes slide {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+  }
+  .judgments {
+    margin-top: 26px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  .judgment {
+    padding: 14px 14px 14px 48px; background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-radius: 10px; border-left: 3px solid #ec4899; position: relative;
+    font-size: 12px; transition: transform 0.2s;
+  }
+  .judgment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(236, 72, 153, 0.15); }
+  .j-num {
+    position: absolute; left: 12px; top: 14px; font-size: 20px; font-weight: 800;
+    background: linear-gradient(135deg, #ec4899, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .j-head { font-weight: 700; color: #f1f5f9; margin-bottom: 4px; font-size: 13px; }
+  .j-body { color: #94a3b8; line-height: 1.5; }
+  @media (max-width: 768px) {
+    .stages { grid-template-columns: 1fr; gap: 14px; }
+    .arrow-col { flex-direction: row; padding: 8px 0; }
+    .arrow-label { writing-mode: horizontal-tb; margin: 0 0 0 8px; }
+    .judgments { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>第一阶段 → 第二阶段 · 升级判断</h1>
+  <div class="subtitle">工具普及已完成,下一阶段要进入能力运营</div>
+
+  <div class="stages">
+    <div class="stage-card p1">
+      <div class="stage-label">PHASE 1</div>
+      <div class="stage-title">工具铺开期</div>
+      <div class="stage-subtitle">"有没有用"的阶段</div>
+      <div class="feat"><span class="feat-icon">📦</span><span>公司统一下发 Claude Code 资源</span></div>
+      <div class="feat"><span class="feat-icon">👥</span><span>部门成员开始普遍接触</span></div>
+      <div class="feat"><span class="feat-icon">📊</span><span>使用深度出现明显差异</span></div>
+      <div class="feat"><span class="feat-icon">🔍</span><span>整体仍以个人探索为主</span></div>
+      <div class="feat"><span class="feat-icon">❓</span><span>缺少统一打法与能力沉淀</span></div>
+    </div>
+
+    <div class="arrow-col">
+      <div class="arrow-big">→</div>
+      <div class="arrow-label">进入能力运营</div>
+    </div>
+
+    <div class="stage-card p2">
+      <div class="stage-label">PHASE 2 · NOW</div>
+      <div class="stage-title">能力运营期</div>
+      <div class="stage-subtitle">"用得深不深、能不能复用"的阶段</div>
+      <div class="feat"><span class="feat-icon">🎯</span><span>场景定义：6 个核心高价值节点</span></div>
+      <div class="feat"><span class="feat-icon">🧬</span><span>方法抽象：Prompt/工作流/模板资产化</span></div>
+      <div class="feat"><span class="feat-icon">🥋</span><span>组织节奏：双周 AI 实战道场</span></div>
+      <div class="feat"><span class="feat-icon">📐</span><span>标准沉淀：资产库版本与责任人</span></div>
+      <div class="feat"><span class="feat-icon">📈</span><span>结果衡量：经营看板 13 项指标</span></div>
+    </div>
+  </div>
+
+  <div class="judgments">
+    <div class="judgment">
+      <div class="j-num">1</div>
+      <div class="j-head">从全员采用 → 分层运营</div>
+      <div class="j-body">识别种子用户,把资源投向最能放大效果的 A 类,带动 B/C 类</div>
+    </div>
+    <div class="judgment">
+      <div class="j-num">2</div>
+      <div class="j-head">从个人提效 → 部门产能</div>
+      <div class="j-body">响应更快、并发更高、风险更早、经验更易复用</div>
+    </div>
+    <div class="judgment">
+      <div class="j-num">3</div>
+      <div class="j-head">从工具导向 → 场景导向</div>
+      <div class="j-body">不讲 Claude Code 有多强,讲 6 个高价值场景怎么重构</div>
+    </div>
+    <div class="judgment">
+      <div class="j-num">4</div>
+      <div class="j-head">从感觉有效 → 看板可见</div>
+      <div class="j-body">让管理层看见周期、并发、返工、复用的数字变化</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
